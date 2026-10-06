@@ -1,33 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="start"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp">
+    android:gravity="top"
+    android:paddingVertical="4dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="48dp">
 
-    <androidx.cardview.widget.CardView
+    <!-- Bot Avatar Icon -->
+    <FrameLayout
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/bg_circle_icon">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="🤖"
+            android:textSize="18sp" />
+    </FrameLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="60dp"
-        app:cardBackgroundColor="@color/surface_light"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="1dp">
+        android:layout_marginStart="10dp"
+        android:background="@drawable/bg_chat_bubble_bot"
+        android:elevation="2dp"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:letterSpacing="0.04"
+            android:text="SOSense AI"
+            android:textColor="@color/accent_cyan"
+            android:textSize="11sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvBotMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:maxWidth="260dp"
-            android:padding="12dp"
-            android:text="Bot message"
+            android:lineSpacingExtra="3dp"
+            android:text="Bot response text goes here"
             android:textColor="@color/text_primary"
-            android:textSize="13sp"
-            android:lineSpacingExtra="2dp" />
+            android:textSize="14sp" />
 
-    </androidx.cardview.widget.CardView>
+        <TextView
+            android:id="@+id/tvBotTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="6dp"
+            android:text="12:04 PM"
+            android:textColor="@color/text_muted"
+            android:textSize="10sp" />
+    </LinearLayout>
 
 </LinearLayout>

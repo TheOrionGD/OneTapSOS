@@ -6,7 +6,7 @@
 [![Gemini AI](https://img.shields.io/badge/AI-Google_Gemini-4285F4?logo=google&logoColor=white)](https://ai.google.dev)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**SOSense** is an advanced, privacy-first personal safety and emergency response Android application built to protect individuals, families, and communities during critical crises. With instantaneous one-touch SOS dispatch, automated accelerometer-driven fall detection, per-contact custom alert messaging, offline-ready Safe Map discovery, and Google Gemini AI safety companion, SOSense empowers users to get immediate life-saving help when every second counts.
+**SOSense** is an advanced, privacy-first personal safety and emergency response Android application built to protect individuals, families, and communities during critical crises. With instantaneous one-touch SOS dispatch, automated accelerometer-driven fall detection, per-contact custom alert messaging, offline-ready Safe Map discovery, and one of the best Google product Gemini AI safety companion, SOSense empowers users to get immediate life-saving help when every second counts.
 
 ---
 

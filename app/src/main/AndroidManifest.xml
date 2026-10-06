@@ -62,7 +62,10 @@
         <activity android:name=".EmergencyBroadcastActivity" android:exported="false" />
         <activity android:name=".MessageHistoryActivity" android:exported="false" />
         <activity android:name=".ConversationActivity" android:exported="false" />
-        <activity android:name=".ChatActivity" android:exported="false" />
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- 6. Contacts Management Screens -->
         <activity android:name=".ContactsActivity" android:exported="false" />
