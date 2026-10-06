@@ -357,6 +357,7 @@
 
                 <!-- Safe Map -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cardQuickSafeMap"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_marginEnd="6dp"
@@ -394,6 +395,7 @@
 
                 <!-- AI Chat -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cardQuickAiChat"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_marginStart="3dp"
@@ -432,6 +434,7 @@
 
                 <!-- Contacts Vault -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/cardQuickVault"
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_marginStart="6dp"

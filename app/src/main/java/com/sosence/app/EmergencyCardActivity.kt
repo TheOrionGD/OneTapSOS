@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import android.widget.Toast
 
-class EmergencyCardActivity : AppCompatActivity() {
+class EmergencyCardActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,11 @@ class EmergencyCardActivity : AppCompatActivity() {
                 type = "text/plain"
                 putExtra(android.content.Intent.EXTRA_TEXT, info)
             }
-            startActivity(android.content.Intent.createChooser(shareIntent, "Share Emergency Card"))
+            try {
+                startActivity(android.content.Intent.createChooser(shareIntent, "Share Emergency Card"))
+            } catch (e: Exception) {
+                Toast.makeText(this, "Unable to share emergency card", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

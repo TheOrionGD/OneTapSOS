@@ -10,7 +10,7 @@ import android.content.pm.PackageManager
 import android.Manifest
 import androidx.core.content.ContextCompat
 
-class AppLockActivity : AppCompatActivity() {
+class AppLockActivity : BaseActivity() {
 
     private val correctPin: String get() = getSharedPreferences("sosense_prefs", MODE_PRIVATE).getString("app_pin", "") ?: ""
     private var enteredPin = StringBuilder()

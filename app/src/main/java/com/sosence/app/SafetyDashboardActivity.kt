@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import com.sosence.app.data.AppDatabaseHelper
 
 class SafetyDashboardActivity : BaseActivity() {
@@ -60,7 +61,7 @@ class SafetyDashboardActivity : BaseActivity() {
             startActivity(Intent(this, LanguageSettingsActivity::class.java))
         }
 
-        findViewById<TextView>(R.id.btnSettingsShortcut).setOnClickListener {
+        findViewById<View>(R.id.btnSettingsShortcut).setOnClickListener {
             startActivity(Intent(this, SOSSettingsActivity::class.java))
         }
 
@@ -119,12 +120,12 @@ class SafetyDashboardActivity : BaseActivity() {
         if (appSettings.isSosActive) {
             tvState.text = "STATE: EMERGENCY ACTIVE 🚨"
             tvBadge.text = "🚨 EMERGENCY IN PROGRESS"
-            tvBadge.setTextColor(getColor(R.color.danger_red))
+            tvBadge.setTextColor(ContextCompat.getColor(this, R.color.danger_red))
             cardImSafe.visibility = View.VISIBLE
         } else {
             tvState.text = "STATE: READY"
             tvBadge.text = "🟢 System Ready • Armed"
-            tvBadge.setTextColor(getColor(R.color.success_green))
+            tvBadge.setTextColor(ContextCompat.getColor(this, R.color.success_green))
             cardImSafe.visibility = View.GONE
         }
     }
@@ -159,6 +160,7 @@ class SafetyDashboardActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        holdTimer?.cancel()
         glowAnimator?.cancel()
     }
 }

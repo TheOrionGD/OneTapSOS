@@ -38,6 +38,9 @@
     <!-- Card / Surface -->
     <color name="surface_light">#252A3D</color>
     <color name="surface_border">#3A3F5C</color>
+    <color name="bg_card_semi">#CC0F3460</color>
+    <color name="accent_coral">#FF6B6B</color>
+    <color name="bg_badge_pill">#33FF4E50</color>
 
     <!-- Original default (keep for compatibility) -->
     <color name="purple_200">#FFBB86FC</color>

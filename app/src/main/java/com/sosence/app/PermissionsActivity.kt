@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 data class PermissionStatus(val name: String, val description: String, val isGranted: Boolean, val icon: String)
 
-class PermissionsActivity : AppCompatActivity() {
+class PermissionsActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +72,10 @@ class PermissionsAdapter(private val items: List<PermissionStatus>) :
         holder.tvDesc.text = item.description
         if (item.isGranted) {
             holder.tvStatus.text = "✅ Granted"
-            holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.success_green))
+            holder.tvStatus.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.success_green))
         } else {
             holder.tvStatus.text = "❌ Denied"
-            holder.tvStatus.setTextColor(holder.itemView.context.getColor(R.color.danger_red))
+            holder.tvStatus.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.danger_red))
         }
     }
 

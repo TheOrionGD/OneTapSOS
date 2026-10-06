@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.CurrentLocationRequest
@@ -17,7 +16,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
-class ShareLocationActivity : AppCompatActivity() {
+class ShareLocationActivity : BaseActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -28,7 +27,6 @@ class ShareLocationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_location)
-        animateEntrance()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -54,46 +52,81 @@ class ShareLocationActivity : AppCompatActivity() {
     }
 
     private fun fetchAndShare(mode: String = "copy") {
+        if (isFinishing || isDestroyed) return
         try {
             val req = CurrentLocationRequest.Builder().setPriority(Priority.PRIORITY_HIGH_ACCURACY).build()
             fusedLocationClient.getCurrentLocation(req, null).addOnSuccessListener { location ->
-                shareLocation(location, mode)
+                if (!isFinishing && !isDestroyed) {
+                    shareLocation(location, mode)
+                }
             }.addOnFailureListener {
-                fusedLocationClient.lastLocation.addOnSuccessListener { loc -> shareLocation(loc, mode) }
+                fusedLocationClient.lastLocation.addOnSuccessListener { loc ->
+                    if (!isFinishing && !isDestroyed) {
+                        shareLocation(loc, mode)
+                    }
+                }
             }
         } catch (e: SecurityException) {
             Toast.makeText(this, "Location unavailable", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun shareLocation(location: Location?, mode: String) {
-        if (location == null) { Toast.makeText(this, "Could not get location", Toast.LENGTH_SHORT).show(); return }
-        val lat = location.latitude; val lon = location.longitude
+        if (location == null) {
+            Toast.makeText(this, "Could not get location", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val lat = location.latitude
+        val lon = location.longitude
         val mapsLink = "https://maps.google.com/?q=$lat,$lon"
         val msg = "📍 My current location: $mapsLink\n\nShared via SOSense"
 
-        when (mode) {
-            "whatsapp" -> {
-                val intent = Intent(Intent.ACTION_SEND).apply { type = "text/plain"; setPackage("com.whatsapp"); putExtra(Intent.EXTRA_TEXT, msg) }
-                try { startActivity(intent) } catch (e: Exception) { sharePlain(msg) }
+        try {
+            when (mode) {
+                "whatsapp" -> {
+                    val intent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        setPackage("com.whatsapp")
+                        putExtra(Intent.EXTRA_TEXT, msg)
+                    }
+                    try {
+                        startActivity(intent)
+                    } catch (e: Exception) {
+                        sharePlain(msg)
+                    }
+                }
+                "sms" -> {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:")).apply {
+                        putExtra("sms_body", msg)
+                    }
+                    startActivity(intent)
+                }
+                "maps" -> {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:$lat,$lon?q=$lat,$lon"))
+                    startActivity(intent)
+                }
+                "copy" -> {
+                    val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Location", mapsLink))
+                    Toast.makeText(this, "Location link copied!", Toast.LENGTH_SHORT).show()
+                }
             }
-            "sms" -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("sms:")).apply { putExtra("sms_body", msg) })
-            "maps" -> startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:$lat,$lon?q=$lat,$lon")))
-            "copy" -> {
-                val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Location", mapsLink))
-                Toast.makeText(this, "Location link copied!", Toast.LENGTH_SHORT).show()
-            }
+        } catch (e: Exception) {
+            sharePlain(msg)
         }
     }
 
     private fun sharePlain(msg: String) {
-        startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply { type = "text/plain"; putExtra(Intent.EXTRA_TEXT, msg) }, "Share Location"))
-    }
-
-    private fun animateEntrance() {
-        window.decorView.alpha = 0f
-        window.decorView.animate().alpha(1f).setDuration(280)
-            .setInterpolator(android.view.animation.DecelerateInterpolator()).start()
+        try {
+            startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, msg)
+            }, "Share Location"))
+        } catch (e: Exception) {
+            Toast.makeText(this, "Could not launch share", Toast.LENGTH_SHORT).show()
+        }
     }
 }
+

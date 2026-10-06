@@ -79,14 +79,15 @@ class MapActivity : BaseActivity() {
                 val fusedClient = LocationServices.getFusedLocationProviderClient(this)
                 val req = CurrentLocationRequest.Builder().setPriority(Priority.PRIORITY_HIGH_ACCURACY).build()
                 fusedClient.getCurrentLocation(req, null).addOnSuccessListener { loc ->
+                    if (isFinishing || isDestroyed) return@addOnSuccessListener
                     if (loc != null) {
                         defaultLat = loc.latitude
                         defaultLng = loc.longitude
                         dbHelper.recordLocation(defaultLat, defaultLng, "Current GPS Location")
-                        tvCoords.text = "Location: Lat %.4f, Lng %.4f".format(defaultLat, defaultLng)
+                        tvCoords.text = "Location: Lat %.4f, Lng %.4f".format(java.util.Locale.US, defaultLat, defaultLng)
                         val point = GeoPoint(defaultLat, defaultLng)
                         mapView.controller.animateTo(point)
-                        addMarker(point, "You Are Here (GPS)", "Accuracy: %.1fm".format(loc.accuracy))
+                        addMarker(point, "You Are Here (GPS)", "Accuracy: %.1fm".format(java.util.Locale.US, loc.accuracy))
                     }
                 }
             } catch (e: Exception) {}
@@ -121,5 +122,10 @@ class MapActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         try { mapView.onPause() } catch (e: Exception) {}
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try { mapView.onDetach() } catch (e: Exception) {}
     }
 }

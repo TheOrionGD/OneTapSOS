@@ -8,7 +8,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class ContactsActivity : AppCompatActivity() {
+class ContactsActivity : BaseActivity() {
 
     private lateinit var dbHelper: ContactsDatabaseHelper
     private lateinit var adapter: ContactsAdapter

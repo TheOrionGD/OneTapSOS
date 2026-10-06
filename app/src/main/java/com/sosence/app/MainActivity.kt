@@ -94,24 +94,32 @@ class MainActivity : BaseActivity() {
 
     private val batteryReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (intent.action == Intent.ACTION_BATTERY_CHANGED && appSettings.isBatteryAlertEnabled) {
-                val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-                val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-                val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+            try {
+                if (intent.action == Intent.ACTION_BATTERY_CHANGED && appSettings.isBatteryAlertEnabled) {
+                    val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+                    val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
+                    val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
 
-                val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
+                    val isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
 
-                if (level > 0 && scale > 0) {
-                    val batteryPct = (level * 100) / scale.toFloat()
-                    if (batteryPct <= 5.0f && !isCharging) {
-                        if (!hasBatteryAlertFired) {
-                            hasBatteryAlertFired = true
-                            show5PercentBatteryAlert()
+                    if (level > 0 && scale > 0) {
+                        val batteryPct = (level * 100) / scale.toFloat()
+                        if (batteryPct in 1.0f..5.0f && !isCharging) {
+                            if (!hasBatteryAlertFired) {
+                                hasBatteryAlertFired = true
+                                window.decorView.postDelayed({
+                                    if (!isFinishing && !isDestroyed) {
+                                        show5PercentBatteryAlert()
+                                    }
+                                }, 1500)
+                            }
+                        } else if (batteryPct > 6.0f || isCharging) {
+                            hasBatteryAlertFired = false
                         }
-                    } else if (batteryPct > 6.0f || isCharging) {
-                        hasBatteryAlertFired = false
                     }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -133,27 +141,19 @@ class MainActivity : BaseActivity() {
             }
         }
 
-
-        val scrollView = findViewById<View>(android.R.id.content)
-        scrollView.alpha = 0f
-        scrollView.animate()
-            .alpha(1f)
-            .setDuration(350)
-            .setStartDelay(80)
-            .setInterpolator(android.view.animation.DecelerateInterpolator())
-            .start()
-
         val glowRing = findViewById<View>(R.id.viewGlowRing)
-        glowPulseAnimator = ObjectAnimator.ofFloat(glowRing, "alpha", 0.35f, 1f).apply {
-            duration = 900
-            repeatCount = ObjectAnimator.INFINITE
-            repeatMode = ObjectAnimator.REVERSE
-            interpolator = android.view.animation.AccelerateDecelerateInterpolator()
-            start()
+        if (glowRing != null) {
+            glowPulseAnimator = ObjectAnimator.ofFloat(glowRing, "alpha", 0.35f, 1f).apply {
+                duration = 900
+                repeatCount = ObjectAnimator.INFINITE
+                repeatMode = ObjectAnimator.REVERSE
+                interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+                start()
+            }
         }
 
-        val btnSettings = findViewById<TextView>(R.id.btnSettings)
-        btnSettings.setOnClickListener {
+        val btnSettings = findViewById<FrameLayout>(R.id.btnSettings)
+        btnSettings?.setOnClickListener {
             btnSettings.animate().scaleX(0.88f).scaleY(0.88f).setDuration(80).withEndAction {
                 btnSettings.animate().scaleX(1f).scaleY(1f).setDuration(120).start()
             }.start()
@@ -161,7 +161,7 @@ class MainActivity : BaseActivity() {
         }
 
         val sosButton = findViewById<FrameLayout>(R.id.frameSOS)
-        sosButton.setOnTouchListener { v, event ->
+        sosButton?.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     v.animate().scaleX(0.94f).scaleY(0.94f).setDuration(100).start()
@@ -179,29 +179,24 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        val layoutFeatures = findViewById<LinearLayout>(R.id.layoutFeatures)
-
-        val safeMapCard = layoutFeatures.getChildAt(0) as CardView
-        safeMapCard.setOnClickListener {
+        findViewById<CardView>(R.id.cardQuickSafeMap)?.setOnClickListener {
             startActivity(Intent(this, MapActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
-        val aiChatCard = layoutFeatures.getChildAt(1) as CardView
-        aiChatCard.setOnClickListener {
+        findViewById<CardView>(R.id.cardQuickAiChat)?.setOnClickListener {
             startActivity(Intent(this, ChatActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
-        val vaultCard = layoutFeatures.getChildAt(2) as CardView
-        vaultCard.setOnClickListener {
+        findViewById<CardView>(R.id.cardQuickVault)?.setOnClickListener {
             startActivity(Intent(this, TrustedContactsActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
         tvFallDetectionStatus = findViewById(R.id.tvFallDetectionStatus)
         val cardFallDetection = findViewById<CardView>(R.id.cardFallDetection)
-        cardFallDetection.setOnClickListener {
+        cardFallDetection?.setOnClickListener {
             showFallDetectionDialog()
         }
 
@@ -216,7 +211,10 @@ class MainActivity : BaseActivity() {
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
 
-        animateFeatureCardsEntrance(layoutFeatures)
+        val layoutFeatures = findViewById<LinearLayout>(R.id.layoutFeatures)
+        if (layoutFeatures != null) {
+            animateFeatureCardsEntrance(layoutFeatures)
+        }
 
         updateFallDetectionStatusText()
         updateImSafeCardState()

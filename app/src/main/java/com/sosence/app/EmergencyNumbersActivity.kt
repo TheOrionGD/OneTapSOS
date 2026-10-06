@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 data class EmergencyNumber(val country: String, val police: String, val ambulance: String, val fire: String, val flag: String)
 
-class EmergencyNumbersActivity : AppCompatActivity() {
+class EmergencyNumbersActivity : BaseActivity() {
 
     private val numbers = listOf(
         EmergencyNumber("India", "100", "108", "101", "🇮🇳"),
@@ -46,7 +46,11 @@ class EmergencyNumbersActivity : AppCompatActivity() {
         btnBack.setOnClickListener { finish() }
         rvNumbers.layoutManager = LinearLayoutManager(this)
         rvNumbers.adapter = EmergencyNumbersAdapter(numbers) { number ->
-            startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")))
+            try {
+                startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number")))
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(this, "Unable to open dialer", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

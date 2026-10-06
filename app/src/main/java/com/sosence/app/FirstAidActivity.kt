@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 data class FirstAidGuide(val title: String, val icon: String, val steps: List<String>)
 
-class FirstAidActivity : AppCompatActivity() {
+class FirstAidActivity : BaseActivity() {
 
     private val guides = listOf(
         FirstAidGuide("CPR (Cardiopulmonary Resuscitation)", "❤️", listOf(

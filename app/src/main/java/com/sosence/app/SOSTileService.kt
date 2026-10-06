@@ -15,13 +15,15 @@ class SOSTileService : TileService() {
 
     override fun onClick() {
         super.onClick()
-
-        val sosIntent = Intent("com.sosence.app.SEND_SOS").apply {
-            setPackage(packageName)
+        try {
+            val sosIntent = Intent("com.sosence.app.SEND_SOS").apply {
+                setPackage(packageName)
+            }
+            sendBroadcast(sosIntent)
+            Toast.makeText(this, "🚨 SOS Triggered via Quick Settings!", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        sendBroadcast(sosIntent)
-
-        Toast.makeText(this, "🚨 SOS Triggered via Quick Settings!", Toast.LENGTH_LONG).show()
     }
 
     private fun updateTile() {

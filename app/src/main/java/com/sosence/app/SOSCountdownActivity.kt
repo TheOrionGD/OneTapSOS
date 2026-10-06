@@ -61,13 +61,25 @@ class SOSCountdownActivity : BaseActivity() {
             try {
                 val req = CurrentLocationRequest.Builder().setPriority(Priority.PRIORITY_HIGH_ACCURACY).build()
                 fusedClient.getCurrentLocation(req, null)
-                    .addOnSuccessListener { loc -> sendEmergencyMessages(loc) }
-                    .addOnFailureListener { sendEmergencyMessages(null) }
+                    .addOnSuccessListener { loc ->
+                        if (!isFinishing && !isDestroyed) {
+                            sendEmergencyMessages(loc)
+                        }
+                    }
+                    .addOnFailureListener {
+                        if (!isFinishing && !isDestroyed) {
+                            sendEmergencyMessages(null)
+                        }
+                    }
             } catch (e: Exception) {
-                sendEmergencyMessages(null)
+                if (!isFinishing && !isDestroyed) {
+                    sendEmergencyMessages(null)
+                }
             }
         } else {
-            sendEmergencyMessages(null)
+            if (!isFinishing && !isDestroyed) {
+                sendEmergencyMessages(null)
+            }
         }
     }
 
@@ -136,5 +148,10 @@ class SOSCountdownActivity : BaseActivity() {
         } catch (e: Exception) {
             false
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        countdownTimer?.cancel()
     }
 }

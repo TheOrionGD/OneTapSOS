@@ -97,9 +97,7 @@ class OnboardingActivity : BaseActivity() {
     private fun dpToPx(dp: Int) = (dp * resources.displayMetrics.density).toInt()
 
     private fun finishOnboarding() {
-        getSharedPreferences("sosense_prefs", MODE_PRIVATE).edit()
-            .putBoolean("onboarding_done", true).apply()
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, OnboardingPermissionsActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
         startActivity(intent)

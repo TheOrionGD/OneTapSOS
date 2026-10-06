@@ -90,9 +90,15 @@ class HelpAndSupportActivity : BaseActivity() {
                 )
                 cardParams.bottomMargin = dpToPx(8)
                 layoutParams = cardParams
-                setCardBackgroundColor(getColor(R.color.card_bg))
+                setCardBackgroundColor(androidx.core.content.ContextCompat.getColor(this@HelpAndSupportActivity, R.color.card_bg))
                 radius = dpToPx(10).toFloat()
-                setOnClickListener { startActivity(Intent(this@HelpAndSupportActivity, targetClass)) }
+                setOnClickListener {
+                    try {
+                        startActivity(Intent(this@HelpAndSupportActivity, targetClass))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
 
             val tv = TextView(this).apply {
@@ -104,7 +110,7 @@ class HelpAndSupportActivity : BaseActivity() {
                 tvParams.leftMargin = dpToPx(16)
                 layoutParams = tvParams
                 text = title
-                setTextColor(getColor(R.color.text_primary))
+                setTextColor(androidx.core.content.ContextCompat.getColor(this@HelpAndSupportActivity, R.color.text_primary))
                 textSize = 14f
             }
             card.addView(tv)

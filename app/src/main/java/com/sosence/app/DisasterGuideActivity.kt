@@ -12,7 +12,7 @@ import android.view.ViewGroup
 
 data class DisasterGuide(val type: String, val icon: String, val before: String, val during: String, val after: String)
 
-class DisasterGuideActivity : AppCompatActivity() {
+class DisasterGuideActivity : BaseActivity() {
 
     private val guides = listOf(
         DisasterGuide("Earthquake", "🌍",

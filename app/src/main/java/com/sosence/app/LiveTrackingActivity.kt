@@ -17,7 +17,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 
-class LiveTrackingActivity : AppCompatActivity() {
+class LiveTrackingActivity : BaseActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var trackingActive = false
@@ -75,9 +75,10 @@ class LiveTrackingActivity : AppCompatActivity() {
                 try {
                     val req = CurrentLocationRequest.Builder().setPriority(Priority.PRIORITY_HIGH_ACCURACY).build()
                     fusedLocationClient.getCurrentLocation(req, null).addOnSuccessListener { loc ->
+                        if (isFinishing || isDestroyed) return@addOnSuccessListener
                         loc?.let {
                             lastLocation = it
-                            tvLocation.text = "📍 Lat: ${String.format("%.5f", it.latitude)}\n🗺 Lon: ${String.format("%.5f", it.longitude)}\n⚡ Accuracy: ${it.accuracy.toInt()}m"
+                            tvLocation.text = "📍 Lat: ${String.format(java.util.Locale.US, "%.5f", it.latitude)}\n🗺 Lon: ${String.format(java.util.Locale.US, "%.5f", it.longitude)}\n⚡ Accuracy: ${it.accuracy.toInt()}m"
                         }
                     }
                 } catch (e: SecurityException) {}

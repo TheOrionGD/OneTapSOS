@@ -3,9 +3,13 @@ package com.sosence.app
 import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.sosence.app.utils.AnimationExtensions.applyBackwardTransition
-import com.sosence.app.utils.AnimationExtensions.applyForwardTransition
 
 open class BaseActivity : AppCompatActivity() {
 
@@ -20,6 +24,8 @@ open class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         appSettings = AppSettings(this)
 
+        setupSystemBarSeparation()
+
         // Smooth fade & slide transition
         window.decorView.alpha = 0f
         window.decorView.animate()
@@ -27,6 +33,43 @@ open class BaseActivity : AppCompatActivity() {
             .setDuration(220)
             .setInterpolator(android.view.animation.DecelerateInterpolator())
             .start()
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        applySystemBarInsets()
+    }
+
+    override fun setContentView(view: View?) {
+        super.setContentView(view)
+        applySystemBarInsets()
+    }
+
+    private fun setupSystemBarSeparation() {
+        try {
+            val darkBg = ContextCompat.getColor(this, R.color.bg_dark_primary)
+            window.statusBarColor = darkBg
+            window.navigationBarColor = darkBg
+
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.isAppearanceLightStatusBars = false
+            controller.isAppearanceLightNavigationBars = false
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun applySystemBarInsets() {
+        try {
+            val content = findViewById<View>(android.R.id.content) ?: return
+            ViewCompat.setOnApplyWindowInsetsListener(content) { view, insets ->
+                val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+                view.setPadding(0, statusBars.top, 0, 0)
+                insets
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun finish() {
@@ -47,4 +90,3 @@ open class BaseActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
     }
 }
-

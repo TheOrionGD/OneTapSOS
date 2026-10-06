@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 
-class FakeCallActivity : AppCompatActivity() {
+class FakeCallActivity : BaseActivity() {
 
     private var ringTimer: CountDownTimer? = null
     private var callTimer: CountDownTimer? = null

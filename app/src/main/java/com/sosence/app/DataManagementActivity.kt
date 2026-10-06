@@ -39,11 +39,17 @@ class DataManagementActivity : BaseActivity() {
     }
 
     private fun showConfirmationDialog(title: String, message: String, onConfirm: () -> Unit) {
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton("Confirm") { _, _ -> onConfirm() }
-            .setNegativeButton("Cancel", null)
-            .show()
+        if (isFinishing || isDestroyed) return
+        try {
+            AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("Confirm") { _, _ -> onConfirm() }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }
+

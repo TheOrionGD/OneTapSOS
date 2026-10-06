@@ -21,8 +21,12 @@ class ContactDetailActivity : BaseActivity() {
         findViewById<TextView>(R.id.tvDetailContactPhone).text = phone
 
         findViewById<CardView>(R.id.btnCallContact).setOnClickListener {
-            val callIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
-            startActivity(callIntent)
+            try {
+                val callIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
+                startActivity(callIntent)
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(this, "Unable to open dialer", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
 
         findViewById<CardView>(R.id.btnOpenThread).setOnClickListener {

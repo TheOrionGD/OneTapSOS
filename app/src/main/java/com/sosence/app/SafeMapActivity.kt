@@ -27,7 +27,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 
-class SafeMapActivity : AppCompatActivity() {
+class SafeMapActivity : BaseActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var webView: WebView
@@ -45,10 +45,11 @@ class SafeMapActivity : AppCompatActivity() {
         if (granted) {
             loadMapWithCurrentLocation()
         } else {
-            Toast.makeText(this, "Location permission denied. Showing default location.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Location permission denied. Showing default location.", Toast.LENGTH_SHORT).show()
             loadDefaultMap()
         }
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,25 +149,33 @@ class SafeMapActivity : AppCompatActivity() {
     }
 
     private fun showDetailsDialog(zone: SafeZone) {
-        val message = "${zone.type}\n\n📍 Address: ${zone.address}\n📞 Phone: ${zone.phone}\n📏 Distance: ${zone.distance}"
+        if (isFinishing || isDestroyed) return
+        try {
+            val message = "${zone.type}\n\n📍 Address: ${zone.address}\n📞 Phone: ${zone.phone}\n📏 Distance: ${zone.distance}"
 
-        AlertDialog.Builder(this)
-            .setTitle(zone.name)
-            .setMessage(message)
-            .setPositiveButton("Get Directions") { _, _ ->
-                val gmmIntentUri = Uri.parse("google.navigation:q=${zone.latitude},${zone.longitude}")
-                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                mapIntent.setPackage("com.google.android.apps.maps")
-                try {
-                    startActivity(mapIntent)
-                } catch (e: Exception) {
-                    val fallbackUri = Uri.parse("https://maps.google.com/?q=${zone.latitude},${zone.longitude}")
-                    startActivity(Intent(Intent.ACTION_VIEW, fallbackUri))
+            AlertDialog.Builder(this)
+                .setTitle(zone.name)
+                .setMessage(message)
+                .setPositiveButton("Get Directions") { _, _ ->
+                    val gmmIntentUri = Uri.parse("google.navigation:q=${zone.latitude},${zone.longitude}")
+                    val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+                    mapIntent.setPackage("com.google.android.apps.maps")
+                    try {
+                        startActivity(mapIntent)
+                    } catch (e: Exception) {
+                        val fallbackUri = Uri.parse("https://maps.google.com/?q=${zone.latitude},${zone.longitude}")
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW, fallbackUri))
+                        } catch (_: Exception) {}
+                    }
                 }
-            }
-            .setNegativeButton("Close", null)
-            .show()
+                .setNegativeButton("Close", null)
+                .show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
 
     private fun loadMapAt(lat: Double, lon: Double, label: String) {
         Log.d(TAG, "loadMapAt: $lat, $lon")
@@ -332,4 +341,13 @@ class SafeMapActivity : AppCompatActivity() {
             it.distance.replace(" km", "").toFloatOrNull() ?: Float.MAX_VALUE
         }.take(15)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            webView.stopLoading()
+            webView.destroy()
+        } catch (e: Exception) {}
+    }
 }
+

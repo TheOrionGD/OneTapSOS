@@ -70,13 +70,25 @@ class SOSActiveActivity : BaseActivity() {
             try {
                 val req = CurrentLocationRequest.Builder().setPriority(Priority.PRIORITY_HIGH_ACCURACY).build()
                 fusedClient.getCurrentLocation(req, null)
-                    .addOnSuccessListener { loc -> sendImSafeMessages(loc) }
-                    .addOnFailureListener { sendImSafeMessages(null) }
+                    .addOnSuccessListener { loc ->
+                        if (!isFinishing && !isDestroyed) {
+                            sendImSafeMessages(loc)
+                        }
+                    }
+                    .addOnFailureListener {
+                        if (!isFinishing && !isDestroyed) {
+                            sendImSafeMessages(null)
+                        }
+                    }
             } catch (e: Exception) {
-                sendImSafeMessages(null)
+                if (!isFinishing && !isDestroyed) {
+                    sendImSafeMessages(null)
+                }
             }
         } else {
-            sendImSafeMessages(null)
+            if (!isFinishing && !isDestroyed) {
+                sendImSafeMessages(null)
+            }
         }
     }
 

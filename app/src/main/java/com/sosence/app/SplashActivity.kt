@@ -15,8 +15,19 @@ import androidx.appcompat.app.AppCompatActivity
 
 class SplashActivity : AppCompatActivity() {
 
+    private val splashHandler = Handler(Looper.getMainLooper())
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        try {
+            window.statusBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.bg_dark_primary)
+            window.navigationBarColor = androidx.core.content.ContextCompat.getColor(this, R.color.bg_dark_primary)
+            val controller = androidx.core.view.WindowCompat.getInsetsController(window, window.decorView)
+            controller.isAppearanceLightStatusBars = false
+            controller.isAppearanceLightNavigationBars = false
+        } catch (e: Exception) {}
+
         setContentView(R.layout.activity_splash)
 
         val logo = findViewById<ImageView>(R.id.ivSplashLogo)
@@ -97,15 +108,22 @@ class SplashActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("sosense_prefs", MODE_PRIVATE)
         val onboardingDone = prefs.getBoolean("onboarding_done", false)
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            val next = if (onboardingDone) {
-                Intent(this, MainActivity::class.java)
-            } else {
-                Intent(this, OnboardingActivity::class.java)
+        splashHandler.postDelayed({
+            if (!isFinishing && !isDestroyed) {
+                val next = if (onboardingDone) {
+                    Intent(this, MainActivity::class.java)
+                } else {
+                    Intent(this, OnboardingActivity::class.java)
+                }
+                startActivity(next)
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+                finish()
             }
-            startActivity(next)
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            finish()
         }, 2300)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        splashHandler.removeCallbacksAndMessages(null)
     }
 }

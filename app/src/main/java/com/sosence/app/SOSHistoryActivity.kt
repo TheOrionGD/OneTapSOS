@@ -15,7 +15,7 @@ import java.util.Locale
 
 data class SOSEvent(val timestamp: Long, val message: String, val recipientCount: Int)
 
-class SOSHistoryActivity : AppCompatActivity() {
+class SOSHistoryActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

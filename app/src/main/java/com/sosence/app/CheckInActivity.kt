@@ -18,7 +18,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 
-class CheckInActivity : AppCompatActivity() {
+class CheckInActivity : BaseActivity() {
 
     private var checkInTimer: CountDownTimer? = null
     private var isCheckInActive = false
@@ -56,7 +56,7 @@ class CheckInActivity : AppCompatActivity() {
             checkInTimer = object : CountDownTimer(totalMs, 1000) {
                 override fun onTick(ms: Long) {
                     val m = ms / 60000; val s = (ms % 60000) / 1000
-                    tvCountdown.text = String.format("Time remaining: %02d:%02d", m, s)
+                    tvCountdown.text = String.format(java.util.Locale.US, "Time remaining: %02d:%02d", m, s)
                 }
                 override fun onFinish() {
                     isCheckInActive = false
@@ -78,21 +78,25 @@ class CheckInActivity : AppCompatActivity() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel("check_in", "Check-In Alerts", NotificationManager.IMPORTANCE_HIGH)
-            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-        }
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val channel = NotificationChannel("check_in", "Check-In Alerts", NotificationManager.IMPORTANCE_HIGH)
+                getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
+            }
+        } catch (e: Exception) {}
     }
 
     private fun showMissedCheckInNotification() {
-        val notification = NotificationCompat.Builder(this, "check_in")
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setContentTitle("⚠️ Missed Check-In!")
-            .setContentText("You did not check in on time. Consider triggering SOS.")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-            .build()
-        getSystemService(NotificationManager::class.java).notify(1001, notification)
+        try {
+            val notification = NotificationCompat.Builder(this, "check_in")
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setContentTitle("⚠️ Missed Check-In!")
+                .setContentText("You did not check in on time. Consider triggering SOS.")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .build()
+            getSystemService(NotificationManager::class.java)?.notify(1001, notification)
+        } catch (e: Exception) {}
     }
 
     override fun onDestroy() {

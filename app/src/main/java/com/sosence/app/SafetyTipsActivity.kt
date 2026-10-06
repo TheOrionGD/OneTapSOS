@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 data class SafetyTip(val category: String, val icon: String, val title: String, val body: String)
 
-class SafetyTipsActivity : AppCompatActivity() {
+class SafetyTipsActivity : BaseActivity() {
 
     private val tips = listOf(
         SafetyTip("Personal Safety", "🚶", "Walking Alone at Night", "Stay in well-lit areas, avoid shortcuts through isolated paths, and keep your phone charged. Share your live location with a trusted contact."),
