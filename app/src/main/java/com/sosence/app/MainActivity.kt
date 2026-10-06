@@ -73,9 +73,9 @@ class MainActivity : BaseActivity() {
         val smsGranted = permissions[Manifest.permission.SEND_SMS] ?: false
 
         if (!locationGranted || !smsGranted) {
-            Toast.makeText(this, "Location & SMS permissions are needed for SOS to work", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Location & SMS permissions are recommended for full SOS alerts", Toast.LENGTH_SHORT).show()
         } else {
-            showLocationConsentDialog()
+            Toast.makeText(this, "✅ Permissions active. Protection ready.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -127,7 +127,12 @@ class MainActivity : BaseActivity() {
         appDbHelper = AppDatabaseHelper(this)
 
         initVibrator()
-        requestNeededPermissions()
+        window.decorView.post {
+            if (!isFinishing && !isDestroyed) {
+                requestNeededPermissions()
+            }
+        }
+
 
         val scrollView = findViewById<View>(android.R.id.content)
         scrollView.alpha = 0f
@@ -250,12 +255,21 @@ class MainActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         glowPulseAnimator?.cancel()
+        countDownTimer?.cancel()
+        volumeCountDownTimer?.cancel()
+        sosCountdownTimer?.cancel()
+        stopVibration()
+        try {
+            sosCountdownDialog?.dismiss()
+        } catch (e: Exception) {}
     }
 
     override fun onStart() {
         super.onStart()
-        val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
-        registerReceiver(batteryReceiver, filter)
+        try {
+            val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+            registerReceiver(batteryReceiver, filter)
+        } catch (e: Exception) {}
     }
 
     override fun onStop() {
@@ -266,133 +280,155 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initVibrator() {
-        vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-            vibratorManager.defaultVibrator
-        } else {
-            @Suppress("DEPRECATION")
-            getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        }
+        try {
+            vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+                vibratorManager?.defaultVibrator
+            } else {
+                @Suppress("DEPRECATION")
+                getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+            }
+        } catch (e: Exception) {}
     }
 
     private fun show5PercentBatteryAlert() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_battery_alert, null)
-        val btnDismiss = dialogView.findViewById<CardView>(R.id.btnDismissBatteryAlert)
+        if (isFinishing || isDestroyed) return
+        try {
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_battery_alert, null)
+            val btnDismiss = dialogView.findViewById<CardView>(R.id.btnDismissBatteryAlert)
 
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
+            val dialog = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create()
 
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        startVibration15Seconds()
+            startVibration15Seconds()
 
-        btnDismiss.setOnClickListener {
-            stopVibration()
-            dialog.dismiss()
+            btnDismiss.setOnClickListener {
+                stopVibration()
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
-        dialog.show()
     }
 
     private fun startVibration15Seconds() {
         stopVibration()
-        val pattern = longArrayOf(0, 500, 200, 500, 200)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
-        } else {
-            @Suppress("DEPRECATION")
-            vibrator?.vibrate(pattern, 0)
-        }
-
-        batteryAlertTimer = object : CountDownTimer(15000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {}
-            override fun onFinish() {
-                stopVibration()
+        try {
+            val pattern = longArrayOf(0, 500, 200, 500, 200)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator?.vibrate(VibrationEffect.createWaveform(pattern, 0))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(pattern, 0)
             }
-        }.start()
+
+            batteryAlertTimer = object : CountDownTimer(15000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {}
+                override fun onFinish() {
+                    stopVibration()
+                }
+            }.start()
+        } catch (e: Exception) {}
     }
 
     private fun stopVibration() {
-        batteryAlertTimer?.cancel()
-        vibrator?.cancel()
+        try {
+            batteryAlertTimer?.cancel()
+            vibrator?.cancel()
+        } catch (e: Exception) {}
     }
 
     private fun showSettingsDialog() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_settings, null)
+        if (isFinishing || isDestroyed) return
+        try {
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_settings, null)
 
-        val switchBattery = dialogView.findViewById<SwitchCompat>(R.id.switchBatteryAlert)
-        val rb5s = dialogView.findViewById<RadioButton>(R.id.rbTimer5s)
-        val rb15s = dialogView.findViewById<RadioButton>(R.id.rbTimer15s)
-        val etMessage = dialogView.findViewById<EditText>(R.id.etCustomSafeMessage)
-        val btnCancel = dialogView.findViewById<CardView>(R.id.btnCancelSettings)
-        val btnSave = dialogView.findViewById<CardView>(R.id.btnSaveSettings)
+            val switchBattery = dialogView.findViewById<SwitchCompat>(R.id.switchBatteryAlert)
+            val rb5s = dialogView.findViewById<RadioButton>(R.id.rbTimer5s)
+            val rb15s = dialogView.findViewById<RadioButton>(R.id.rbTimer15s)
+            val etMessage = dialogView.findViewById<EditText>(R.id.etCustomSafeMessage)
+            val btnCancel = dialogView.findViewById<CardView>(R.id.btnCancelSettings)
+            val btnSave = dialogView.findViewById<CardView>(R.id.btnSaveSettings)
 
-        switchBattery.isChecked = appSettings.isBatteryAlertEnabled
-        if (appSettings.sosTimerSeconds == 15) {
-            rb15s.isChecked = true
-        } else {
-            rb5s.isChecked = true
-        }
-        etMessage.setText(appSettings.customSafeMessage)
-
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        btnCancel.setOnClickListener { dialog.dismiss() }
-
-        btnSave.setOnClickListener {
-            appSettings.isBatteryAlertEnabled = switchBattery.isChecked
-            appSettings.sosTimerSeconds = if (rb15s.isChecked) 15 else 5
-            val customMsg = etMessage.text.toString().trim()
-            if (customMsg.isNotEmpty()) {
-                appSettings.customSafeMessage = customMsg
+            switchBattery.isChecked = appSettings.isBatteryAlertEnabled
+            if (appSettings.sosTimerSeconds == 15) {
+                rb15s.isChecked = true
+            } else {
+                rb5s.isChecked = true
             }
-            Toast.makeText(this, "Settings saved successfully", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-        }
+            etMessage.setText(appSettings.customSafeMessage)
 
-        dialog.show()
+            val dialog = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create()
+
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+            btnCancel.setOnClickListener { dialog.dismiss() }
+
+            btnSave.setOnClickListener {
+                appSettings.isBatteryAlertEnabled = switchBattery.isChecked
+                appSettings.sosTimerSeconds = if (rb15s.isChecked) 15 else 5
+                val customMsg = etMessage.text.toString().trim()
+                if (customMsg.isNotEmpty()) {
+                    appSettings.customSafeMessage = customMsg
+                }
+                Toast.makeText(this, "Settings saved successfully", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun showFallDetectionDialog() {
-        val message = if (isFallDetectionEnabled) {
-            "Fall Detection is currently ENABLED. Do you want to disable it?"
-        } else {
-            "Fall Detection is currently DISABLED. Do you want to enable it?"
-        }
+        if (isFinishing || isDestroyed) return
+        try {
+            val message = if (isFallDetectionEnabled) {
+                "Fall Detection is currently ENABLED. Do you want to disable it?"
+            } else {
+                "Fall Detection is currently DISABLED. Do you want to enable it?"
+            }
 
-        val actionText = if (isFallDetectionEnabled) "Disable" else "Enable"
+            val actionText = if (isFallDetectionEnabled) "Disable" else "Enable"
 
-        AlertDialog.Builder(this)
-            .setTitle("Fall Detection")
-            .setMessage(message)
-            .setPositiveButton(actionText) { _, _ ->
-                if (isFallDetectionEnabled) {
-                    isFallDetectionEnabled = false
-                    stopFallDetectionService()
-                    Toast.makeText(this, "Fall Detection Disabled", Toast.LENGTH_SHORT).show()
-                    updateFallDetectionStatusText()
-                } else {
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
-                        == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
-                    ) {
-                        isFallDetectionEnabled = true
-                        startFallDetectionService()
-                        Toast.makeText(this, "Fall Detection Enabled", Toast.LENGTH_SHORT).show()
+            AlertDialog.Builder(this)
+                .setTitle("Fall Detection")
+                .setMessage(message)
+                .setPositiveButton(actionText) { _, _ ->
+                    if (isFallDetectionEnabled) {
+                        isFallDetectionEnabled = false
+                        stopFallDetectionService()
+                        Toast.makeText(this, "Fall Detection Disabled", Toast.LENGTH_SHORT).show()
                         updateFallDetectionStatusText()
                     } else {
-                        requestActivityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
+                            == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                        ) {
+                            isFallDetectionEnabled = true
+                            startFallDetectionService()
+                            Toast.makeText(this, "Fall Detection Enabled", Toast.LENGTH_SHORT).show()
+                            updateFallDetectionStatusText()
+                        } else {
+                            requestActivityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                        }
                     }
                 }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+                .setNegativeButton("Cancel", null)
+                .show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
 
     private fun updateFallDetectionStatusText() {
         if (isFallDetectionEnabled) {
@@ -489,41 +525,49 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showSosCountdownDialog() {
-        val durationSeconds = appSettings.sosTimerSeconds
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sos_countdown, null)
-        val tvCountdownNumber = dialogView.findViewById<TextView>(R.id.tvCountdownNumber)
-        val btnCancelSOS = dialogView.findViewById<CardView>(R.id.btnCancelSOS)
+        if (isFinishing || isDestroyed) return
+        try {
+            val durationSeconds = appSettings.sosTimerSeconds
+            val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_sos_countdown, null)
+            val tvCountdownNumber = dialogView.findViewById<TextView>(R.id.tvCountdownNumber)
+            val btnCancelSOS = dialogView.findViewById<CardView>(R.id.btnCancelSOS)
 
-        tvCountdownNumber.text = durationSeconds.toString()
+            tvCountdownNumber.text = durationSeconds.toString()
 
-        sosCountdownDialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
+            sosCountdownDialog = AlertDialog.Builder(this)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create()
 
-        sosCountdownDialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+            sosCountdownDialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        btnCancelSOS.setOnClickListener {
-            sosCountdownTimer?.cancel()
-            sosCountdownDialog?.dismiss()
-            Toast.makeText(this, "SOS Cancelled", Toast.LENGTH_SHORT).show()
-        }
-
-        sosCountdownDialog?.show()
-
-        sosCountdownTimer?.cancel()
-        sosCountdownTimer = object : CountDownTimer(durationSeconds * 1000L, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                val secondsLeft = (millisUntilFinished / 1000).toInt() + 1
-                tvCountdownNumber.text = secondsLeft.toString()
-            }
-
-            override fun onFinish() {
+            btnCancelSOS.setOnClickListener {
+                sosCountdownTimer?.cancel()
                 sosCountdownDialog?.dismiss()
-                executeSendSOS()
+                Toast.makeText(this, "SOS Cancelled", Toast.LENGTH_SHORT).show()
             }
-        }.start()
+
+            sosCountdownDialog?.show()
+
+            sosCountdownTimer?.cancel()
+            sosCountdownTimer = object : CountDownTimer(durationSeconds * 1000L, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val secondsLeft = (millisUntilFinished / 1000).toInt() + 1
+                    tvCountdownNumber.text = secondsLeft.toString()
+                }
+
+                override fun onFinish() {
+                    try {
+                        sosCountdownDialog?.dismiss()
+                    } catch (e: Exception) {}
+                    executeSendSOS()
+                }
+            }.start()
+        } catch (e: Exception) {
+            executeSendSOS()
+        }
     }
+
 
     private fun executeSendSOS() {
         Toast.makeText(this, "🚨 SOS Sending! Getting location...", Toast.LENGTH_SHORT).show()

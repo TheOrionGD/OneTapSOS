@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 
-class OnboardingActivity : AppCompatActivity() {
+class OnboardingActivity : BaseActivity() {
 
     private val pages = listOf(
         OnboardingPage(
@@ -99,11 +99,14 @@ class OnboardingActivity : AppCompatActivity() {
     private fun finishOnboarding() {
         getSharedPreferences("sosense_prefs", MODE_PRIVATE).edit()
             .putBoolean("onboarding_done", true).apply()
-        startActivity(Intent(this, MainActivity::class.java))
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        startActivity(intent)
         finish()
     }
 }
+
 
 data class OnboardingPage(
     val step: String,
