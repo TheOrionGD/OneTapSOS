@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App General -->
+    <string name="app_name">SOSense</string>
+    <string name="tagline">व्यक्तिगत आपातकालीन और सुरक्षा नेटवर्क</string>
+    <string name="sos">एसओएस (SOS)</string>
+    <string name="im_safe">मैं सुरक्षित हूँ</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="save">सहेजें</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="back">पीछे</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="enabled">सक्षम</string>
+    <string name="disabled">अक्षम</string>
+
+    <!-- Navigation & Titles -->
+    <string name="title_safety_dashboard">सुरक्षा डैशबोर्ड</string>
+    <string name="title_sos_activation">एसओएस आपातकालीन सक्रियण</string>
+    <string name="title_sos_countdown">एसओएस उलटी गिनती</string>
+    <string name="title_sos_active">सक्रिय एसओएस निगरानी</string>
+    <string name="title_sos_resolved">एसओएस घटना हल हुई</string>
+    <string name="title_sos_details">एसओएस घटना विवरण</string>
+    <string name="title_sos_history">एसओएस इतिहास</string>
+    <string name="title_sos_diagnostics">एसओएस सिस्टम निदान</string>
+    <string name="title_emergency_messages">आपातकालीन संदेश केंद्र</string>
+    <string name="title_message_templates">संदेश टेम्पलेट</string>
+    <string name="title_im_safe_message">कस्टम "मैं सुरक्षित हूँ" संदेश</string>
+    <string name="title_emergency_broadcast">आपातकालीन प्रसारण</string>
+    <string name="title_message_history">आपातकालीन संदेश इतिहास</string>
+    <string name="title_conversation">संपर्क बातचीत</string>
+    <string name="title_trusted_contacts">विश्वसनीय संपर्क</string>
+    <string name="title_add_contact">विश्वसनीय संपर्क जोड़ें</string>
+    <string name="title_edit_contact">संपर्क संपादित करें</string>
+    <string name="title_contact_detail">संपर्क विवरण</string>
+    <string name="title_groups">संपर्क समूह</string>
+    <string name="title_contact_selection">प्राप्तकर्ता चुनें</string>
+    <string name="title_contact_permissions">एसएमएस और संपर्क अनुमतियां</string>
+    <string name="title_map">ओपनस्ट्रीटमैप मानचित्र</string>
+    <string name="title_safe_map">सुरक्षित क्षेत्र और मार्ग</string>
+    <string name="title_safe_routes">सुरक्षित मार्ग नेविगेशन</string>
+    <string name="title_nearby_help">आस-पास की आपातकालीन सेवाएं</string>
+    <string name="title_location_dashboard">स्थान स्थिति डैशबोर्ड</string>
+    <string name="title_live_tracking">लाइव स्थान ट्रैकिंग</string>
+    <string name="title_location_history">स्थान इतिहास</string>
+    <string name="title_location_sharing_settings">स्थान साझाकरण सेटिंग्स</string>
+    <string name="title_location_share_active">सक्रिय स्थान साझाकरण</string>
+    <string name="title_location_permissions">स्थान अनुमति गाइड</string>
+    <string name="title_map_settings">मानचित्र सेटिंग्स</string>
+    <string name="title_check_in">अनुसूचित सुरक्षा चेक-इन</string>
+    <string name="title_check_in_history">सुरक्षा चेक-इन इतिहास</string>
+    <string name="title_safety_timer">सुरक्षा टाइमर सेटअप</string>
+    <string name="title_safety_timer_active">सक्रिय सुरक्षा टाइमर</string>
+    <string name="title_journey_mode">यात्रा निगरानी</string>
+    <string name="title_unsafe_situation">असुरक्षित स्थिति की रिपोर्ट करें</string>
+    <string name="title_incident_report">घटना रिपोर्ट बनाएं</string>
+    <string name="title_incident_history">घटना इतिहास</string>
+    <string name="title_safety_tips">व्यक्तिगत सुरक्षा युक्तियाँ</string>
+    <string name="title_emergency_numbers">आपातकालीन नंबर</string>
+    <string name="title_disaster_guide">आपदा तैयारी गाइड</string>
+    <string name="title_first_aid">प्राथमिक चिकित्सा गाइड</string>
+    <string name="title_emergency_prep">आपातकालीन किट तैयारी</string>
+    <string name="title_battery_safety">बैटरी सुरक्षा और अलर्ट</string>
+    <string name="title_battery_settings">बैटरी अलर्ट सेटिंग्स</string>
+    <string name="title_profile">उपयोगकर्ता प्रोफ़ाइल</string>
+    <string name="title_emergency_card">मेडिकल इमरजेंसी कार्ड</string>
+    <string name="title_sos_settings">एसओएस सेटिंग्स</string>
+    <string name="title_notification_settings">अधिसूचना प्राथमिकताएं</string>
+    <string name="title_language">भाषा / Language / மொழி</string>
+    <string name="title_privacy">गोपनीयता और डेटा नियंत्रण</string>
+    <string name="title_permissions">अनुमति डैशबोर्ड</string>
+    <string name="title_data_management">डेटा प्रबंधन</string>
+    <string name="title_appearance">उपस्थिति और प्रदर्शन</string>
+    <string name="title_app_lock">ऐप लॉक</string>
+    <string name="title_help_support">सहायता और समर्थन</string>
+    <string name="title_fake_call">फेक कॉल</string>
+    <string name="title_panic_widget">होम स्क्रीन विजेट</string>
+
+    <string name="hold_sos_prompt">आपातकालीन एसओएस के लिए 3 सेकंड दबाकर रखें</string>
+    <string name="sos_activated_message">एसओएस अलर्ट भेजा गया!</string>
+    <string name="im_safe_sent">"मैं सुरक्षित हूँ" संदेश भेजा गया।</string>
+    <string name="no_contacts_warning">कोई विश्वसनीय संपर्क नहीं जोड़ा गया। कृपया कम से कम 1 संपर्क जोड़ें।</string>
+    <string name="location_fetching">वर्तमान स्थान प्राप्त किया जा रहा है...</string>
+    <string name="location_success">स्थान प्राप्त हुआ।</string>
+</resources>

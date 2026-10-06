@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App General -->
+    <string name="app_name">SOSense</string>
+    <string name="tagline">Personal Emergency &amp; Safety Network</string>
+    <string name="sos">SOS</string>
+    <string name="im_safe">I\'m Safe</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="confirm">Confirm</string>
+    <string name="back">Back</string>
+    <string name="retry">Retry</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+
+    <!-- Navigation & Titles -->
+    <string name="title_safety_dashboard">Safety Dashboard</string>
+    <string name="title_sos_activation">SOS Emergency Activation</string>
+    <string name="title_sos_countdown">SOS Countdown</string>
+    <string name="title_sos_active">SOS Active Monitoring</string>
+    <string name="title_sos_resolved">SOS Event Resolved</string>
+    <string name="title_sos_details">SOS Event Details</string>
+    <string name="title_sos_history">SOS History Log</string>
+    <string name="title_sos_diagnostics">SOS System Diagnostics</string>
+    <string name="title_emergency_messages">Emergency Message Hub</string>
+    <string name="title_message_templates">Message Templates</string>
+    <string name="title_im_safe_message">Custom I\'m Safe Message</string>
+    <string name="title_emergency_broadcast">Emergency Broadcast</string>
+    <string name="title_message_history">Emergency Message History</string>
+    <string name="title_conversation">Contact Conversation</string>
+    <string name="title_trusted_contacts">Trusted Contacts</string>
+    <string name="title_add_contact">Add Trusted Contact</string>
+    <string name="title_edit_contact">Edit Trusted Contact</string>
+    <string name="title_contact_detail">Contact Information</string>
+    <string name="title_groups">Contact Groups</string>
+    <string name="title_contact_selection">Select Recipients</string>
+    <string name="title_contact_permissions">SMS &amp; Contact Permissions</string>
+    <string name="title_map">OpenStreetMap Explorer</string>
+    <string name="title_safe_map">Safe Zones &amp; Routes Map</string>
+    <string name="title_safe_routes">Safe Navigation Routes</string>
+    <string name="title_nearby_help">Nearby Emergency Services</string>
+    <string name="title_location_dashboard">Location Status Dashboard</string>
+    <string name="title_live_tracking">Live Location Tracking</string>
+    <string name="title_location_history">Location Timeline History</string>
+    <string name="title_location_sharing_settings">Location Sharing Settings</string>
+    <string name="title_location_share_active">Active Location Sharing</string>
+    <string name="title_location_permissions">Location Permissions Guide</string>
+    <string name="title_map_settings">Map Display Settings</string>
+    <string name="title_check_in">Scheduled Safety Check-In</string>
+    <string name="title_check_in_history">Safety Check-In History</string>
+    <string name="title_safety_timer">Safety Timer Setup</string>
+    <string name="title_safety_timer_active">Active Safety Timer</string>
+    <string name="title_journey_mode">Journey Monitoring</string>
+    <string name="title_unsafe_situation">Report Unsafe Situation</string>
+    <string name="title_incident_report">Create Incident Report</string>
+    <string name="title_incident_history">Incident History</string>
+    <string name="title_safety_tips">Personal Safety Tips</string>
+    <string name="title_emergency_numbers">Emergency Hotlines</string>
+    <string name="title_disaster_guide">Disaster Readiness Guide</string>
+    <string name="title_first_aid">First Aid Instructions</string>
+    <string name="title_emergency_prep">Emergency Kit Preparation</string>
+    <string name="title_battery_safety">Battery Safety &amp; Alerts</string>
+    <string name="title_battery_settings">Battery Alert Settings</string>
+    <string name="title_profile">User Profile</string>
+    <string name="title_emergency_card">Medical Emergency Card</string>
+    <string name="title_sos_settings">SOS Activation Settings</string>
+    <string name="title_notification_settings">Notification Preferences</string>
+    <string name="title_language">Language / மொழி / भाषा</string>
+    <string name="title_privacy">Privacy &amp; Data Control</string>
+    <string name="title_permissions">App Permissions Dashboard</string>
+    <string name="title_data_management">Data &amp; Storage Management</string>
+    <string name="title_appearance">Appearance &amp; Display</string>
+    <string name="title_app_lock">App Security Lock</string>
+    <string name="title_help_support">Help &amp; Support Guide</string>
+    <string name="title_fake_call">Fake Incoming Call</string>
+    <string name="title_panic_widget">Home Screen Panic Widget</string>
+
+    <!-- Prompts & Messages -->
+    <string name="hold_sos_prompt">HOLD 3 SECONDS FOR EMERGENCY SOS</string>
+    <string name="sos_activated_message">SOS Alert Triggered! Notifying contacts...</string>
+    <string name="im_safe_sent">I\'m Safe notification sent to contacts.</string>
+    <string name="no_contacts_warning">No trusted contacts added. Please add at least 1 contact.</string>
+    <string name="location_fetching">Fetching current location...</string>
+    <string name="location_success">Location acquired.</string>
+</resources>

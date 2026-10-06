@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App General -->
+    <string name="app_name">SOSense</string>
+    <string name="tagline">தனிநபர் அவசரநிலை மற்றும் பாதுகாப்பு பிணையம்</string>
+    <string name="sos">எஸ்.ஓ.எஸ் (SOS)</string>
+    <string name="im_safe">நான் பாதுகாப்பாக உள்ளேன்</string>
+    <string name="cancel">ரத்து செய்</string>
+    <string name="save">சேமி</string>
+    <string name="confirm">உறுதிசெய்</string>
+    <string name="back">பின்செல்</string>
+    <string name="retry">மீண்டும் முயற்சி செய்</string>
+    <string name="enabled">செயலில் உள்ளது</string>
+    <string name="disabled">செயலிழக்கப்பட்டது</string>
+
+    <!-- Navigation & Titles -->
+    <string name="title_safety_dashboard">பாதுகாப்பு கட்டுப்பாட்டு மையம்</string>
+    <string name="title_sos_activation">அவசர SOS செயல்படுத்தல்</string>
+    <string name="title_sos_countdown">SOS கவுண்ட்டவுன்</string>
+    <string name="title_sos_active">செயலில் உள்ள SOS கண்காணிப்பு</string>
+    <string name="title_sos_resolved">SOS நிகழ்வு முடிந்தது</string>
+    <string name="title_sos_details">SOS நிகழ்வு விவரங்கள்</string>
+    <string name="title_sos_history">SOS வரலாற்றுப் பதிவு</string>
+    <string name="title_sos_diagnostics">SOS கணினி பரிசோதனை</string>
+    <string name="title_emergency_messages">அவசர செய்தி மையம்</string>
+    <string name="title_message_templates">செய்தி வார்ப்புருக்கள்</string>
+    <string name="title_im_safe_message">தனிப்பயன் "பாதுகாப்பாக உள்ளேன்" செய்தி</string>
+    <string name="title_emergency_broadcast">அவசர ஒளிபரப்பு</string>
+    <string name="title_message_history">அவசர செய்தி வரலாறு</string>
+    <string name="title_conversation">தொடர்பு உரையாடல்</string>
+    <string name="title_trusted_contacts">நம்பகமான தொடர்புகள்</string>
+    <string name="title_add_contact">நம்பகமான தொடர்பைச் சேர்</string>
+    <string name="title_edit_contact">தொடர்பைத் திருத்து</string>
+    <string name="title_contact_detail">தொடர்பு விவரங்கள்</string>
+    <string name="title_groups">தொடர்பு குழுக்கள்</string>
+    <string name="title_contact_selection">பெறுநர்களைத் தேர்ந்தெடு</string>
+    <string name="title_contact_permissions">SMS &amp; தொடர்பு அனுமதிகள்</string>
+    <string name="title_map">OpenStreetMap வரைபடம்</string>
+    <string name="title_safe_map">பாதுகாப்பான இடங்கள் &amp; வழிகள்</string>
+    <string name="title_safe_routes">பாதுகாப்பான வழித் திட்டமிடல்</string>
+    <string name="title_nearby_help">அருகிலுள்ள அவசர சேவைகள்</string>
+    <string name="title_location_dashboard">இருப்பிட நிலை கட்டுப்பாட்டு மையம்</string>
+    <string name="title_live_tracking">நேரலை இருப்பிடப் பகிர்வு</string>
+    <string name="title_location_history">இருப்பிட வரலாற்றுப் பதிவு</string>
+    <string name="title_location_sharing_settings">இருப்பிடப் பகிர்வு அமைப்புகள்</string>
+    <string name="title_location_share_active">செயலில் உள்ள இருப்பிடப் பகிர்வு</string>
+    <string name="title_location_permissions">இருப்பிட அனுமதிகள் வழிகாட்டி</string>
+    <string name="title_map_settings">வரைபட அமைப்புகள்</string>
+    <string name="title_check_in">திட்டமிடப்பட்ட பாதுகாப்பு செக்-இன்</string>
+    <string name="title_check_in_history">பாதுகாப்பு செக்-இன் வரலாறு</string>
+    <string name="title_safety_timer">பாதுகாப்பு டைமர் அமைவு</string>
+    <string name="title_safety_timer_active">செயலில் உள்ள பாதுகாப்பு டைமர்</string>
+    <string name="title_journey_mode">பயணக் கண்காணிப்பு</string>
+    <string name="title_unsafe_situation">பாதுகாப்பற்ற சூழ்நிலை அறிக்கை</string>
+    <string name="title_incident_report">சம்பவ அறிக்கை உருவாக்கு</string>
+    <string name="title_incident_history">சம்பவ வரலாறு</string>
+    <string name="title_safety_tips">தனிநபர் பாதுகாப்பு குறிப்புகள்</string>
+    <string name="title_emergency_numbers">அவசர உதவி எண்கள்</string>
+    <string name="title_disaster_guide">பேரிடர் தயார்நிலை வழிகாட்டி</string>
+    <string name="title_first_aid">முதலுதவி வழிகாட்டி</string>
+    <string name="title_emergency_prep">அவசரப் பெட்டி தயாரிப்பு</string>
+    <string name="title_battery_safety">பேட்டரி பாதுகாப்பு &amp; எச்சரிக்கைகள்</string>
+    <string name="title_battery_settings">பேட்டரி எச்சரிக்கை அமைப்புகள்</string>
+    <string name="title_profile">பயனர் விவரக்குறிப்பு</string>
+    <string name="title_emergency_card">மருத்துவ அவசர அட்டை</string>
+    <string name="title_sos_settings">SOS அமைப்புகள்</string>
+    <string name="title_notification_settings">அறிவிப்பு விருப்பங்கள்</string>
+    <string name="title_language">மொழி / Language / भाषा</string>
+    <string name="title_privacy">தனியுரிமை &amp; தரவு கட்டுப்பாடு</string>
+    <string name="title_permissions">பயன்பாட்டு அனுமதிகள் மையம்</string>
+    <string name="title_data_management">தரவு மேலாண்மை</string>
+    <string name="title_appearance">தோற்றம் &amp; காட்சி</string>
+    <string name="title_app_lock">செயலி பூட்டு</string>
+    <string name="title_help_support">உதவி &amp; ஆதரவு</string>
+    <string name="title_fake_call">போலி அழைப்பு</string>
+    <string name="title_panic_widget">முகப்புத் திரை விட்ஜெட்</string>
+
+    <string name="hold_sos_prompt">அவசர SOS பெற 3 வினாடிகள் அழுத்திப் பிடிக்கவும்</string>
+    <string name="sos_activated_message">SOS எச்சரிக்கை அனுப்பப்பட்டது!</string>
+    <string name="im_safe_sent">"நான் பாதுகாப்பாக உள்ளேன்" செய்தி அனுப்பப்பட்டது.</string>
+    <string name="no_contacts_warning">நம்பகமான தொடர்புகள் எதுவும் இல்லை. குறைந்தது 1 தொடர்பைச் சேர்க்கவும்.</string>
+    <string name="location_fetching">தற்போதைய இருப்பிடம் பெறப்படுகிறது...</string>
+    <string name="location_success">இருப்பிடம் பெறப்பட்டது.</string>
+</resources>

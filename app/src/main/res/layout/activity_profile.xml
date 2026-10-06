@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark_primary"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Header -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp">
+            <ImageView android:id="@+id/ivProfileBack" android:layout_width="40dp" android:layout_height="40dp"
+                android:src="@android:drawable/ic_media_previous" android:padding="8dp"
+                android:tint="@color/text_primary"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:text="My Profile" android:textColor="@color/text_primary" android:textSize="22sp"
+                android:fontFamily="sans-serif-medium" android:layout_marginStart="12dp"/>
+        </LinearLayout>
+
+        <!-- Avatar placeholder -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:layout_marginBottom="28dp">
+            <androidx.cardview.widget.CardView android:layout_width="88dp" android:layout_height="88dp"
+                app:cardCornerRadius="44dp" app:cardBackgroundColor="@color/surface_light">
+                <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:text="👤" android:textSize="40sp" android:gravity="center"/>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Full Name" android:textColor="@color/text_secondary" android:textSize="13sp"
+            android:layout_marginBottom="6dp"/>
+        <EditText android:id="@+id/etProfileName" android:layout_width="match_parent"
+            android:layout_height="52dp" android:background="@drawable/bg_input_field"
+            android:textColor="@color/text_primary" android:hint="Enter your name"
+            android:textColorHint="@color/text_muted" android:padding="14dp" android:layout_marginBottom="16dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Blood Group" android:textColor="@color/text_secondary" android:textSize="13sp"
+            android:layout_marginBottom="6dp"/>
+        <EditText android:id="@+id/etProfileBloodGroup" android:layout_width="match_parent"
+            android:layout_height="52dp" android:background="@drawable/bg_input_field"
+            android:textColor="@color/text_primary" android:hint="e.g. A+, B-, O+"
+            android:textColorHint="@color/text_muted" android:padding="14dp" android:layout_marginBottom="16dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Medical Info / Allergies" android:textColor="@color/text_secondary"
+            android:textSize="13sp" android:layout_marginBottom="6dp"/>
+        <EditText android:id="@+id/etProfileMedical" android:layout_width="match_parent"
+            android:layout_height="80dp" android:background="@drawable/bg_input_field"
+            android:textColor="@color/text_primary" android:hint="Any allergies, conditions, medications..."
+            android:textColorHint="@color/text_muted" android:padding="14dp" android:gravity="top"
+            android:inputType="textMultiLine" android:layout_marginBottom="16dp"/>
+
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Emergency Contact Name" android:textColor="@color/text_secondary"
+            android:textSize="13sp" android:layout_marginBottom="6dp"/>
+        <EditText android:id="@+id/etProfileEmergContact" android:layout_width="match_parent"
+            android:layout_height="52dp" android:background="@drawable/bg_input_field"
+            android:textColor="@color/text_primary" android:hint="Name and phone number"
+            android:textColorHint="@color/text_muted" android:padding="14dp" android:layout_marginBottom="28dp"/>
+
+        <androidx.cardview.widget.CardView android:id="@+id/btnSaveProfile" android:layout_width="match_parent"
+            android:layout_height="52dp" android:layout_marginBottom="12dp"
+            app:cardCornerRadius="26dp" app:cardBackgroundColor="@color/accent_teal">
+            <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                android:text="Save Profile" android:gravity="center"
+                android:textColor="@color/bg_dark_primary" android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView android:id="@+id/btnViewEmergCard" android:layout_width="match_parent"
+            android:layout_height="52dp" android:layout_marginBottom="32dp"
+            app:cardCornerRadius="26dp" app:cardBackgroundColor="@color/surface_light">
+            <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                android:text="🪪  View Emergency Card" android:gravity="center"
+                android:textColor="@color/text_primary" android:textSize="15sp"/>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivLockBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="Back"
+            android:focusable="true"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/text_primary" />
+
+        <TextView
+            android:id="@+id/tvLockTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_weight="1"
+            android:text="App Lock Security"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvPinDisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="36dp"
+        android:letterSpacing="0.4"
+        android:text="○○○○"
+        android:textColor="@color/accent_cyan"
+        android:textSize="36sp"
+        android:textStyle="bold" />
+
+    <!-- Keypad Grid -->
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="36dp"
+        android:columnCount="3"
+        android:rowCount="4">
+
+        <!-- Digits 1-9 -->
+        <androidx.cardview.widget.CardView android:id="@+id/btn1" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="1"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn2" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="2"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn3" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="3"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn4" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="4"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn5" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="5"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn6" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="6"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn7" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="7"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn8" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="8"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn9" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="9"/></androidx.cardview.widget.CardView>
+
+        <!-- Bottom row: Clear, 0, Del -->
+        <androidx.cardview.widget.CardView android:id="@+id/btnClearPin" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="CLR" android:textSize="14sp"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btn0" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="0"/></androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView android:id="@+id/btnDel" style="@style/KeypadButtonStyle"><TextView style="@style/KeypadTextStyle" android:text="⌫"/></androidx.cardview.widget.CardView>
+    </GridLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/btnSetPin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="@color/card_bg"
+        app:cardCornerRadius="12dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Change PIN"
+            android:textColor="@color/accent_cyan"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

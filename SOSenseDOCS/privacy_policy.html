@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - SOSense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0B0F19;
+            --bg-surface: #111827;
+            --bg-surface-elevated: #1F2937;
+            --border: #374151;
+            --primary: #EF4444;
+            --primary-glow: rgba(239, 68, 68, 0.2);
+            --accent-teal: #14B8A6;
+            --accent-blue: #3B82F6;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --text-muted: #6B7280;
+            --success: #10B981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.65;
+            padding: 0;
+            margin: 0;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #182234 0%, var(--bg-base) 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 48px 24px 36px;
+            text-align: center;
+        }
+
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-surface-elevated);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+
+        .app-badge-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #FFFFFF 0%, #D1D5DB 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            transition: border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #4B5563;
+        }
+
+        .card h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #FFFFFF;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h2 .icon {
+            font-size: 1.25rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            font-size: 0.975rem;
+        }
+
+        .card ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 14px;
+        }
+
+        .card li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .card li::before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .highlight-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid var(--primary);
+            padding: 16px 18px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+        }
+
+        .highlight-box p {
+            color: #FCA5A5;
+            margin-bottom: 0;
+            font-size: 0.925rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        th {
+            background: var(--bg-surface-elevated);
+            color: #FFFFFF;
+            padding: 12px 14px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        tr:nth-child(even) {
+            background: rgba(31, 41, 55, 0.4);
+        }
+
+        .badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border);
+            color: #E5E7EB;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            .header h1 {
+                font-size: 1.85rem;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="app-badge">
+            <span class="app-badge-dot"></span>
+            <span>SOSense Official Privacy Policy</span>
+        </div>
+        <h1>Privacy Policy & Data Safety</h1>
+        <p>Effective Date: October 6, 2026 | Application Version: 1.0.3</p>
+    </header>
+
+
+    <main class="container">
+
+        <section class="card">
+            <h2><span class="icon">🛡️</span> 1. Introduction & Overview</h2>
+            <p>
+                <strong>SOSense</strong> ("we", "our", or "the App"), developed under package ID <code>com.sosence.app</code>, is a personal emergency and safety response application. We hold user privacy and data sovereignty as fundamental priorities.
+            </p>
+            <p>
+                Our core operational principle is <strong>privacy-first, on-device local execution</strong>. SOSense does not sell, lease, or monetize your personal information or real-time location data.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">📍</span> 2. Information We Collect and How We Use It</h2>
+            <p>
+                SOSense gathers only the minimal required information necessary to execute emergency life-saving services:
+            </p>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data Category</th>
+                            <th>Purpose</th>
+                            <th>Storage & Transfer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Precise GPS Location</strong></td>
+                            <td>To attach your live Google Maps coordinates to emergency SOS alerts sent to your trusted contacts and display nearby safe zones (hospitals, police stations).</td>
+                            <td>Captured on-demand. Never uploaded to proprietary cloud servers. Dispatched only via user SMS.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Trusted Contacts List</strong></td>
+                            <td>To store names and phone numbers of guardians and emergency responders who will receive your SOS messages.</td>
+                            <td>Encrypted and stored locally in on-device SQLite database.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Motion & Sensor Data</strong></td>
+                            <td>Accelerometer and sensor signals used by the Fall Detection engine to recognize sudden falls or high-velocity impacts.</td>
+                            <td>Processed locally in real-time in memory. Discarded immediately after analysis.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Battery Status</strong></td>
+                            <td>Monitors power level to trigger the 5% Critical Battery SOS alert so your family knows your phone is powering off.</td>
+                            <td>Read via standard Android battery broadcast receiver.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Emergency Medical Profile</strong></td>
+                            <td>Blood type, emergency medical notes, and primary contact details for display on your local Emergency Card.</td>
+                            <td>Stored 100% locally on your smartphone.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">🔑</span> 3. Android Permissions & Justifications</h2>
+            <p>
+                SOSense requests standard runtime Android permissions strictly to fulfill core safety functions:
+            </p>
+            <ul>
+                <li><span class="badge">ACCESS_FINE_LOCATION & ACCESS_COARSE_LOCATION</span>: Calculates GPS coordinates during SOS events and renders local maps.</li>
+                <li><span class="badge">FOREGROUND_SERVICE_LOCATION</span>: Ensures continuous location updates when an active emergency tracking session is running.</li>
+                <li><span class="badge">SEND_SMS</span>: Transmits emergency alert text messages directly through your cellular carrier to designated contacts.</li>
+                <li><span class="badge">READ_CONTACTS</span>: Allows you to pick contacts directly from your address book without manual typing.</li>
+                <li><span class="badge">BODY_SENSORS & ACTIVITY_RECOGNITION</span>: Enables background fall detection and emergency response triggering.</li>
+                <li><span class="badge">VIBRATE & POST_NOTIFICATIONS</span>: Delivers critical countdown alerts, haptic feedback, and active notification drawer quick actions.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">🤖</span> 4. Third-Party Services & APIs</h2>
+            <p>
+                To provide top-tier functionality, SOSense interfaces with trusted developer services:
+            </p>
+            <ul>
+                <li><strong>Google Play Services Location & Maps:</strong> Provides location resolution and map rendering. Governed by Google's Privacy Policy.</li>
+                <li><strong>Google Gemini AI API:</strong> Powers the AI Safety Assistant. When you submit a safety query, your text prompt is transmitted via encrypted HTTPS to Google Gemini services to generate safety advice. No personal identity is linked to AI queries.</li>
+                <li><strong>OpenStreetMap (osmdroid):</strong> Provides open-source map tile caching for offline map navigation.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">🗑️</span> 5. Data Retention & User Data Deletion</h2>
+            <p>
+                Because all primary data is saved locally on your device:
+            </p>
+            <ul>
+                <li>You have complete control to view, modify, or delete trusted contacts and incident logs at any time via the <strong>Data Management</strong> or <strong>Settings</strong> screen in the app.</li>
+                <li>Tapping <strong>"Clear All Data"</strong> permanently deletes all stored SOS history, contacts, and configuration.</li>
+                <li>Uninstalling the SOSense application completely purges all application databases and preferences from your device.</li>
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">👶</span> 6. Children's Privacy</h2>
+            <p>
+                SOSense is designed for general audiences, families, teenagers, and seniors. We do not knowingly collect or solicit personal identifiable information from children under 13 without parental consent.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2><span class="icon">✉️</span> 7. Contact Us</h2>
+            <p>
+                If you have questions, feedback, or concerns regarding this Privacy Policy or your data security, please contact our support team at:
+            </p>
+            <p>
+                <strong>Email:</strong> support@sosense.app<br>
+                <strong>Developer Website:</strong> https://sosense.app<br>
+                <strong>Application:</strong> SOSense Emergency Response Platform
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 SOSense. All rights reserved. Compliant with Google Play Developer Policies.</p>
+    </footer>
+
+</body>
+</html>
