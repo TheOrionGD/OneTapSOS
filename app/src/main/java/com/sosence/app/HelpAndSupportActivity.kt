@@ -2,120 +2,252 @@ package com.sosence.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Gravity
+import android.view.View
+import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
+
+data class HelpCategory(
+    val title: String,
+    val icon: String,
+    val items: List<Pair<String, Class<*>>>
+)
 
 class HelpAndSupportActivity : BaseActivity() {
+
+    private val categories = listOf(
+        HelpCategory(
+            "1. EMERGENCY SOS & CRISIS RESPONSE",
+            "🚨",
+            listOf(
+                "SOS Activation Trigger" to SOSActivationActivity::class.java,
+                "SOS Cancel Countdown Buffer" to SOSCountdownActivity::class.java,
+                "SOS Active Crisis Monitoring" to SOSActiveActivity::class.java,
+                "SOS Resolved & I'm Safe Summary" to SOSResolvedActivity::class.java,
+                "SOS Incident Details Log" to SOSDetailsActivity::class.java,
+                "SOS Full History Records" to SOSHistoryActivity::class.java,
+                "SOS System & Sensor Diagnostics" to SOSDiagnosticsActivity::class.java
+            )
+        ),
+        HelpCategory(
+            "2. PREVENTION, TIMERS & MONITORING",
+            "🛡️",
+            listOf(
+                "Journey Mode & Route Escort" to JourneyModeActivity::class.java,
+                "Active Route Sharing Monitor" to LocationShareActiveActivity::class.java,
+                "Safety Countdown Timer" to SafetyTimerActivity::class.java,
+                "Active Safety Timer Session" to SafetyTimerActiveActivity::class.java,
+                "Scheduled Safety Check-In" to CheckInActivity::class.java,
+                "Safety Check-In Log" to SafetyCheckInHistoryActivity::class.java,
+                "Report Unsafe Situation" to UnsafeSituationActivity::class.java,
+                "Incident Documentation Report" to IncidentReportActivity::class.java,
+                "Incident History Records" to IncidentHistoryActivity::class.java,
+                "Emergency Kit Preparation Checklist" to EmergencyPreparationActivity::class.java
+            )
+        ),
+        HelpCategory(
+            "3. SAFE MAP & LOCATION DISCOVERY",
+            "🗺️",
+            listOf(
+                "Full Screen Interactive Safe Map" to MapActivity::class.java,
+                "Safe Havens & Zones" to SafeMapActivity::class.java,
+                "Safe Navigation Routes" to SafeRouteActivity::class.java,
+                "Nearby Police & Hospitals Directory" to NearbyHelpActivity::class.java,
+                "Live Location Tracking & Breadcrumbs" to LiveTrackingActivity::class.java,
+                "Location Timeline & History Log" to LocationHistoryActivity::class.java,
+                "Location Sharing Settings" to LocationSharingSettingsActivity::class.java,
+                "Map Display & Offline Settings" to MapSettingsActivity::class.java,
+                "Location Permissions Guide" to LocationPermissionActivity::class.java
+            )
+        ),
+        HelpCategory(
+            "4. TRUSTED CIRCLE & MESSAGING",
+            "👥",
+            listOf(
+                "Trusted Contacts Manager" to TrustedContactsActivity::class.java,
+                "Add New Emergency Contact" to AddTrustedContactActivity::class.java,
+                "Edit Contact & Custom Alerts" to EditTrustedContactActivity::class.java,
+                "Contact Detail Information" to ContactDetailActivity::class.java,
+                "Emergency Groups & Circles" to GroupsActivity::class.java,
+                "Emergency Message Hub" to EmergencyMessagesActivity::class.java,
+                "Custom I'm Safe Message Editor" to ImSafeMessageActivity::class.java,
+                "Emergency Message Templates" to MessageTemplateActivity::class.java,
+                "Emergency SMS Broadcast Launcher" to EmergencyBroadcastActivity::class.java,
+                "Conversation & Delivery Threads" to ConversationActivity::class.java,
+                "SMS & Contact Permissions Guide" to ContactPermissionActivity::class.java
+            )
+        ),
+        HelpCategory(
+            "5. MEDICAL ID, GUIDES & SETTINGS",
+            "⚙️",
+            listOf(
+                "Medical Emergency ID Card" to EmergencyCardActivity::class.java,
+                "User Profile & Emergency Alias" to ProfileActivity::class.java,
+                "Emergency Numbers Directory (112, 100, 108)" to EmergencyNumbersActivity::class.java,
+                "Offline First Aid Survival Guide" to FirstAidActivity::class.java,
+                "Disaster Readiness & Survival Guide" to DisasterGuideActivity::class.java,
+                "Personal Safety Tips & Best Practices" to SafetyTipsActivity::class.java,
+                "AI Safety Companion Chat" to ChatActivity::class.java,
+                "SOS Settings & Hardware Triggers" to SOSSettingsActivity::class.java,
+                "Notification Preferences & Test Lab" to NotificationSettingsActivity::class.java,
+                "Language Selector (EN / TA / HI)" to LanguageSettingsActivity::class.java,
+                "Battery Safety & 5% Alert Settings" to BatterySafetyActivity::class.java,
+                "App Security Lock & Biometrics" to AppLockActivity::class.java,
+                "Privacy & Data Sovereignty" to PrivacySettingsActivity::class.java,
+                "Data Management & Clear Cache" to DataManagementActivity::class.java,
+                "Appearance & Dark Mode" to AppearanceSettingsActivity::class.java,
+                "Permissions Dashboard" to PermissionsActivity::class.java,
+                "Fake Call Generator" to FakeCallActivity::class.java,
+                "Home Screen Panic Widget Guide" to PanicWidgetActivity::class.java
+            )
+        )
+    )
+
+    private lateinit var container: LinearLayout
+    private lateinit var etSearch: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_help_and_support)
 
-        findViewById<TextView>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.ivHelpBack).setOnClickListener { finish() }
+        container = findViewById(R.id.llHelpCategoriesContainer)
+        etSearch = findViewById(R.id.etHelpSearch)
 
-        val container = findViewById<LinearLayout>(R.id.llDirectoryButtons)
-        val screens = listOf(
-            "1. Splash Launch Screen" to SplashActivity::class.java,
-            "2. Onboarding Intro" to OnboardingActivity::class.java,
-            "3. Safety Dashboard (Main Hub)" to SafetyDashboardActivity::class.java,
-            "4. SOS Activation Interface" to SOSActivationActivity::class.java,
-            "5. SOS Countdown Screen" to SOSCountdownActivity::class.java,
-            "6. SOS Active Monitoring" to SOSActiveActivity::class.java,
-            "7. SOS Resolved Screen" to SOSResolvedActivity::class.java,
-            "8. SOS Details Viewer" to SOSDetailsActivity::class.java,
-            "9. SOS History Log" to SOSHistoryActivity::class.java,
-            "10. SOS System Diagnostics" to SOSDiagnosticsActivity::class.java,
-            "11. Custom I'm Safe Message Editor" to ImSafeMessageActivity::class.java,
-            "12. Emergency Message Hub" to EmergencyMessagesActivity::class.java,
-            "13. Message Templates Manager" to MessageTemplateActivity::class.java,
-            "14. Emergency Broadcast Launcher" to EmergencyBroadcastActivity::class.java,
-            "15. Message History Log" to MessageHistoryActivity::class.java,
-            "16. Contact Conversation Thread" to ConversationActivity::class.java,
-            "17. AI Safety Companion Chat" to ChatActivity::class.java,
-            "18. Trusted Contacts Manager" to TrustedContactsActivity::class.java,
-            "19. Add Trusted Contact Form" to AddTrustedContactActivity::class.java,
-            "20. Edit Trusted Contact Form" to EditTrustedContactActivity::class.java,
-            "21. Contact Detail Info" to ContactDetailActivity::class.java,
-            "22. Contact Groups Manager" to GroupsActivity::class.java,
-            "23. Emergency Contact Selector" to ContactSelectionActivity::class.java,
-            "24. SMS & Contact Permissions" to ContactPermissionActivity::class.java,
-            "25. OpenStreetMap Full View" to MapActivity::class.java,
-            "26. Safe Map & Zones" to SafeMapActivity::class.java,
-            "27. Safe Navigation Routes" to SafeRouteActivity::class.java,
-            "28. Nearby Police & Hospitals" to NearbyHelpActivity::class.java,
-            "29. Location Status Dashboard" to LocationDashboardActivity::class.java,
-            "30. Live Location Tracking" to LiveTrackingActivity::class.java,
-            "31. Location Timeline History" to LocationHistoryActivity::class.java,
-            "32. Location Sharing Settings" to LocationSharingSettingsActivity::class.java,
-            "33. Active Location Share Monitor" to LocationShareActiveActivity::class.java,
-            "34. Location Permission Guide" to LocationPermissionActivity::class.java,
-            "35. Map Display Settings" to MapSettingsActivity::class.java,
-            "36. Scheduled Safety Check-In" to CheckInActivity::class.java,
-            "37. Safety Check-In History" to SafetyCheckInHistoryActivity::class.java,
-            "38. Safety Timer Setup" to SafetyTimerActivity::class.java,
-            "39. Active Safety Timer" to SafetyTimerActiveActivity::class.java,
-            "40. Journey Monitoring Mode" to JourneyModeActivity::class.java,
-            "41. Report Unsafe Situation" to UnsafeSituationActivity::class.java,
-            "42. Create Incident Report" to IncidentReportActivity::class.java,
-            "43. Incident History Log" to IncidentHistoryActivity::class.java,
-            "44. Personal Safety Tips" to SafetyTipsActivity::class.java,
-            "45. Emergency Hotlines" to EmergencyNumbersActivity::class.java,
-            "46. Disaster Readiness Guide" to DisasterGuideActivity::class.java,
-            "47. First Aid Guide" to FirstAidActivity::class.java,
-            "48. Emergency Kit Preparation" to EmergencyPreparationActivity::class.java,
-            "49. Battery Safety & Health" to BatterySafetyActivity::class.java,
-            "50. 5% Battery Alert Settings" to BatteryAlertSettingsActivity::class.java,
-            "51. User Profile" to ProfileActivity::class.java,
-            "52. Medical Emergency Card" to EmergencyCardActivity::class.java,
-            "53. SOS Settings & Timer" to SOSSettingsActivity::class.java,
-            "54. Notification Settings" to NotificationSettingsActivity::class.java,
-            "55. Language Selector (EN/TA/HI)" to LanguageSettingsActivity::class.java,
-            "56. Privacy & Data Controls" to PrivacySettingsActivity::class.java,
-            "57. Permissions Dashboard" to PermissionsActivity::class.java,
-            "58. Data & Storage Management" to DataManagementActivity::class.java,
-            "59. Appearance & Theme" to AppearanceSettingsActivity::class.java,
-            "60. App Security Lock" to AppLockActivity::class.java,
-            "61. Fake Call Simulator" to FakeCallActivity::class.java,
-            "62. Home Screen Panic Widget" to PanicWidgetActivity::class.java
-        )
+        renderCategories("")
 
-        for ((title, targetClass) in screens) {
-            val card = CardView(this).apply {
-                val cardParams = LinearLayout.LayoutParams(
+        etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                renderCategories(s?.toString()?.trim() ?: "")
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun renderCategories(query: String) {
+        container.removeAllViews()
+
+        val isSearching = query.isNotEmpty()
+
+        for (cat in categories) {
+            val filteredItems = if (isSearching) {
+                cat.items.filter { it.first.contains(query, ignoreCase = true) }
+            } else {
+                cat.items
+            }
+
+            if (filteredItems.isEmpty()) continue
+
+            // Category Header
+            val headerTv = TextView(this).apply {
+                val params = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    dpToPx(48)
+                    LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                cardParams.bottomMargin = dpToPx(8)
-                layoutParams = cardParams
-                setCardBackgroundColor(androidx.core.content.ContextCompat.getColor(this@HelpAndSupportActivity, R.color.card_bg))
-                radius = dpToPx(10).toFloat()
-                setOnClickListener {
-                    try {
-                        startActivity(Intent(this@HelpAndSupportActivity, targetClass))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                params.topMargin = dpToPx(16)
+                params.bottomMargin = dpToPx(8)
+                layoutParams = params
+                text = "${cat.icon}  ${cat.title}"
+                setTextColor(ContextCompat.getColor(this@HelpAndSupportActivity, R.color.accent_cyan))
+                textSize = 12f
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                letterSpacing = 0.06f
+            }
+            container.addView(headerTv)
+
+            // Category Items Card Container
+            val sectionCard = CardView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                setCardBackgroundColor(ContextCompat.getColor(this@HelpAndSupportActivity, R.color.card_bg))
+                radius = dpToPx(14).toFloat()
+                cardElevation = dpToPx(3).toFloat()
+            }
+
+            val itemsLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            filteredItems.forEachIndexed { idx, (itemTitle, targetClass) ->
+                val rowView = createItemRow(itemTitle, targetClass)
+                itemsLayout.addView(rowView)
+
+                if (idx < filteredItems.size - 1) {
+                    val divider = View(this).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            dpToPx(1)
+                        )
+                        setBackgroundColor(0xFF2E334D.toInt())
                     }
+                    itemsLayout.addView(divider)
                 }
             }
 
-            val tv = TextView(this).apply {
-                val tvParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT
-                )
-                tvParams.gravity = Gravity.CENTER_VERTICAL
-                tvParams.leftMargin = dpToPx(16)
-                layoutParams = tvParams
-                text = title
-                setTextColor(androidx.core.content.ContextCompat.getColor(this@HelpAndSupportActivity, R.color.text_primary))
-                textSize = 14f
-            }
-            card.addView(tv)
-            container.addView(card)
+            sectionCard.addView(itemsLayout)
+            container.addView(sectionCard)
         }
+    }
+
+    private fun createItemRow(title: String, targetClass: Class<*>): View {
+        val row = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dpToPx(48)
+            )
+            setPadding(dpToPx(16), 0, dpToPx(16), 0)
+            setBackgroundResource(android.R.drawable.list_selector_background)
+            isClickable = true
+            isFocusable = true
+            setOnClickListener {
+                try {
+                    startActivity(Intent(this@HelpAndSupportActivity, targetClass))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        val tvTitle = TextView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+            text = title
+            setTextColor(ContextCompat.getColor(this@HelpAndSupportActivity, R.color.text_primary))
+            textSize = 14f
+        }
+
+        val tvArrow = TextView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            text = "›"
+            setTextColor(ContextCompat.getColor(this@HelpAndSupportActivity, R.color.text_muted))
+            textSize = 18f
+        }
+
+        row.addView(tvTitle)
+        row.addView(tvArrow)
+        return row
     }
 
     private fun dpToPx(dp: Int) = (dp * resources.displayMetrics.density).toInt()

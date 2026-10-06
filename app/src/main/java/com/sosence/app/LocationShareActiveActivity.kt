@@ -14,6 +14,7 @@ class LocationShareActiveActivity : BaseActivity() {
         findViewById<TextView>(R.id.btnBack).setOnClickListener { finish() }
 
         findViewById<CardView>(R.id.btnStopSharing).setOnClickListener {
+            SOSNotificationManager.cancelJourneyTrackingNotification(this)
             Toast.makeText(this, "Live location sharing stopped.", Toast.LENGTH_LONG).show()
             finish()
         }

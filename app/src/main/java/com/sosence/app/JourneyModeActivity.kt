@@ -15,6 +15,7 @@ class JourneyModeActivity : BaseActivity() {
         findViewById<TextView>(R.id.btnBack).setOnClickListener { finish() }
 
         findViewById<CardView>(R.id.btnStartJourney).setOnClickListener {
+            SOSNotificationManager.showJourneyTrackingNotification(this, "Active Commute", "Sharing real-time location trail")
             Toast.makeText(this, "Journey monitoring active", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, LocationShareActiveActivity::class.java))
         }

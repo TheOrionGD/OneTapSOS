@@ -88,15 +88,10 @@ class CheckInActivity : BaseActivity() {
 
     private fun showMissedCheckInNotification() {
         try {
-            val notification = NotificationCompat.Builder(this, "check_in")
-                .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                .setContentTitle("⚠️ Missed Check-In!")
-                .setContentText("You did not check in on time. Consider triggering SOS.")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .build()
-            getSystemService(NotificationManager::class.java)?.notify(1001, notification)
-        } catch (e: Exception) {}
+            SOSNotificationManager.showMissedCheckInNotification(this, "Scheduled Check-In")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onDestroy() {

@@ -17,7 +17,14 @@ class SOSApplication : Application() {
             Log.e("SOSApplication", "Failed to configure OSMDroid: ${e.message}")
         }
 
-        // 2. Global Uncaught Exception Guard to prevent abrupt app crashes
+        // 2. Initialize App Notification Channels
+        try {
+            SOSNotificationManager.initNotificationChannels(this)
+        } catch (e: Exception) {
+            Log.e("SOSApplication", "Failed to initialize notification channels: ${e.message}")
+        }
+
+        // 3. Global Uncaught Exception Guard to prevent abrupt app crashes
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {

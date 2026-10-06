@@ -16,9 +16,44 @@ class AppSettings(context: Context) {
         private const val KEY_LAST_SOS_TIMESTAMP = "last_sos_timestamp"
         private const val KEY_SOS_RECIPIENTS = "sos_recipients"
         private const val KEY_LANGUAGE = "app_language"
+        private const val KEY_NOTIF_SOS = "notif_sos"
+        private const val KEY_NOTIF_FALL = "notif_fall"
+        private const val KEY_NOTIF_CHECKIN = "notif_checkin"
+        private const val KEY_NOTIF_BATTERY = "notif_battery"
+        private const val KEY_NOTIF_JOURNEY = "notif_journey"
+        private const val KEY_NOTIF_SAFEZONE = "notif_safezone"
+        private const val KEY_NOTIF_TIPS = "notif_tips"
         const val DEFAULT_SAFE_MESSAGE =
             "I'm Safe\n\nThe situation has been resolved. I am safe now.\n\nThank you for your concern."
     }
+
+    var isNotifSosEnabled: Boolean
+        get() = prefs.getBoolean(KEY_NOTIF_SOS, true)
+        set(value) = prefs.edit().putBoolean(KEY_NOTIF_SOS, value).apply()
+
+    var isNotifFallEnabled: Boolean
+        get() = prefs.getBoolean(KEY_NOTIF_FALL, true)
+        set(value) = prefs.edit().putBoolean(KEY_NOTIF_FALL, value).apply()
+
+    var isNotifCheckInEnabled: Boolean
+        get() = prefs.getBoolean(KEY_NOTIF_CHECKIN, true)
+        set(value) = prefs.edit().putBoolean(KEY_NOTIF_CHECKIN, value).apply()
+
+    var isNotifBatteryEnabled: Boolean
+        get() = prefs.getBoolean(KEY_NOTIF_BATTERY, true)
+        set(value) = prefs.edit().putBoolean(KEY_NOTIF_BATTERY, value).apply()
+
+    var isNotifJourneyEnabled: Boolean
+        get() = prefs.getBoolean(KEY_NOTIF_JOURNEY, true)
+        set(value) = prefs.edit().putBoolean(KEY_NOTIF_JOURNEY, value).apply()
+
+    var isNotifSafeZoneEnabled: Boolean
+        get() = prefs.getBoolean(KEY_NOTIF_SAFEZONE, true)
+        set(value) = prefs.edit().putBoolean(KEY_NOTIF_SAFEZONE, value).apply()
+
+    var isNotifTipsEnabled: Boolean
+        get() = prefs.getBoolean(KEY_NOTIF_TIPS, true)
+        set(value) = prefs.edit().putBoolean(KEY_NOTIF_TIPS, value).apply()
 
     var isBatteryAlertEnabled: Boolean
         get() = prefs.getBoolean(KEY_BATTERY_ALERT_ENABLED, true)

@@ -31,6 +31,13 @@ class FakeCallActivity : BaseActivity() {
 
         btnBack.setOnClickListener { finish() }
 
+        val isAutoAnswer = intent.getBooleanExtra("AUTO_ANSWER", false)
+        if (isAutoAnswer) {
+            layoutSetup.visibility = android.view.View.GONE
+            layoutRinging.visibility = android.view.View.VISIBLE
+            btnAnswer.performClick()
+        }
+
         btnStart.setOnClickListener {
             layoutSetup.visibility = android.view.View.GONE
             layoutRinging.visibility = android.view.View.VISIBLE

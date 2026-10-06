@@ -161,6 +161,22 @@
             android:name=".FallCancelReceiver"
             android:exported="false" />
 
+        <receiver
+            android:name=".SOSNotificationActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.sosence.app.ACTION_RESOLVE_SOS" />
+                <action android:name="com.sosence.app.ACTION_CANCEL_FALL" />
+                <action android:name="com.sosence.app.ACTION_CONFIRM_CHECK_IN" />
+                <action android:name="com.sosence.app.ACTION_EXTEND_TIMER" />
+                <action android:name="com.sosence.app.ACTION_STOP_JOURNEY" />
+                <action android:name="com.sosence.app.ACTION_TRIGGER_INSTANT_SOS" />
+                <action android:name="com.sosence.app.ACTION_ANSWER_FAKE_CALL" />
+                <action android:name="com.sosence.app.ACTION_DECLINE_FAKE_CALL" />
+                <action android:name="com.sosence.app.ACTION_SEND_BATTERY_SMS" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

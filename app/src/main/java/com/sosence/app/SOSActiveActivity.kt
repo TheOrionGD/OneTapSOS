@@ -116,6 +116,10 @@ class SOSActiveActivity : BaseActivity() {
         appSettings.isSosActive = false
         appSettings.sosRecipients = emptyList()
 
+        // Update phone notification
+        SOSNotificationManager.cancelEmergencySosNotification(this)
+        SOSNotificationManager.showSosResolvedNotification(this)
+
         Toast.makeText(this, "✅ 'I'm Safe' sent to $sentCount contact(s)", Toast.LENGTH_LONG).show()
 
         val intent = Intent(this, SOSResolvedActivity::class.java).apply {

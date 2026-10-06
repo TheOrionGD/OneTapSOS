@@ -55,6 +55,7 @@ class EmergencyBroadcastActivity : BaseActivity() {
                 }
             }
 
+            SOSNotificationManager.showBroadcastSentNotification(this, count)
             Toast.makeText(this, "📢 Broadcast sent to $count contacts!", Toast.LENGTH_LONG).show()
             finish()
         }
