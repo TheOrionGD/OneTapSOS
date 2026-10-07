@@ -23,9 +23,78 @@ class AppSettings(context: Context) {
         private const val KEY_NOTIF_JOURNEY = "notif_journey"
         private const val KEY_NOTIF_SAFEZONE = "notif_safezone"
         private const val KEY_NOTIF_TIPS = "notif_tips"
+
+        // Background Safety Engine Keys
+        private const val KEY_BG_SAFETY_ENABLED = "bg_safety_enabled"
+        private const val KEY_LOW_BATTERY_THRESHOLD = "low_battery_threshold"
+        private const val KEY_BATTERY_VIBRATION_ENABLED = "battery_vibration_enabled"
+        private const val KEY_SAFETY_TIMER_ESCALATION = "safety_timer_escalation"
+        private const val KEY_JOURNEY_MONITORING = "journey_monitoring_enabled"
+        private const val KEY_LOW_BATTERY_STATE_ACTIVE = "low_battery_state_active"
+        private const val KEY_LAST_LOW_BATTERY_TRIGGER_TS = "last_low_battery_trigger_ts"
+        private const val KEY_LAST_KNOWN_BATTERY_LEVEL = "last_known_battery_level"
+        private const val KEY_ACTIVE_SAFETY_TIMER_END_TIME = "active_safety_timer_end_time"
+        private const val KEY_ACTIVE_SAFETY_TIMER_REASON = "active_safety_timer_reason"
+        private const val KEY_ACTIVE_SAFETY_TIMER_MINUTES = "active_safety_timer_minutes"
+        private const val KEY_ACTIVE_CHECKIN_END_TIME = "active_checkin_end_time"
+        private const val KEY_ACTIVE_CHECKIN_NOTE = "active_checkin_note"
+
         const val DEFAULT_SAFE_MESSAGE =
             "I'm Safe\n\nThe situation has been resolved. I am safe now.\n\nThank you for your concern."
     }
+
+    // Background Safety Engine Properties
+    var isBackgroundSafetyEnabled: Boolean
+        get() = prefs.getBoolean(KEY_BG_SAFETY_ENABLED, true)
+        set(value) = prefs.edit().putBoolean(KEY_BG_SAFETY_ENABLED, value).apply()
+
+    var lowBatteryThreshold: Int
+        get() = prefs.getInt(KEY_LOW_BATTERY_THRESHOLD, 5)
+        set(value) = prefs.edit().putInt(KEY_LOW_BATTERY_THRESHOLD, value).apply()
+
+    var isBatteryVibrationEnabled: Boolean
+        get() = prefs.getBoolean(KEY_BATTERY_VIBRATION_ENABLED, true)
+        set(value) = prefs.edit().putBoolean(KEY_BATTERY_VIBRATION_ENABLED, value).apply()
+
+    var isSafetyTimerEscalationEnabled: Boolean
+        get() = prefs.getBoolean(KEY_SAFETY_TIMER_ESCALATION, true)
+        set(value) = prefs.edit().putBoolean(KEY_SAFETY_TIMER_ESCALATION, value).apply()
+
+    var isJourneyMonitoringEnabled: Boolean
+        get() = prefs.getBoolean(KEY_JOURNEY_MONITORING, true)
+        set(value) = prefs.edit().putBoolean(KEY_JOURNEY_MONITORING, value).apply()
+
+    var isLowBatteryStateActive: Boolean
+        get() = prefs.getBoolean(KEY_LOW_BATTERY_STATE_ACTIVE, false)
+        set(value) = prefs.edit().putBoolean(KEY_LOW_BATTERY_STATE_ACTIVE, value).apply()
+
+    var lastLowBatteryTriggerTimestamp: Long
+        get() = prefs.getLong(KEY_LAST_LOW_BATTERY_TRIGGER_TS, 0L)
+        set(value) = prefs.edit().putLong(KEY_LAST_LOW_BATTERY_TRIGGER_TS, value).apply()
+
+    var lastKnownBatteryLevel: Int
+        get() = prefs.getInt(KEY_LAST_KNOWN_BATTERY_LEVEL, 100)
+        set(value) = prefs.edit().putInt(KEY_LAST_KNOWN_BATTERY_LEVEL, value).apply()
+
+    var activeSafetyTimerEndTime: Long
+        get() = prefs.getLong(KEY_ACTIVE_SAFETY_TIMER_END_TIME, 0L)
+        set(value) = prefs.edit().putLong(KEY_ACTIVE_SAFETY_TIMER_END_TIME, value).apply()
+
+    var activeSafetyTimerReason: String
+        get() = prefs.getString(KEY_ACTIVE_SAFETY_TIMER_REASON, "Safety Monitoring") ?: "Safety Monitoring"
+        set(value) = prefs.edit().putString(KEY_ACTIVE_SAFETY_TIMER_REASON, value).apply()
+
+    var activeSafetyTimerMinutes: Int
+        get() = prefs.getInt(KEY_ACTIVE_SAFETY_TIMER_MINUTES, 30)
+        set(value) = prefs.edit().putInt(KEY_ACTIVE_SAFETY_TIMER_MINUTES, value).apply()
+
+    var activeCheckInEndTime: Long
+        get() = prefs.getLong(KEY_ACTIVE_CHECKIN_END_TIME, 0L)
+        set(value) = prefs.edit().putLong(KEY_ACTIVE_CHECKIN_END_TIME, value).apply()
+
+    var activeCheckInNote: String
+        get() = prefs.getString(KEY_ACTIVE_CHECKIN_NOTE, "Scheduled Check-In") ?: "Scheduled Check-In"
+        set(value) = prefs.edit().putString(KEY_ACTIVE_CHECKIN_NOTE, value).apply()
 
     var isNotifSosEnabled: Boolean
         get() = prefs.getBoolean(KEY_NOTIF_SOS, true)

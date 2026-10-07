@@ -78,11 +78,24 @@ data class ConversationMessageModel(
     val isSosRelated: Boolean = false
 )
 
+data class SafetyEventRecord(
+    val id: Long = 0,
+    val eventType: String,
+    val timestamp: Long = System.currentTimeMillis(),
+    val formattedTime: String = "",
+    val priority: String = "NORMAL",
+    val batteryLevel: Int = -1,
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
+    val details: String = "",
+    val handled: Boolean = true
+)
+
 class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "sosence_full.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4
 
         // Tables
         private const val TABLE_CONTACTS = "contacts"
@@ -92,6 +105,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         private const val TABLE_CHECKINS = "check_ins"
         private const val TABLE_LOCATIONS = "location_logs"
         private const val TABLE_MESSAGES = "conversation_messages"
+        private const val TABLE_SAFETY_EVENTS = "safety_events"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -179,6 +193,21 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
             )
         """.trimIndent())
 
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS $TABLE_SAFETY_EVENTS (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event_type TEXT,
+                timestamp INTEGER,
+                formatted_time TEXT,
+                priority TEXT,
+                battery_level INTEGER DEFAULT -1,
+                latitude REAL DEFAULT 0.0,
+                longitude REAL DEFAULT 0.0,
+                details TEXT,
+                handled INTEGER DEFAULT 1
+            )
+        """.trimIndent())
+
         // Seed initial templates
         seedInitialTemplates(db)
     }
@@ -189,6 +218,26 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                 db.execSQL("ALTER TABLE $TABLE_CONTACTS ADD COLUMN custom_message TEXT DEFAULT ''")
             } catch (e: Exception) {
                 // Column may already exist
+            }
+        }
+        if (oldVersion < 4) {
+            try {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS $TABLE_SAFETY_EVENTS (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        event_type TEXT,
+                        timestamp INTEGER,
+                        formatted_time TEXT,
+                        priority TEXT,
+                        battery_level INTEGER DEFAULT -1,
+                        latitude REAL DEFAULT 0.0,
+                        longitude REAL DEFAULT 0.0,
+                        details TEXT,
+                        handled INTEGER DEFAULT 1
+                    )
+                """.trimIndent())
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -629,5 +678,97 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
 
     fun clearIncidents() {
         try { writableDatabase.delete(TABLE_INCIDENTS, null, null) } catch (e: Exception) {}
+    }
+
+    // --- SAFETY EVENTS (BACKGROUND & DEVICE EVENT ENGINE) ---
+    fun recordSafetyEvent(event: SafetyEventRecord): Long {
+        return try {
+            val db = writableDatabase
+            val sdf = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
+            val cv = ContentValues().apply {
+                put("event_type", event.eventType)
+                put("timestamp", event.timestamp)
+                put("formatted_time", if (event.formattedTime.isEmpty()) sdf.format(Date(event.timestamp)) else event.formattedTime)
+                put("priority", event.priority)
+                put("battery_level", event.batteryLevel)
+                put("latitude", event.latitude)
+                put("longitude", event.longitude)
+                put("details", event.details)
+                put("handled", if (event.handled) 1 else 0)
+            }
+            db.insert(TABLE_SAFETY_EVENTS, null, cv)
+        } catch (e: Exception) {
+            -1L
+        }
+    }
+
+    fun getAllSafetyEvents(limit: Int = 100): List<SafetyEventRecord> {
+        val list = mutableListOf<SafetyEventRecord>()
+        try {
+            val db = readableDatabase
+            val cursor = db.query(
+                TABLE_SAFETY_EVENTS,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "timestamp DESC",
+                limit.toString()
+            )
+            with(cursor) {
+                while (moveToNext()) {
+                    list.add(SafetyEventRecord(
+                        id = getLong(getColumnIndexOrThrow("id")),
+                        eventType = getString(getColumnIndexOrThrow("event_type")),
+                        timestamp = getLong(getColumnIndexOrThrow("timestamp")),
+                        formattedTime = getString(getColumnIndexOrThrow("formatted_time")),
+                        priority = getString(getColumnIndexOrThrow("priority")),
+                        batteryLevel = getInt(getColumnIndexOrThrow("battery_level")),
+                        latitude = getDouble(getColumnIndexOrThrow("latitude")),
+                        longitude = getDouble(getColumnIndexOrThrow("longitude")),
+                        details = getString(getColumnIndexOrThrow("details")),
+                        handled = getInt(getColumnIndexOrThrow("handled")) == 1
+                    ))
+                }
+                close()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return list
+    }
+
+    fun getLastSafetyEvent(): SafetyEventRecord? {
+        try {
+            val db = readableDatabase
+            val cursor = db.query(TABLE_SAFETY_EVENTS, null, null, null, null, null, "timestamp DESC", "1")
+            with(cursor) {
+                if (moveToFirst()) {
+                    val record = SafetyEventRecord(
+                        id = getLong(getColumnIndexOrThrow("id")),
+                        eventType = getString(getColumnIndexOrThrow("event_type")),
+                        timestamp = getLong(getColumnIndexOrThrow("timestamp")),
+                        formattedTime = getString(getColumnIndexOrThrow("formatted_time")),
+                        priority = getString(getColumnIndexOrThrow("priority")),
+                        batteryLevel = getInt(getColumnIndexOrThrow("battery_level")),
+                        latitude = getDouble(getColumnIndexOrThrow("latitude")),
+                        longitude = getDouble(getColumnIndexOrThrow("longitude")),
+                        details = getString(getColumnIndexOrThrow("details")),
+                        handled = getInt(getColumnIndexOrThrow("handled")) == 1
+                    )
+                    close()
+                    return record
+                }
+                close()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    fun clearSafetyEvents() {
+        try { writableDatabase.delete(TABLE_SAFETY_EVENTS, null, null) } catch (e: Exception) {}
     }
 }

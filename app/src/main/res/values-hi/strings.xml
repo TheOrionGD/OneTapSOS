@@ -81,4 +81,12 @@
     <string name="no_contacts_warning">कोई विश्वसनीय संपर्क नहीं जोड़ा गया। कृपया कम से कम 1 संपर्क जोड़ें।</string>
     <string name="location_fetching">वर्तमान स्थान प्राप्त किया जा रहा है...</string>
     <string name="location_success">स्थान प्राप्त हुआ।</string>
+
+    <!-- Background Safety & Device Event Engine -->
+    <string name="title_background_diagnostics">पृष्ठभूमि सुरक्षा स्थिति</string>
+    <string name="bg_monitoring_active">पृष्ठभूमि सुरक्षा निगरानी सक्रिय</string>
+    <string name="low_battery_warning">कम बैटरी चेतावनी</string>
+    <string name="battery_critical_alert">गंभीर बैटरी चेतावनी</string>
+    <string name="safety_timer_expired">सुरक्षा टाइमर समाप्त</string>
+    <string name="checkin_missed_alert">चेक-इन छूटा चेतावनी</string>
 </resources>

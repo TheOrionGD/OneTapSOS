@@ -1,168 +1,1300 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_dark"
-    android:orientation="vertical"
-    android:padding="20dp">
+    android:background="@drawable/bg_call_exact_gradient"
+    android:keepScreenOn="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/ivFakeCallBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:contentDescription="Back"
-            android:focusable="true"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/text_primary" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_weight="1"
-            android:text="Fake Incoming Call"
-            android:textColor="@color/text_primary"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <!-- Setup View -->
+    <!-- ========================================================================= -->
+    <!-- 1. FAKE CALL CONFIGURATION / TRIGGER LAUNCHER VIEW                        -->
+    <!-- ========================================================================= -->
     <LinearLayout
         android:id="@+id/layoutSetup"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_call_exact_gradient"
+        android:orientation="vertical"
+        android:visibility="visible">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="📞 Escape Assistant"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+        <!-- Top Header Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/ivFakeCallBack"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_header_btn"
+                android:clickable="true"
+                android:contentDescription="Back"
+                android:focusable="true"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="#FFFFFF" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="14dp"
+                android:layout_weight="1"
+                android:text="Discreet Escape Call"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvQuickTest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_slide_to_answer"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="6dp"
+                android:text="Call Now"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Hero Banner Preview Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="#2A436D"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#4A6595"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:layout_width="54dp"
+                            android:layout_height="54dp"
+                            android:src="@drawable/ic_exact_avatar" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvPreviewCallerName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="father"
+                                android:textColor="#FFFFFF"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="3dp"
+                                android:text="Realistic phone calling UI simulator"
+                                android:textColor="#A8C2E6"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Section: Caller Presets -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:letterSpacing="0.08"
+                    android:text="CALLER PRESET"
+                    android:textColor="#8EA4C4"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/chipPresetFather"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_pill_accent"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="9dp"
+                            android:text="👨 father"
+                            android:textColor="@color/accent_cyan"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/chipPresetMother"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_pill_neutral"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="9dp"
+                            android:text="👩 mother"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/chipPresetPolice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_pill_neutral"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="9dp"
+                            android:text="🚨 Police Officer"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/chipPresetBoss"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/bg_pill_neutral"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="9dp"
+                            android:text="💼 Boss"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/chipPresetDoctor"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_pill_neutral"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="9dp"
+                            android:text="🩺 Doctor"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <!-- Caller Name Input -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textColorHint="#8EA4C4"
+                    app:boxBackgroundColor="#20365B"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxStrokeColor="@color/accent_cyan"
+                    app:boxStrokeWidth="1dp"
+                    app:hintTextColor="@color/accent_cyan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etCallerName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Caller Display Name"
+                        android:inputType="textPersonName"
+                        android:text="father"
+                        android:textColor="#FFFFFF"
+                        android:textSize="15sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Caller UI Style Mode: 2-Buttons vs Slide to Answer -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:letterSpacing="0.08"
+                    android:text="ANSWER STYLE"
+                    android:textColor="#8EA4C4"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chipStyleButtons"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill_accent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="🔴 🟢 Two Buttons"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/chipStyleSlide"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill_neutral"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="Slide to Answer"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <!-- Section: Delay Timer -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:letterSpacing="0.08"
+                    android:text="TRIGGER DELAY"
+                    android:textColor="#8EA4C4"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chipDelay0"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill_accent"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="Now"
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/chipDelay5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill_neutral"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="5s"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/chipDelay15"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill_neutral"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="15s"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/chipDelay30"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill_neutral"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="30s"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/chipDelay60"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_pill_neutral"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="1m"
+                        android:textColor="#FFFFFF"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <!-- Section: Options Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    app:cardBackgroundColor="#20365B"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#354E78"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Play Phone Ringtone"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchRingtone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                app:thumbTint="@color/white"
+                                app:trackTint="@color/accent_cyan" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="8dp"
+                            android:background="#354E78" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Call Vibration"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switchVibration"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checked="true"
+                                app:thumbTint="@color/white"
+                                app:trackTint="@color/accent_cyan" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Countdown Banner -->
+                <LinearLayout
+                    android:id="@+id/layoutCountdownBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_slide_to_answer"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="12dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvCountdownNotice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⏳ Triggering call in 5s... You can lock phone."
+                        android:textColor="@color/accent_cyan"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Launch Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnStartFakeCall"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:backgroundTint="#2ECC71"
+                    android:text="📞 Start Fake Call"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="28dp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+
+    <!-- ========================================================================= -->
+    <!-- 2. INCOMING CALL SCREEN (EXACT REPLICA OF USER REFERENCE IMAGE)            -->
+    <!-- ========================================================================= -->
+    <RelativeLayout
+        android:id="@+id/layoutRinging"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_call_exact_gradient"
+        android:paddingHorizontal="32dp"
+        android:paddingTop="36dp"
+        android:paddingBottom="48dp"
+        android:visibility="gone">
+
+        <!-- Top Status Bar Mockup (Time on left, Battery & Signal on right) -->
+        <RelativeLayout
+            android:id="@+id/layoutIncomingStatusBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_alignParentTop="true">
+
+            <TextView
+                android:id="@+id/tvIncomingClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="22:48"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_status_icons" />
+        </RelativeLayout>
+
+        <!-- Center Avatar & Caller Name Section -->
+        <LinearLayout
+            android:id="@+id/layoutIncomingCallerCenter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <!-- Circular Outline Avatar exactly matching reference -->
+            <ImageView
+                android:id="@+id/ivIncomingCallerAvatar"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/ic_exact_avatar" />
+
+            <!-- Caller Name exactly as in reference: 'father' lowercase -->
+            <TextView
+                android:id="@+id/tvIncomingCallerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="father"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp" />
+
+            <!-- Subtitle/Ringing indicator (invisible or subtle) -->
+            <TextView
+                android:id="@+id/tvFakeCallStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text=""
+                android:textColor="#A8C2E6"
+                android:textSize="13sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Mode A: Decline & Accept Circular Buttons (Left & Right) -->
+        <LinearLayout
+            android:id="@+id/layoutIncomingButtonsMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:gravity="center"
-            android:text="Simulates a realistic incoming call screen so you can politely exit uncomfortable or unsafe situations."
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp" />
+            android:orientation="horizontal">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btnStartFakeCall"
-            android:layout_width="220dp"
-            android:layout_height="54dp"
-            android:layout_marginTop="32dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardBackgroundColor="@color/accent_cyan"
-            app:cardCornerRadius="27dp">
+            <!-- Decline Button -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/btnDeclineCall"
+                    android:layout_width="68dp"
+                    android:layout_height="68dp"
+                    android:background="@drawable/bg_call_decline"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_call_end"
+                        app:tint="#FFFFFF" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Decline"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Accept Button -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/btnAnswerCall"
+                    android:layout_width="68dp"
+                    android:layout_height="68dp"
+                    android:background="@drawable/bg_call_accept"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="34dp"
+                        android:layout_height="34dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_call_answer"
+                        app:tint="#FFFFFF" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="Accept"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Mode B: Slide To Answer (Screen 2 from user's image) -->
+        <FrameLayout
+            android:id="@+id/layoutIncomingSlideMode"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/bg_slide_to_answer"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Trigger Call Now"
-                android:textColor="#0D1117"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </androidx.cardview.widget.CardView>
-    </LinearLayout>
+                android:text="slide to answer"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp" />
 
-    <!-- Ringing/Active Call View -->
-    <LinearLayout
-        android:id="@+id/layoutRinging"
+            <FrameLayout
+                android:id="@+id/btnSlideHandle"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_gravity="center_vertical|start"
+                android:layout_marginStart="4dp"
+                android:background="@drawable/bg_call_action_btn_active"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_call_answer"
+                    app:tint="#2ECC71" />
+            </FrameLayout>
+        </FrameLayout>
+
+    </RelativeLayout>
+
+
+    <!-- ========================================================================= -->
+    <!-- 3. ACTIVE CONNECTED CALL SCREEN (SCREEN 3 OF USER REFERENCE IMAGE)         -->
+    <!-- ========================================================================= -->
+    <RelativeLayout
+        android:id="@+id/layoutActiveCall"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_call_exact_gradient"
+        android:paddingHorizontal="32dp"
+        android:paddingTop="36dp"
+        android:paddingBottom="48dp"
         android:visibility="gone">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Top Status Bar Mockup -->
+        <RelativeLayout
+            android:id="@+id/layoutActiveStatusBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="👤 Security Office"
-            android:textColor="@color/text_primary"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            android:layout_alignParentTop="true">
 
-        <TextView
-            android:id="@+id/tvFakeCallStatus"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tvActiveClock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="22:48"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_status_icons" />
+        </RelativeLayout>
+
+        <!-- Top Caller Header: "Father", "CALLING..." / Timer -->
+        <LinearLayout
+            android:id="@+id/layoutActiveHeader"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="📞 Incoming call..."
-            android:textColor="@color/accent_cyan"
-            android:textSize="16sp" />
+            android:layout_below="@id/layoutActiveStatusBar"
+            android:layout_marginTop="48dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvFakeCallTimer"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tvActiveCallerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Father"
+                android:textColor="#FFFFFF"
+                android:textSize="32sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/tvFakeCallTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:letterSpacing="0.12"
+                android:text="CALLING..."
+                android:textColor="#A8C2E6"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Middle 2x3 Grid (Contacts, Add call, Mute, Hold, Record, Note) -->
+        <LinearLayout
+            android:id="@+id/layoutActiveGrid"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="00:00"
-            android:textColor="@color/text_secondary"
-            android:textSize="20sp" />
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
 
+            <!-- Row 1: Contacts, Add call, Mute -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <!-- 1. Contacts -->
+                <LinearLayout
+                    android:id="@+id/btnCallContacts"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_call_contacts"
+                        app:tint="#FFFFFF" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Contacts"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- 2. Add call -->
+                <LinearLayout
+                    android:id="@+id/btnCallAdd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_call_add"
+                        app:tint="#FFFFFF" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Add call"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- 3. Mute -->
+                <LinearLayout
+                    android:id="@+id/btnCallMute"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/ivBtnMute"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_call_mute"
+                        app:tint="#FFFFFF" />
+
+                    <TextView
+                        android:id="@+id/tvBtnMuteLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Mute"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Row 2: Hold, Record, Note -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                android:orientation="horizontal">
+
+                <!-- 4. Hold -->
+                <LinearLayout
+                    android:id="@+id/btnCallHold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/ivBtnHold"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_call_hold"
+                        app:tint="#FFFFFF" />
+
+                    <TextView
+                        android:id="@+id/tvBtnHoldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Hold"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- 5. Record -->
+                <LinearLayout
+                    android:id="@+id/btnCallRecord"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/ivBtnRecord"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_call_record"
+                        app:tint="#FFFFFF" />
+
+                    <TextView
+                        android:id="@+id/tvBtnRecordLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Record"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- 6. Note -->
+                <LinearLayout
+                    android:id="@+id/btnCallNote"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_call_note"
+                        app:tint="#FFFFFF" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Note"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Bottom Row: Speaker, Red End Call Button, Dialpad Keypad -->
+        <LinearLayout
+            android:id="@+id/layoutActiveBottomRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!-- Speaker Icon on Left -->
+            <FrameLayout
+                android:id="@+id/btnCallSpeaker"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/ivBtnSpeaker"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_call_speaker"
+                    app:tint="#FFFFFF" />
+            </FrameLayout>
+
+            <!-- Large Red End Call Button in Center -->
+            <FrameLayout
+                android:id="@+id/btnEndActiveCall"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:background="@drawable/bg_call_decline"
+                android:clickable="true"
+                android:elevation="4dp"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="34dp"
+                    android:layout_height="34dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_call_end"
+                    app:tint="#FFFFFF" />
+            </FrameLayout>
+
+            <!-- Keypad 3x3 Dots Icon on Right -->
+            <FrameLayout
+                android:id="@+id/btnCallKeypad"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_call_dialpad_dots"
+                    app:tint="#FFFFFF" />
+            </FrameLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+    <!-- ========================================================================= -->
+    <!-- 4. IN-CALL DIALPAD OVERLAY (Displays when keypad icon is pressed)          -->
+    <!-- ========================================================================= -->
+    <LinearLayout
+        android:id="@+id/layoutKeypadOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FA10223D"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingHorizontal="32dp"
+        android:paddingTop="36dp"
+        android:paddingBottom="28dp"
+        android:visibility="gone">
+
+        <!-- Top Keypad Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:gravity="center"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btnDeclineCall"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginEnd="32dp"
+            <TextView
+                android:id="@+id/tvHideKeypad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_neutral"
                 android:clickable="true"
                 android:focusable="true"
-                app:cardBackgroundColor="@color/danger_red"
-                app:cardCornerRadius="35dp">
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:text="✕ Hide"
+                android:textColor="@color/accent_cyan"
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="✖"
-                    android:textColor="#FFFFFF"
-                    android:textSize="28sp" />
-            </androidx.cardview.widget.CardView>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btnAnswerCall"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:layout_marginStart="32dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="@color/success_green"
-                app:cardCornerRadius="35dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="📞"
-                    android:textColor="#FFFFFF"
-                    android:textSize="28sp" />
-            </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/tvKeypadDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="00:00"
+                android:textColor="#A8C2E6"
+                android:textSize="14sp" />
         </LinearLayout>
+
+        <!-- Dialed digits screen -->
+        <TextView
+            android:id="@+id/tvDialedDigits"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="monospace"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- Dialpad Grid -->
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="12dp"
+            android:columnCount="3"
+            android:rowCount="4">
+
+            <!-- 1 -->
+            <TextView
+                android:id="@+id/key1"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <!-- 2 -->
+            <TextView
+                android:id="@+id/key2"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="2\nABC"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 3 -->
+            <TextView
+                android:id="@+id/key3"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="3\nDEF"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 4 -->
+            <TextView
+                android:id="@+id/key4"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="4\nGHI"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 5 -->
+            <TextView
+                android:id="@+id/key5"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="5\nJKL"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 6 -->
+            <TextView
+                android:id="@+id/key6"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="6\nMNO"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 7 -->
+            <TextView
+                android:id="@+id/key7"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="7\nPQRS"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 8 -->
+            <TextView
+                android:id="@+id/key8"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="8\nTUV"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- 9 -->
+            <TextView
+                android:id="@+id/key9"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="9\nWXYZ"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- * -->
+            <TextView
+                android:id="@+id/keyStar"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="*"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <!-- 0 -->
+            <TextView
+                android:id="@+id/key0"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="0\n+"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <!-- # -->
+            <TextView
+                android:id="@+id/keyHash"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:layout_margin="8dp"
+                android:background="@drawable/bg_keypad_btn"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="#"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+        </GridLayout>
+
+        <!-- End Call Button from Keypad -->
+        <FrameLayout
+            android:id="@+id/btnEndCallFromKeypad"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_call_decline"
+            android:clickable="true"
+            android:elevation="4dp"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_call_end"
+                app:tint="#FFFFFF" />
+        </FrameLayout>
     </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

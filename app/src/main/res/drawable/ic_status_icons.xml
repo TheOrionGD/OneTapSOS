@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="16dp"
+    android:viewportWidth="48"
+    android:viewportHeight="16">
+    <!-- Cellular Signal Bars -->
+    <path android:fillColor="#FFFFFF" android:pathData="M2,13 L5,13 L5,15 L2,15 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M7,10 L10,10 L10,15 L7,15 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M12,7 L15,7 L15,15 L12,15 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M17,4 L20,4 L20,15 L17,15 Z" />
+    <!-- Battery outline -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.2"
+        android:pathData="M28,4 L42,4 C43.1,4 44,4.9 44,6 L44,11 C44,12.1 43.1,13 42,13 L28,13 C26.9,13 26,12.1 26,11 L26,6 C26,4.9 26.9,4 28,4 Z" />
+    <!-- Battery Level inside -->
+    <path android:fillColor="#FFFFFF" android:pathData="M28,6 L39,6 L39,11 L28,11 Z" />
+    <!-- Battery Nipple -->
+    <path android:fillColor="#FFFFFF" android:pathData="M45,7 L46.5,7 L46.5,10 L45,10 Z" />
+</vector>

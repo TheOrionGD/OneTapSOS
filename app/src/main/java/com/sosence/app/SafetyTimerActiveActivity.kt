@@ -7,6 +7,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import com.sosence.app.data.AppDatabaseHelper
+import com.sosence.app.engine.BackgroundSafetyEngine
 
 class SafetyTimerActiveActivity : BaseActivity() {
 
@@ -14,44 +15,52 @@ class SafetyTimerActiveActivity : BaseActivity() {
     private var millisLeft: Long = 30 * 60 * 1000L
     private lateinit var tvCountdown: TextView
     private lateinit var dbHelper: AppDatabaseHelper
+    private var currentReason: String = "Safety Monitoring"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_safety_timer_active)
 
         dbHelper = AppDatabaseHelper(this)
-        val minutes = intent.getIntExtra("TIMER_MINUTES", 30)
-        val reason = intent.getStringExtra("TIMER_REASON") ?: "Safety Monitoring"
 
-        millisLeft = minutes * 60 * 1000L
-        findViewById<TextView>(R.id.tvActiveTimerReason).text = "Activity: $reason"
+        val minutes = intent.getIntExtra("TIMER_MINUTES", 30)
+        currentReason = intent.getStringExtra("TIMER_REASON") ?: appSettings.activeSafetyTimerReason
+
+        // Check if there is already an active timer end time saved
+        val now = System.currentTimeMillis()
+        val savedEndTime = appSettings.activeSafetyTimerEndTime
+
+        if (savedEndTime > now) {
+            millisLeft = savedEndTime - now
+        } else {
+            millisLeft = minutes * 60 * 1000L
+            val initialMins = (millisLeft / 60000).toInt().coerceAtLeast(1)
+            BackgroundSafetyEngine.scheduleSafetyTimer(this, initialMins, currentReason)
+        }
+
+        findViewById<TextView>(R.id.tvActiveTimerReason).text = "Activity: $currentReason"
         tvCountdown = findViewById(R.id.tvTimerCountdown)
 
         findViewById<CardView>(R.id.btnTimerImSafe).setOnClickListener {
-            countdownTimer?.cancel()
-            SOSNotificationManager.cancelSafetyTimerNotification(this)
-            dbHelper.recordCheckIn("Completed", "Safety timer completed: $reason")
-            Toast.makeText(this, "✅ Safety confirmed!", Toast.LENGTH_SHORT).show()
-            finish()
+            stopAndCompleteTimer()
         }
 
         findViewById<CardView>(R.id.btnExtend15Mins).setOnClickListener {
             millisLeft += 15 * 60 * 1000L
-            startCountdown(reason)
+            val newMins = (millisLeft / 60000).toInt().coerceAtLeast(1)
+            BackgroundSafetyEngine.scheduleSafetyTimer(this, newMins, currentReason)
+            startCountdown()
             Toast.makeText(this, "Timer extended by 15 minutes", Toast.LENGTH_SHORT).show()
         }
 
         findViewById<CardView>(R.id.btnStopTimer).setOnClickListener {
-            countdownTimer?.cancel()
-            SOSNotificationManager.cancelSafetyTimerNotification(this)
-            Toast.makeText(this, "Safety timer stopped", Toast.LENGTH_SHORT).show()
-            finish()
+            cancelActiveTimer()
         }
 
-        startCountdown(reason)
+        startCountdown()
     }
 
-    private fun startCountdown(reason: String) {
+    private fun startCountdown() {
         countdownTimer?.cancel()
         countdownTimer = object : CountDownTimer(millisLeft, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -59,22 +68,32 @@ class SafetyTimerActiveActivity : BaseActivity() {
                 val totalSecs = millisUntilFinished / 1000
                 val mins = totalSecs / 60
                 val secs = totalSecs % 60
-                val formatted = "%02d:%02d".format(mins, secs)
-                tvCountdown.text = formatted
+                tvCountdown.text = "%02d:%02d".format(mins, secs)
             }
 
             override fun onFinish() {
-                SOSNotificationManager.cancelSafetyTimerNotification(this@SafetyTimerActiveActivity)
-                SOSNotificationManager.showMissedCheckInNotification(this@SafetyTimerActiveActivity, reason)
-                dbHelper.recordCheckIn("Missed", "Safety timer expired without confirmation")
-                Toast.makeText(this@SafetyTimerActiveActivity, "⚠️ Timer Expired! Launching SOS...", Toast.LENGTH_LONG).show()
+                // Background alarm also fires, but if user has UI open, handle smoothly
+                BackgroundSafetyEngine.cancelSafetyTimer(this@SafetyTimerActiveActivity)
+                Toast.makeText(this@SafetyTimerActiveActivity, "⚠️ Safety Timer Expired!", Toast.LENGTH_LONG).show()
                 startActivity(Intent(this@SafetyTimerActiveActivity, SOSActivationActivity::class.java))
                 finish()
             }
         }.start()
+    }
 
-        val initialMins = millisLeft / 60000
-        SOSNotificationManager.showSafetyTimerNotification(this, reason, "$initialMins mins remaining")
+    private fun stopAndCompleteTimer() {
+        countdownTimer?.cancel()
+        BackgroundSafetyEngine.cancelSafetyTimer(this)
+        dbHelper.recordCheckIn("Completed", "Safety timer completed: $currentReason")
+        Toast.makeText(this, "✅ Safety confirmed! Timer stopped.", Toast.LENGTH_SHORT).show()
+        finish()
+    }
+
+    private fun cancelActiveTimer() {
+        countdownTimer?.cancel()
+        BackgroundSafetyEngine.cancelSafetyTimer(this)
+        Toast.makeText(this, "Safety timer stopped", Toast.LENGTH_SHORT).show()
+        finish()
     }
 
     override fun onDestroy() {

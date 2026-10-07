@@ -16,6 +16,10 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.BIND_QUICK_SETTINGS_TILE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <application
         android:name=".SOSApplication"
@@ -126,7 +130,11 @@
         <activity android:name=".HelpAndSupportActivity" android:exported="false" />
 
         <!-- 12. Utilities -->
-        <activity android:name=".FakeCallActivity" android:exported="false" />
+        <activity
+            android:name=".FakeCallActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
         <activity android:name=".PanicWidgetActivity" android:exported="false" />
 
         <!-- Services & Receivers -->
@@ -177,6 +185,38 @@
                 <action android:name="com.sosence.app.ACTION_ANSWER_FAKE_CALL" />
                 <action android:name="com.sosence.app.ACTION_DECLINE_FAKE_CALL" />
                 <action android:name="com.sosence.app.ACTION_SEND_BATTERY_SMS" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".BackgroundDiagnosticsActivity" android:exported="false" />
+
+        <receiver
+            android:name=".engine.BatteryEventReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_LOW" />
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".engine.SafetyAlarmReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.sosence.app.ACTION_SAFETY_TIMER_EXPIRED" />
+                <action android:name="com.sosence.app.ACTION_CHECKIN_EXPIRED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".engine.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

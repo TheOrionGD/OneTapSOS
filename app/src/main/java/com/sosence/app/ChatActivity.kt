@@ -25,7 +25,7 @@ class ChatActivity : BaseActivity() {
 
     private val generativeModel by lazy {
         GenerativeModel(
-            modelName = "gemini-1.5-flash",
+            modelName = "gemini-3.6-flash",
             apiKey = BuildConfig.GEMINI_API_KEY,
             systemInstruction = content {
                 text("You are SOSense AI, an intelligent, calm, empathetic, and rapid crisis safety companion. You provide direct, actionable personal safety advice, disaster survival protocols, emergency first aid steps, and situational risk assessments. Keep responses concise, structured, and prioritized by life-saving importance.")

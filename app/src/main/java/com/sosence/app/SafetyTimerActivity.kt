@@ -27,12 +27,14 @@ class SafetyTimerActivity : BaseActivity() {
             }
             val reason = etReason.text.toString().trim()
 
-            val intent = Intent(this, SafetyTimerActiveActivity::class.java).apply {
-                putExtra("TIMER_MINUTES", minutes)
-                putExtra("TIMER_REASON", if (reason.isNotEmpty()) reason else "Safety Monitoring")
+            com.sosence.app.engine.BackgroundPermissionHelper.checkExactAlarmWithRationale(this) {
+                val intent = Intent(this, SafetyTimerActiveActivity::class.java).apply {
+                    putExtra("TIMER_MINUTES", minutes)
+                    putExtra("TIMER_REASON", if (reason.isNotEmpty()) reason else "Safety Monitoring")
+                }
+                startActivity(intent)
+                finish()
             }
-            startActivity(intent)
-            finish()
         }
     }
 }

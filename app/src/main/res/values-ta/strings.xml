@@ -81,4 +81,12 @@
     <string name="no_contacts_warning">நம்பகமான தொடர்புகள் எதுவும் இல்லை. குறைந்தது 1 தொடர்பைச் சேர்க்கவும்.</string>
     <string name="location_fetching">தற்போதைய இருப்பிடம் பெறப்படுகிறது...</string>
     <string name="location_success">இருப்பிடம் பெறப்பட்டது.</string>
+
+    <!-- Background Safety & Device Event Engine -->
+    <string name="title_background_diagnostics">பின்னணி பாதுகாப்பு நிலை</string>
+    <string name="bg_monitoring_active">பின்னணி பாதுகாப்பு கண்காணிப்பு செயலில் உள்ளது</string>
+    <string name="low_battery_warning">குறைந்த பேட்டரி எச்சரிக்கை</string>
+    <string name="battery_critical_alert">முக்கியமான பேட்டரி எச்சரிக்கை</string>
+    <string name="safety_timer_expired">பாதுகாப்பு டைமர் முடிந்தது</string>
+    <string name="checkin_missed_alert">செக்-இன் தவறவிட்ட எச்சரிக்கை</string>
 </resources>

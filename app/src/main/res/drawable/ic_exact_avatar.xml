@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Outer thin circle ring -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.5"
+        android:pathData="M 60, 60 m -52, 0 a 52,52 0 1,0 104,0 a 52,52 0 1,0 -104,0" />
+    
+    <!-- Head circle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 60, 42 m -14, 0 a 14,14 0 1,0 28,0 a 14,14 0 1,0 -28,0" />
+    
+    <!-- Torso shoulder arc -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M37,84 C37,68 47,62 60,62 C73,62 83,68 83,84 Z" />
+</vector>

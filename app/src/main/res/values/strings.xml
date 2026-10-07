@@ -82,4 +82,12 @@
     <string name="no_contacts_warning">No trusted contacts added. Please add at least 1 contact.</string>
     <string name="location_fetching">Fetching current location...</string>
     <string name="location_success">Location acquired.</string>
+
+    <!-- Background Safety & Device Event Engine -->
+    <string name="title_background_diagnostics">Background Safety Status</string>
+    <string name="bg_monitoring_active">Background Safety Monitoring Active</string>
+    <string name="low_battery_warning">Low Battery Warning</string>
+    <string name="battery_critical_alert">Critical Battery Alert</string>
+    <string name="safety_timer_expired">Safety Timer Expired</string>
+    <string name="checkin_missed_alert">Check-In Missed Alert</string>
 </resources>

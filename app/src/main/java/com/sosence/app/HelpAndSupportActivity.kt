@@ -104,6 +104,7 @@ class HelpAndSupportActivity : BaseActivity() {
                 "Data Management & Clear Cache" to DataManagementActivity::class.java,
                 "Appearance & Dark Mode" to AppearanceSettingsActivity::class.java,
                 "Permissions Dashboard" to PermissionsActivity::class.java,
+                "Background Safety Engine & Diagnostics" to BackgroundDiagnosticsActivity::class.java,
                 "Fake Call Generator" to FakeCallActivity::class.java,
                 "Home Screen Panic Widget Guide" to PanicWidgetActivity::class.java
             )
