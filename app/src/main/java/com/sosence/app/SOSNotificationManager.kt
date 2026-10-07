@@ -400,8 +400,8 @@ object SOSNotificationManager {
         val appSettings = AppSettings(context)
         if (!appSettings.isNotifJourneyEnabled) return
 
-        val openIntent = Intent(context, LocationShareActiveActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        val openIntent = Intent(context, LiveTrackingActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
         val openPendingIntent = PendingIntent.getActivity(
             context, 401, openIntent,
