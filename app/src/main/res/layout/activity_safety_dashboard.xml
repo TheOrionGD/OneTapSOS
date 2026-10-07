@@ -46,19 +46,7 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/btnLanguage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_pill_neutral"
-            android:clickable="true"
-            android:focusable="true"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="6dp"
-            android:text="🌐 ENG"
-            android:textColor="@color/accent_teal"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+
 
         <FrameLayout
             android:id="@+id/btnSettingsShortcut"

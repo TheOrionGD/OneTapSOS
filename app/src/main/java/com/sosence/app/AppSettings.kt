@@ -177,11 +177,11 @@ class AppSettings(context: Context) {
         }
 
     var languageCode: String
-        get() = prefs.getString(KEY_LANGUAGE, "en") ?: "en"
-        set(value) = prefs.edit().putString(KEY_LANGUAGE, value).apply()
+        get() = "en"
+        set(value) = prefs.edit().putString(KEY_LANGUAGE, "en").apply()
 
     fun applyLocale(context: Context): Context {
-        val locale = java.util.Locale(languageCode)
+        val locale = java.util.Locale.ENGLISH
         java.util.Locale.setDefault(locale)
         val config = android.content.res.Configuration(context.resources.configuration)
         config.setLocale(locale)

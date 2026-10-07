@@ -60,15 +60,7 @@ class MoreFragment : Fragment() {
             startActivity(Intent(activity, NotificationSettingsActivity::class.java))
         }
 
-        // 9. Language Selector
-        view.findViewById<View>(R.id.cardMoreLanguage)?.setOnClickListener {
-            startActivity(Intent(activity, LanguageSettingsActivity::class.java))
-        }
 
-        // 10. Privacy & App Lock
-        view.findViewById<View>(R.id.cardMorePrivacy)?.setOnClickListener {
-            startActivity(Intent(activity, AppLockActivity::class.java))
-        }
 
         // 11. Permissions Dashboard
         view.findViewById<View>(R.id.cardMorePermissions)?.setOnClickListener {

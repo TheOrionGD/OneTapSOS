@@ -87,15 +87,29 @@ class SOSCountdownActivity : BaseActivity() {
         val contacts = dbHelper.getAllContacts().filter { it.isEnabled }
         val lat = location?.latitude ?: 0.0
         val lng = location?.longitude ?: 0.0
-        val mapLink = if (location != null) "https://maps.google.com/?q=$lat,$lng" else "Location unavailable"
+        val liveTrackingUrl = com.sosence.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(this, location)
+        val mapLink = if (location != null) "https://maps.google.com/?q=$lat,$lng" else "Acquiring GPS..."
         val timeStr = SimpleDateFormat("HH:mm:ss, dd MMM", Locale.getDefault()).format(Date())
-        val defaultMessage = "🚨 SOS ALERT!\nI need immediate help.\nLocation: $mapLink\nTime: $timeStr"
+        
+        val defaultMessage = """
+            🚨 SOS EMERGENCY BROADCAST
+            I need immediate emergency assistance!
+            
+            🔴 LIVE MOVEMENT TRACKER (Watch My Real-Time Path):
+            $liveTrackingUrl
+            
+            📍 Current GPS Pin:
+            $mapLink
+            
+            🕒 Time: $timeStr
+            ⚡ Tap the Live Tracker link to follow my real-time moving location and route on your map.
+        """.trimIndent()
 
         val sentPhones = mutableListOf<String>()
         for (c in contacts) {
             if (c.phone.isNotEmpty()) {
                 val contactMsg = if (c.customMessage.isNotBlank()) {
-                    "${c.customMessage}\n\n🚨 SOS ALERT!\nLocation: $mapLink\nTime: $timeStr"
+                    "${c.customMessage}\n\n$defaultMessage"
                 } else {
                     defaultMessage
                 }
@@ -109,7 +123,20 @@ class SOSCountdownActivity : BaseActivity() {
         appSettings.lastSosTimestamp = System.currentTimeMillis()
         appSettings.sosRecipients = if (sentPhones.isNotEmpty()) sentPhones else contacts.map { it.phone }
 
-        val locationSummary = if (location != null) "GPS: %.4f, %.4f".format(lat, lng) else "Unknown"
+        // Start background live location streaming
+        com.sosence.app.utils.LiveLocationPublisher.publishLocation(this, location, isSos = true)
+        try {
+            val serviceIntent = Intent(this, SOSForegroundService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent)
+            } else {
+                startService(serviceIntent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val locationSummary = if (location != null) "GPS: %.4f, %.4f".format(lat, lng) else "Live GPS Active"
         val eventId = dbHelper.recordSosEvent(SosEventModel(
             timestamp = System.currentTimeMillis(),
             latitude = lat,
@@ -133,9 +160,20 @@ class SOSCountdownActivity : BaseActivity() {
     }
 
 
+    private fun formatPhoneNumber(phone: String): String {
+        val clean = phone.replace("[^0-9+]".toRegex(), "")
+        return if (clean.startsWith("+")) {
+            clean
+        } else if (clean.length == 10) {
+            "+91$clean"
+        } else {
+            clean
+        }
+    }
+
     private fun sendSms(phone: String, msg: String): Boolean {
         return try {
-            val formatted = if (phone.startsWith("+")) phone else "+91$phone"
+            val formatted = formatPhoneNumber(phone)
             val smsMgr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 getSystemService(SmsManager::class.java)
             } else {

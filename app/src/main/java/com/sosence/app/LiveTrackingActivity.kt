@@ -209,14 +209,14 @@ class LiveTrackingActivity : BaseActivity() {
         btnToggleLayer.setOnClickListener {
             currentLayerIndex = (currentLayerIndex + 1) % 3
             val layerName = when (currentLayerIndex) {
-                0 -> "voyager"
-                1 -> "dark"
+                0 -> "google"
+                1 -> "satellite"
                 else -> "osm"
             }
             webView.evaluateJavascript("javascript:setMapTheme('$layerName');", null)
             val toastMsg = when (currentLayerIndex) {
-                0 -> "🗺️ Map theme: Vibrant Street"
-                1 -> "🌙 Map theme: Night Dark"
+                0 -> "🗺️ Map theme: Google Maps Standard"
+                1 -> "🛰️ Map theme: Google Satellite Hybrid"
                 else -> "🌐 Map theme: OpenStreetMap"
             }
             Toast.makeText(this, toastMsg, Toast.LENGTH_SHORT).show()
@@ -410,6 +410,9 @@ class LiveTrackingActivity : BaseActivity() {
     }
 
     private fun pushLocationToMap(loc: Location) {
+        // Stream to real-time cloud relay
+        com.sosence.app.utils.LiveLocationPublisher.publishLocation(this, loc, isSos = false)
+
         if (!isMapLoaded) return
         val speed = if (loc.hasSpeed()) loc.speed * 3.6f else 0.0f
         val heading = if (loc.hasBearing()) loc.bearing else -1.0f
@@ -464,25 +467,28 @@ class LiveTrackingActivity : BaseActivity() {
 
         val lat = loc.latitude
         val lon = loc.longitude
-        val osmLink = "https://www.openstreetmap.org/?mlat=$lat&mlon=$lon#map=17/$lat/$lon"
+        val liveTrackingUrl = com.sosence.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(this, loc)
         val gmapsLink = "https://maps.google.com/?q=$lat,$lon"
         val address = tvLiveAddress.text.toString()
         val duration = tvLiveDuration.text.toString()
         val dist = tvLiveDistance.text.toString()
+        val speed = tvLiveSpeed.text.toString()
+        val battery = tvLiveBattery.text.toString()
 
         val shareMessage = """
-            🚨 SOSENSE LIVE JOURNEY BROADCAST 📡
-            I am currently commuting and sharing my real-time GPS location trail with you:
+            🚨 LIVE GPS TRACKING STREAM 📡
+            I am currently traveling and sharing my live route and real-time movement:
             
-            📍 Location: $address
-            ⚡ Speed: ${tvLiveSpeed.text}
-            📏 Traveled: $dist
-            ⏱️ Active For: $duration
+            🔴 LIVE MOVEMENT TRACKER (Watch My Real-Time Path):
+            $liveTrackingUrl
             
-            🗺️ Live OSM Tracker: $osmLink
-            🌐 Google Maps: $gmapsLink
+            📍 Current Spot: $address
+            ⚡ Speed: $speed • 📏 Distance Covered: $dist
+            ⏱️ Active For: $duration • 🔋 Battery: $battery
             
-            Shared securely via SOSense Guardian App.
+            🌐 Google Maps Pin: $gmapsLink
+            
+            Real-time live journey broadcast via SOSense.
         """.trimIndent()
 
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -690,13 +696,15 @@ class LiveTrackingActivity : BaseActivity() {
                     var userInteracted = false;
 
                     var tileLayers = {
-                        voyager: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                            maxZoom: 19,
-                            attribution: '© OSM © CARTO'
+                        google: L.tileLayer('https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+                            maxZoom: 20,
+                            subdomains: ['0', '1', '2', '3'],
+                            attribution: '© Google Maps'
                         }),
-                        dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                            maxZoom: 19,
-                            attribution: '© OSM © CARTO'
+                        satellite: L.tileLayer('https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                            maxZoom: 20,
+                            subdomains: ['0', '1', '2', '3'],
+                            attribution: '© Google Maps'
                         }),
                         osm: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                             maxZoom: 19,
@@ -710,7 +718,7 @@ class LiveTrackingActivity : BaseActivity() {
                             attributionControl: false
                         }).setView([lastLat, lastLon], 16);
 
-                        currentLayer = tileLayers.voyager;
+                        currentLayer = tileLayers.google;
                         currentLayer.addTo(map);
 
                         // Glow background trail

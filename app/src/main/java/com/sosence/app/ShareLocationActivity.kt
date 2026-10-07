@@ -99,8 +99,26 @@ class ShareLocationActivity : BaseActivity() {
         }
         val lat = location.latitude
         val lon = location.longitude
+        val liveTrackingUrl = com.sosence.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(this, location)
         val mapsLink = "https://maps.google.com/?q=$lat,$lon"
-        val msg = "📍 My current location: $mapsLink\n\nShared via SOSense"
+        val accuracy = if (location.hasAccuracy()) " (±%.0fm)".format(location.accuracy) else ""
+        val timeStr = java.text.SimpleDateFormat("HH:mm:ss, dd MMM", java.util.Locale.getDefault()).format(java.util.Date())
+
+        com.sosence.app.utils.LiveLocationPublisher.publishLocation(this, location, isSos = false)
+
+        val msg = """
+            📍 LIVE LOCATION BROADCAST 📡
+            I am sharing my real-time GPS coordinates and live movement with you:
+            
+            🔴 LIVE MOVEMENT TRACKER (Watch My Real-Time Path):
+            $liveTrackingUrl
+            
+            🗺️ Current GPS Pin:
+            $mapsLink
+            
+            🕒 Time: $timeStr$accuracy
+            ⚡ Open the Live Tracker link above to see my exact location and live movement on your map.
+        """.trimIndent()
 
         try {
             when (mode) {
@@ -123,13 +141,13 @@ class ShareLocationActivity : BaseActivity() {
                     startActivity(intent)
                 }
                 "maps" -> {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:$lat,$lon?q=$lat,$lon"))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(liveTrackingUrl))
                     startActivity(intent)
                 }
                 "copy" -> {
                     val clipboard = getSystemService(CLIPBOARD_SERVICE) as android.content.ClipboardManager
-                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Location", mapsLink))
-                    Toast.makeText(this, "Location link copied!", Toast.LENGTH_SHORT).show()
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText("Live Location Stream", liveTrackingUrl))
+                    Toast.makeText(this, "Live tracking link copied!", Toast.LENGTH_SHORT).show()
                 }
             }
         } catch (e: Exception) {

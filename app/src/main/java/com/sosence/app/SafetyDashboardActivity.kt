@@ -57,9 +57,7 @@ class SafetyDashboardActivity : BaseActivity() {
             }
         }
 
-        findViewById<TextView>(R.id.btnLanguage).setOnClickListener {
-            startActivity(Intent(this, LanguageSettingsActivity::class.java))
-        }
+
 
         findViewById<View>(R.id.btnSettingsShortcut).setOnClickListener {
             startActivity(Intent(this, SOSSettingsActivity::class.java))

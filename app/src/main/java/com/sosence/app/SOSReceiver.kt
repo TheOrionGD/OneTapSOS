@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.location.Location
+import android.os.Build
 import android.telephony.SmsManager
 import android.util.Log
 import android.widget.Toast
@@ -50,38 +51,37 @@ class SOSReceiver : BroadcastReceiver() {
     ) {
         val lat = location?.latitude ?: 0.0
         val lng = location?.longitude ?: 0.0
-        val mapsLink = if (location != null) {
-            "https://maps.google.com/?q=$lat,$lng"
-        } else {
-            "Location unavailable"
-        }
-        val timeStamp = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date())
+        val liveTrackingUrl = com.sosence.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(context, location)
+        val mapsLink = if (location != null) "https://maps.google.com/?q=$lat,$lng" else "Location unavailable"
+        val timeStamp = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale.getDefault()).format(Date())
 
         val message = if (isFall) {
             buildString {
-                appendLine("⚠️ FALL DETECTED")
+                appendLine("⚠️ FALL DETECTED (EMERGENCY)")
+                appendLine("A high-impact fall has been detected. I may need immediate emergency assistance!")
                 appendLine()
-                appendLine("A high-impact fall has been detected. I may need emergency assistance.")
+                appendLine("🔴 LIVE MOVEMENT TRACKER (Watch My Real-Time Path):")
+                appendLine(liveTrackingUrl)
                 appendLine()
-                appendLine("Location:")
+                appendLine("📍 Current GPS Pin:")
                 appendLine(mapsLink)
                 appendLine()
-                appendLine("Time: $timeStamp")
-                appendLine()
-                append("Please check on me immediately.")
+                appendLine("🕒 Time: $timeStamp")
+                append("⚡ Tap the Live Tracker link to follow my real-time moving location and route on your map.")
             }
         } else {
             buildString {
-                appendLine("🚨 SOS ALERT")
+                appendLine("🚨 SOS EMERGENCY BROADCAST")
+                appendLine("I need immediate emergency assistance!")
                 appendLine()
-                appendLine("I need immediate assistance.")
+                appendLine("🔴 LIVE MOVEMENT TRACKER (Watch My Real-Time Path):")
+                appendLine(liveTrackingUrl)
                 appendLine()
-                appendLine("Location:")
+                appendLine("📍 Current GPS Pin:")
                 appendLine(mapsLink)
                 appendLine()
-                appendLine("Time: $timeStamp")
-                appendLine()
-                append("Please respond as soon as possible.")
+                appendLine("🕒 Time: $timeStamp")
+                append("⚡ Tap the Live Tracker link to follow my real-time moving location and route on your map.")
             }
         }
 
@@ -93,7 +93,7 @@ class SOSReceiver : BroadcastReceiver() {
         for (contact in contacts) {
             if (contact.phone.isNotEmpty()) {
                 val contactMessage = if (contact.customMessage.isNotBlank() && !isFall) {
-                    "${contact.customMessage}\n\n🚨 SOS ALERT!\nLocation: $mapsLink\nTime: $timeStamp"
+                    "${contact.customMessage}\n\n$message"
                 } else {
                     message
                 }
@@ -109,6 +109,19 @@ class SOSReceiver : BroadcastReceiver() {
         appSettings.isSosActive = true
         appSettings.lastSosTimestamp = System.currentTimeMillis()
         appSettings.sosRecipients = if (successfulRecipients.isNotEmpty()) successfulRecipients else contacts.map { it.phone }
+
+        // Start background live location streaming
+        com.sosence.app.utils.LiveLocationPublisher.publishLocation(context, location, isSos = true)
+        try {
+            val serviceIntent = Intent(context, SOSForegroundService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(serviceIntent)
+            } else {
+                context.startService(serviceIntent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         // Persist authoritative SOS record in Room/SQLite database
         val triggerType = if (isFall) "FALL_DETECTION" else "BACKGROUND_SOS"

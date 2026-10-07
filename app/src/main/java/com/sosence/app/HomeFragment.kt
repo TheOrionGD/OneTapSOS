@@ -151,16 +151,32 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private var touchDownTimeMs = 0L
+
     private fun setupSosButtonTouch() {
         frameHeroSOS.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    touchDownTimeMs = System.currentTimeMillis()
                     v.animate().scaleX(0.92f).scaleY(0.92f).setDuration(100).start()
                     vibrateHaptic(80)
                     startHoldTimer()
                     true
                 }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                MotionEvent.ACTION_UP -> {
+                    v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(150)
+                        .setInterpolator(OvershootInterpolator(1.4f))
+                        .start()
+                    val pressDuration = System.currentTimeMillis() - touchDownTimeMs
+                    cancelHoldTimer()
+                    if (pressDuration < 800) {
+                        // Single tap activation: immediately launch SOS countdown workflow
+                        vibrateHaptic(100)
+                        (activity as? MainActivity)?.launchSosCountdownWorkflow()
+                    }
+                    true
+                }
+                MotionEvent.ACTION_CANCEL -> {
                     v.animate().scaleX(1.0f).scaleY(1.0f).setDuration(150)
                         .setInterpolator(OvershootInterpolator(1.4f))
                         .start()

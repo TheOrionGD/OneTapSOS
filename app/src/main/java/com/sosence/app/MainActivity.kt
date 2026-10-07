@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
+import android.net.Uri
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +17,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.telephony.SmsManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.TextView
 import android.widget.Toast
@@ -343,10 +345,24 @@ class MainActivity : BaseActivity() {
     // SOS WORKFLOW METHODS
     // ==========================================
     fun launchSosCountdownWorkflow() {
-        val contacts = legacyDbHelper.getAllContacts()
+        val appContacts = appDbHelper.getAllContacts().filter { it.isEnabled }
+        val contacts = if (appContacts.isNotEmpty()) {
+            appContacts.map { Contact(it.name, it.phone, it.id, it.customMessage) }
+        } else {
+            legacyDbHelper.getAllContacts()
+        }
         if (contacts.isEmpty()) {
-            Toast.makeText(this, "No trusted contacts added! Add contacts first.", Toast.LENGTH_LONG).show()
-            navigateToTab(R.id.nav_contacts)
+            AlertDialog.Builder(this)
+                .setTitle("⚠️ No Emergency Contacts")
+                .setMessage("You haven't added any emergency contacts yet.\n\nAdd trusted contacts so they receive your emergency SOS SMS and live location, or dial 112 directly.")
+                .setPositiveButton("Add Contacts") { _, _ ->
+                    navigateToTab(R.id.nav_contacts)
+                }
+                .setNegativeButton("Call 112") { _, _ ->
+                    val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:112"))
+                    startActivity(dialIntent)
+                }
+                .show()
             return
         }
         showSosCountdownDialog()
@@ -396,8 +412,8 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun executeSendSOS() {
-        Toast.makeText(this, "🚨 SOS Sending! Acquiring GPS coordinates...", Toast.LENGTH_SHORT).show()
+    fun executeSendSOS() {
+        Toast.makeText(this, "🚨 SOS Triggered! Dispatching emergency alert...", Toast.LENGTH_SHORT).show()
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             try {
@@ -406,8 +422,24 @@ class MainActivity : BaseActivity() {
                     .build()
 
                 fusedLocationClient.getCurrentLocation(locationRequest, null)
-                    .addOnSuccessListener { location: Location? -> sendEmergencyAlert(location) }
-                    .addOnFailureListener { sendEmergencyAlert(null) }
+                    .addOnSuccessListener { location: Location? ->
+                        if (location != null) {
+                            sendEmergencyAlert(location)
+                        } else {
+                            fusedLocationClient.lastLocation.addOnSuccessListener { lastLoc ->
+                                sendEmergencyAlert(lastLoc)
+                            }.addOnFailureListener {
+                                sendEmergencyAlert(null)
+                            }
+                        }
+                    }
+                    .addOnFailureListener {
+                        fusedLocationClient.lastLocation.addOnSuccessListener { lastLoc ->
+                            sendEmergencyAlert(lastLoc)
+                        }.addOnFailureListener {
+                            sendEmergencyAlert(null)
+                        }
+                    }
             } catch (e: SecurityException) {
                 sendEmergencyAlert(null)
             }
@@ -416,11 +448,40 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun formatPhoneNumber(phone: String): String {
+        val clean = phone.replace("[^0-9+]".toRegex(), "")
+        return if (clean.startsWith("+")) {
+            clean
+        } else if (clean.length == 10) {
+            "+91$clean"
+        } else {
+            clean
+        }
+    }
+
     private fun sendEmergencyAlert(location: Location?) {
         val defaultMessage = buildSosMessage(location)
-        val contacts = legacyDbHelper.getAllContacts()
+        
+        // Query both AppDatabaseHelper and legacy database to ensure no contact is missed
+        val appContacts = appDbHelper.getAllContacts().filter { it.isEnabled }
+        val contacts = if (appContacts.isNotEmpty()) {
+            appContacts.map { Contact(it.name, it.phone, it.id, it.customMessage) }
+        } else {
+            legacyDbHelper.getAllContacts()
+        }
+
         if (contacts.isEmpty()) {
-            Toast.makeText(this, "No trusted contacts added.", Toast.LENGTH_LONG).show()
+            AlertDialog.Builder(this)
+                .setTitle("⚠️ No Emergency Contacts Found")
+                .setMessage("You haven't added any trusted emergency contacts yet.\n\nAdd contacts now to automatically broadcast emergency alerts, or call Emergency Services directly.")
+                .setPositiveButton("Add Contacts") { _, _ ->
+                    startActivity(Intent(this, AddTrustedContactActivity::class.java))
+                }
+                .setNegativeButton("Dial 112 (Emergency)") { _, _ ->
+                    val dialIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:112"))
+                    startActivity(dialIntent)
+                }
+                .show()
             return
         }
 
@@ -430,9 +491,9 @@ class MainActivity : BaseActivity() {
         val successfulRecipients = mutableListOf<String>()
         var sentCount = 0
         for (contact in contacts) {
-            if (contact.phone.isNotEmpty()) {
+            if (contact.phone.isNotBlank()) {
                 val contactMessage = if (contact.customMessage.isNotBlank()) {
-                    "${contact.customMessage}\n\n🚨 SOS ALERT!\n📍 Location: $mapsLink\n🕒 Time: $timeStamp"
+                    "${contact.customMessage}\n\n$defaultMessage"
                 } else {
                     defaultMessage
                 }
@@ -444,10 +505,23 @@ class MainActivity : BaseActivity() {
 
         appSettings.isSosActive = true
         appSettings.lastSosTimestamp = System.currentTimeMillis()
-        appSettings.sosRecipients = successfulRecipients
+        appSettings.sosRecipients = if (successfulRecipients.isNotEmpty()) successfulRecipients else contacts.map { it.phone }
 
-        val locSummary = if (location != null) "GPS: %.4f, %.4f".format(location.latitude, location.longitude) else "Unknown"
-        appDbHelper.recordSosEvent(
+        // Start background live location streaming
+        com.sosence.app.utils.LiveLocationPublisher.publishLocation(this, location, isSos = true)
+        try {
+            val serviceIntent = Intent(this, SOSForegroundService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent)
+            } else {
+                startService(serviceIntent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val locSummary = if (location != null) "GPS: %.4f, %.4f".format(location.latitude, location.longitude) else "Live GPS Active"
+        val eventId = appDbHelper.recordSosEvent(
             SosEventModel(
                 timestamp = System.currentTimeMillis(),
                 latitude = location?.latitude ?: 0.0,
@@ -460,12 +534,25 @@ class MainActivity : BaseActivity() {
             )
         )
 
+        // 1. Show Persistent System Emergency Notification
         SOSNotificationManager.showEmergencySosNotification(this, locSummary, sentCount)
 
-        homeFragment.refreshDashboardState()
-        Toast.makeText(this, "✅ SOS alert dispatched to $sentCount contact(s)!", Toast.LENGTH_LONG).show()
+        // 2. In-App Notification / Dialog message confirming emergency alert dispatched to the contacts
+        val contactNames = contacts.joinToString("\n") { "• ${it.name} (${it.phone})" }
+        AlertDialog.Builder(this)
+            .setTitle("🚨 SOS Emergency Alert Dispatched")
+            .setMessage("Emergency distress alert and live GPS broadcast sent to $sentCount contact(s):\n\n$contactNames\n\nStatus: $locSummary")
+            .setPositiveButton("View Active Session") { _, _ ->
+                val activeIntent = Intent(this, SOSActiveActivity::class.java).apply {
+                    putExtra("SOS_EVENT_ID", eventId)
+                }
+                startActivity(activeIntent)
+            }
+            .setNegativeButton("OK", null)
+            .show()
 
-        startActivity(Intent(this, SOSActiveActivity::class.java))
+        homeFragment.refreshDashboardState()
+        Toast.makeText(this, "🚨 SOS alert dispatched to $sentCount contact(s)!", Toast.LENGTH_LONG).show()
     }
 
     fun triggerImSafeResolution() {
@@ -475,7 +562,11 @@ class MainActivity : BaseActivity() {
         }
 
         val recipients = appSettings.sosRecipients
-        val phoneNumbers = if (recipients.isNotEmpty()) recipients else legacyDbHelper.getAllContacts().map { it.phone }
+        val phoneNumbers = if (recipients.isNotEmpty()) {
+            recipients
+        } else {
+            appDbHelper.getAllContacts().map { it.phone }.ifEmpty { legacyDbHelper.getAllContacts().map { it.phone } }
+        }
         fetchLocationAndSendImSafe(phoneNumbers)
     }
 
@@ -497,7 +588,7 @@ class MainActivity : BaseActivity() {
         val message = buildImSafeMessage(location)
         var sentCount = 0
         for (phone in phoneNumbers) {
-            if (phone.isNotEmpty()) {
+            if (phone.isNotBlank()) {
                 sendSms(phone, message)
                 sentCount++
             }
@@ -518,19 +609,40 @@ class MainActivity : BaseActivity() {
     }
 
     private fun buildSosMessage(location: Location?): String {
-        val mapsLink = if (location != null) "https://maps.google.com/?q=${location.latitude},${location.longitude}" else "Location unavailable"
-        val timeStamp = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()).format(Date())
-        return buildString {
-            appendLine("🚨 SOS ALERT")
-            appendLine()
-            appendLine("I need immediate assistance.")
-            appendLine()
-            appendLine("Location:")
-            appendLine(mapsLink)
-            appendLine()
-            appendLine("Time: $timeStamp")
-            appendLine()
-            append("Please respond as soon as possible.")
+        val timeStamp = SimpleDateFormat("dd MMM yyyy, HH:mm:ss", Locale.getDefault()).format(Date())
+        val liveTrackingUrl = com.sosence.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(this, location)
+        return if (location != null) {
+            val lat = location.latitude
+            val lng = location.longitude
+            val mapsLink = "https://maps.google.com/?q=$lat,$lng"
+            val accuracy = if (location.hasAccuracy()) "±%.0fm".format(location.accuracy) else "High"
+            val speed = if (location.hasSpeed() && location.speed > 0) " • Speed: %.0f km/h".format(location.speed * 3.6f) else ""
+            
+            buildString {
+                appendLine("🚨 SOS EMERGENCY BROADCAST")
+                appendLine("I need immediate emergency assistance!")
+                appendLine()
+                appendLine("🔴 LIVE MOVEMENT TRACKER (Watch My Real-Time Path):")
+                appendLine(liveTrackingUrl)
+                appendLine()
+                appendLine("📍 Current GPS Pin:")
+                appendLine(mapsLink)
+                appendLine()
+                appendLine("🕒 Time: $timeStamp (GPS: $accuracy$speed)")
+                append("⚡ Tap the Live Tracker link to follow my real-time moving location and route on your map.")
+            }
+        } else {
+            buildString {
+                appendLine("🚨 SOS EMERGENCY BROADCAST")
+                appendLine("I need immediate emergency assistance!")
+                appendLine()
+                appendLine("🔴 LIVE TRACKER STREAM:")
+                appendLine(liveTrackingUrl)
+                appendLine()
+                appendLine("📍 Location: Acquiring live GPS fix...")
+                appendLine("🕒 Time: $timeStamp")
+                append("Please call or respond immediately!")
+            }
         }
     }
 
@@ -542,9 +654,9 @@ class MainActivity : BaseActivity() {
 
     private fun sendSms(phoneNumber: String, message: String): Boolean {
         return try {
-            val formattedNumber = if (phoneNumber.startsWith("+")) phoneNumber else "+91$phoneNumber"
-            val smsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                getSystemService(SmsManager::class.java)
+            val formattedNumber = formatPhoneNumber(phoneNumber)
+            val smsManager: SmsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                getSystemService(SmsManager::class.java) ?: @Suppress("DEPRECATION") SmsManager.getDefault()
             } else {
                 @Suppress("DEPRECATION")
                 SmsManager.getDefault()
@@ -555,8 +667,10 @@ class MainActivity : BaseActivity() {
             } else {
                 smsManager.sendTextMessage(formattedNumber, null, message, null, null)
             }
+            Log.i("MainActivity", "Direct background SMS successfully sent to $formattedNumber via SmsManager")
             true
         } catch (e: Exception) {
+            Log.e("MainActivity", "sendSms failed for $phoneNumber: ${e.message}", e)
             false
         }
     }
@@ -721,6 +835,14 @@ class MainActivity : BaseActivity() {
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
             needed.add(Manifest.permission.SEND_SMS)
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                needed.add(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+            needed.add(Manifest.permission.CALL_PHONE)
         }
         if (needed.isNotEmpty()) {
             requestPermissionLauncher.launch(needed.toTypedArray())

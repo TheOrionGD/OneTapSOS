@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SOSense - Live Emergency Location Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #0A0D14;
+            color: #FFFFFF;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 16px;
+            gap: 14px;
+        }
+
+        /* 1. Header & Person Card */
+        .card-person {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(30, 41, 59, 0.85));
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 18px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 30px rgba(239, 68, 68, 0.15);
+        }
+
+        .person-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .avatar-badge {
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, #EF4444, #B91C1C);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+        }
+
+        .person-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #F87171;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 2px;
+        }
+
+        .person-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.25);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            color: #FCA5A5;
+            letter-spacing: 0.5px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #EF4444;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #EF4444;
+            animation: pulseRing 1.4s infinite ease-in-out;
+        }
+
+        @keyframes pulseRing {
+            0% { transform: scale(0.9); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+
+        /* 2. Emergency Message Card */
+        .card-message {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #EF4444;
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+
+        .message-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .message-content {
+            font-size: 14px;
+            font-weight: 600;
+            color: #F1F5F9;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        /* 3. Map Section */
+        .map-section {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            background-color: #0F141C;
+        }
+
+        .current-loc-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #00D9FF;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .map-overlay-loading {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 20, 28, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #CBD5E1;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3.5px solid rgba(239, 68, 68, 0.2);
+            border-top-color: #EF4444;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 4. Past 5 Locations Section */
+        .card-history {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 16px 18px;
+        }
+
+        .history-header {
+            font-size: 13px;
+            font-weight: 800;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-badge {
+            font-size: 10px;
+            background: rgba(0, 217, 255, 0.15);
+            color: #00D9FF;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: rgba(30, 41, 59, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(30, 41, 59, 0.9);
+            border-color: rgba(0, 217, 255, 0.4);
+        }
+
+        .history-item.latest {
+            border-color: rgba(239, 68, 68, 0.45);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-icon {
+            font-size: 16px;
+        }
+
+        .item-coords {
+            font-size: 13px;
+            font-weight: 700;
+            color: #F8FAFC;
+        }
+
+        .item-time {
+            font-size: 11px;
+            color: #94A3B8;
+            font-weight: 500;
+            margin-top: 1px;
+        }
+
+        .item-status {
+            font-size: 11px;
+            font-weight: 700;
+            color: #00D9FF;
+        }
+
+        /* Marker Styles */
+        .live-marker-container {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .marker-pulse-ring {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.4);
+            animation: radarWaves 1.6s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+        }
+
+        .marker-dot-core {
+            position: relative;
+            width: 22px;
+            height: 22px;
+            background: #EF4444;
+            border: 3.5px solid #FFFFFF;
+            border-radius: 50%;
+            box-shadow: 0 0 18px rgba(239, 68, 68, 0.95);
+            z-index: 10;
+        }
+
+        @keyframes radarWaves {
+            0% { transform: scale(0.3); opacity: 1; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        .past-marker-icon {
+            background: #3B82F6;
+            color: #FFFFFF;
+            font-size: 10px;
+            font-weight: 800;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .btn-location {
+            position: absolute;
+            bottom: 14px;
+            right: 14px;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 217, 255, 0.4);
+            color: #00D9FF;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+            transition: all 0.2s ease;
+        }
+
+        .btn-location:hover {
+            background: rgba(0, 217, 255, 0.2);
+            border-color: #00D9FF;
+            color: #FFFFFF;
+        }
+
+        .btn-location:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 1. Person Information -->
+        <div class="card-person">
+            <div class="person-info">
+                <div class="avatar-badge">🚨</div>
+                <div>
+                    <div class="person-label">SOS Triggered By</div>
+                    <div class="person-name" id="tvPersonName">Connecting to Live Feed...</div>
+                </div>
+            </div>
+            <div class="live-indicator">
+                <div class="pulse-dot"></div>
+                <span id="tvLiveStatus">CONNECTING</span>
+            </div>
+        </div>
+
+        <!-- 2. SOS Message -->
+        <div class="card-message">
+            <div class="message-title">
+                <span>💬</span> Emergency Message
+            </div>
+            <div class="message-content" id="tvSosMessage">Waiting for emergency broadcast details...</div>
+        </div>
+
+        <!-- 3. Current Live Location Map -->
+        <div class="map-section">
+            <div class="current-loc-badge" id="currentLocBadge" style="display: none;">
+                <span>📍</span>
+                <span id="tvCurrentStatus">Tracking Live Movement</span>
+            </div>
+            <button id="btnGetLocation" class="btn-location" title="Grant or Refresh Device Location Access">
+                <span>📍</span>
+                <span id="btnLocationText">Device Location</span>
+            </button>
+            <div class="map-overlay-loading" id="mapLoadingOverlay">
+                <div class="spinner"></div>
+                <div id="loadingText">Connecting to SOS Live Satellite Stream...</div>
+            </div>
+            <div id="map"></div>
+        </div>
+
+        <!-- 4. Past 5 Locations History -->
+        <div class="card-history">
+            <div class="history-header">
+                <span>📍 Current & Past 5 Locations</span>
+                <span class="history-badge" id="tvHistoryCount">0 Locations</span>
+            </div>
+            <div class="history-list" id="historyList">
+                <div style="font-size: 12px; color: #94A3B8; text-align: center; padding: 12px;" id="emptyHistoryMsg">
+                    Awaiting initial GPS coordinate broadcast...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Parse URL Parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session') || '';
+        const paramLat = parseFloat(urlParams.get('lat'));
+        const paramLng = parseFloat(urlParams.get('lng'));
+        const paramName = urlParams.get('name');
+        const paramMsg = urlParams.get('msg');
+
+        if (paramName && paramName.trim() !== '') {
+            document.getElementById('tvPersonName').textContent = paramName.trim();
+        }
+        if (paramMsg && paramMsg.trim() !== '') {
+            document.getElementById('tvSosMessage').textContent = paramMsg.trim();
+        }
+
+        // Initialize Map in neutral state
+        const map = L.map('map', {
+            zoomControl: true,
+            attributionControl: false
+        }).setView([20.5937, 78.9629], 4); // Default continent view until first live coordinate
+
+        // Google Maps Standard Tile Layer
+        L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
+
+        // Polyline Route Line
+        const locationHistory = []; // Array of { lat, lng, time, speed }
+        const polyline = L.polyline([], {
+            color: '#EF4444',
+            weight: 4,
+            opacity: 0.85,
+            smoothFactor: 1.0,
+            dashArray: '6, 6'
+        }).addTo(map);
+
+        // Live Pulsing Marker
+        const liveIcon = L.divIcon({
+            className: 'custom-live-marker',
+            html: '<div class="live-marker-container"><div class="marker-pulse-ring"></div><div class="marker-dot-core"></div></div>',
+            iconSize: [48, 48],
+            iconAnchor: [24, 24]
+        });
+
+        let currentMarker = null;
+        const pastMarkers = [];
+        let hasAcquiredLocation = false;
+
+        function renderHistoryList() {
+            const container = document.getElementById('historyList');
+            if (locationHistory.length === 0) return;
+
+            document.getElementById('tvHistoryCount').textContent = `${Math.min(locationHistory.length, 5)} Locations`;
+
+            // Take the last 5 locations (most recent first)
+            const recentFive = locationHistory.slice(-5).reverse();
+            container.innerHTML = '';
+
+            recentFive.forEach((loc, idx) => {
+                const isLatest = idx === 0;
+                const item = document.createElement('div');
+                item.className = 'history-item' + (isLatest ? ' latest' : '');
+                
+                const timeFormatted = new Date(loc.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const latStr = loc.lat.toFixed(5);
+                const lngStr = loc.lng.toFixed(5);
+                const speedStr = (loc.speed && loc.speed > 0) ? ` • ${(loc.speed * 3.6).toFixed(0)} km/h` : '';
+
+                item.innerHTML = `
+                    <div class="item-left">
+                        <div class="item-icon">${isLatest ? '🔴' : '📍'}</div>
+                        <div>
+                            <div class="item-coords">${latStr}°, ${lngStr}°</div>
+                            <div class="item-time">${timeFormatted}${speedStr}</div>
+                        </div>
+                    </div>
+                    <div class="item-status">${isLatest ? 'Current Spot' : '#' + (locationHistory.length - idx)}</div>
+                `;
+
+                item.addEventListener('click', () => {
+                    map.panTo([loc.lat, loc.lng], { animate: true });
+                });
+
+                container.appendChild(item);
+            });
+        }
+
+        function onNewLocation(lat, lng, speed, accuracy, bearing, timestamp, name, msg) {
+            if (lat === undefined || lng === undefined || isNaN(lat) || isNaN(lng)) return;
+            if (lat === 0 && lng === 0) return;
+
+            if (name && name.trim() !== '') {
+                document.getElementById('tvPersonName').textContent = name.trim();
+            }
+            if (msg && msg.trim() !== '') {
+                document.getElementById('tvSosMessage').textContent = msg.trim();
+            }
+
+            // Hide loading overlay on first valid GPS fix
+            if (!hasAcquiredLocation) {
+                hasAcquiredLocation = true;
+                const overlay = document.getElementById('mapLoadingOverlay');
+                if (overlay) overlay.style.display = 'none';
+                document.getElementById('currentLocBadge').style.display = 'flex';
+                document.getElementById('tvLiveStatus').textContent = 'LIVE TRACKING';
+                map.setView([lat, lng], 17);
+
+                currentMarker = L.marker([lat, lng], { icon: liveIcon, zIndexOffset: 1000 }).addTo(map);
+            }
+
+            const newPoint = { lat, lng, time: timestamp || Date.now(), speed: speed || 0 };
+            
+            // Check if coordinates moved (>1.5 meters) or first point
+            if (locationHistory.length > 0) {
+                const last = locationHistory[locationHistory.length - 1];
+                if (Math.abs(last.lat - lat) < 0.000015 && Math.abs(last.lng - lng) < 0.000015) {
+                    return;
+                }
+            }
+
+            locationHistory.push(newPoint);
+
+            // Update Polyline
+            const coords = locationHistory.map(p => [p.lat, p.lng]);
+            polyline.setLatLngs(coords);
+
+            // Update Live Marker position
+            if (currentMarker) {
+                currentMarker.setLatLng([lat, lng]);
+            }
+            map.panTo([lat, lng], { animate: true, duration: 0.8 });
+
+            // Clear and redraw past point numbers on the map (up to 5 past markers)
+            pastMarkers.forEach(m => map.removeLayer(m));
+            pastMarkers.length = 0;
+
+            const pastFive = locationHistory.slice(-5);
+            pastFive.forEach((p, idx) => {
+                if (idx < pastFive.length - 1) { // all points before the current one
+                    const dotIcon = L.divIcon({
+                        className: 'past-dot',
+                        html: `<div class="past-marker-icon">${idx + 1}</div>`,
+                        iconSize: [22, 22],
+                        iconAnchor: [11, 11]
+                    });
+                    const pm = L.marker([p.lat, p.lng], { icon: dotIcon }).addTo(map);
+                    pastMarkers.push(pm);
+                }
+            });
+
+            document.getElementById('tvCurrentStatus').textContent = `Live: ${lat.toFixed(5)}°, ${lng.toFixed(5)}°`;
+            renderHistoryList();
+        }
+
+        // HTML5 Browser Geolocation Access
+        function requestDeviceLocation(isManual = false) {
+            if (!navigator.geolocation) {
+                if (isManual) alert("Geolocation is not supported by your browser or device.");
+                return;
+            }
+
+            const btnText = document.getElementById('btnLocationText');
+            if (btnText && isManual) btnText.textContent = "Acquiring...";
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const speed = position.coords.speed || 0;
+                    const accuracy = position.coords.accuracy || 5;
+                    const heading = position.coords.heading || 0;
+                    const time = position.timestamp || Date.now();
+
+                    if (btnText) btnText.textContent = "Device Located";
+
+                    onNewLocation(
+                        lat,
+                        lng,
+                        speed,
+                        accuracy,
+                        heading,
+                        time,
+                        paramName || "Live Device Track",
+                        paramMsg || "Active Emergency Broadcast"
+                    );
+                },
+                (err) => {
+                    console.warn('Geolocation access error:', err.message);
+                    if (btnText) btnText.textContent = "Device Location";
+                    if (isManual) {
+                        alert("Location access was denied or is unavailable. Please enable GPS and allow location permission in your browser.");
+                    }
+                },
+                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+            );
+        }
+
+        // Watch device position for live continuous location updates
+        function startGeolocationWatch() {
+            if (!navigator.geolocation) return;
+
+            navigator.geolocation.watchPosition(
+                (position) => {
+                    if (!sessionId || !hasAcquiredLocation) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        const speed = position.coords.speed || 0;
+                        const accuracy = position.coords.accuracy || 5;
+                        const heading = position.coords.heading || 0;
+                        const time = position.timestamp || Date.now();
+
+                        onNewLocation(
+                            lat,
+                            lng,
+                            speed,
+                            accuracy,
+                            heading,
+                            time,
+                            paramName || "Live Device Track",
+                            paramMsg || "Active Emergency Broadcast"
+                        );
+                    }
+                },
+                (err) => console.warn('watchPosition error:', err.message),
+                { enableHighAccuracy: true, maximumAge: 3000 }
+            );
+        }
+
+        document.getElementById('btnGetLocation').addEventListener('click', () => {
+            requestDeviceLocation(true);
+        });
+
+        // Request browser/device location access immediately on page load
+        requestDeviceLocation(false);
+        startGeolocationWatch();
+
+        // Connect Real-Time Cloud Stream via ntfy.sh
+        if (sessionId) {
+            const topic = `sosense_live_${sessionId}`;
+
+            function connectSSE() {
+                try {
+                    const sseUrl = `https://ntfy.sh/${topic}/sse`;
+                    const eventSource = new EventSource(sseUrl);
+
+                    eventSource.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            let payload = null;
+                            if (typeof data.message === 'string') {
+                                try { payload = JSON.parse(data.message); } catch(e) { payload = data; }
+                            } else if (typeof data.message === 'object') {
+                                payload = data.message;
+                            } else {
+                                payload = data;
+                            }
+
+                            if (payload && payload.lat && payload.lng) {
+                                onNewLocation(
+                                    parseFloat(payload.lat),
+                                    parseFloat(payload.lng),
+                                    parseFloat(payload.speed || 0),
+                                    parseFloat(payload.accuracy || 5),
+                                    parseFloat(payload.bearing || 0),
+                                    payload.timestamp,
+                                    payload.name,
+                                    payload.message
+                                );
+                            }
+                        } catch (e) {
+                            console.error('Error parsing SSE data:', e);
+                        }
+                    };
+
+                    eventSource.onerror = () => {
+                        eventSource.close();
+                        setTimeout(connectSSE, 3000);
+                    };
+                } catch (e) {}
+            }
+
+            // Polling Fallback
+            function pollLatest() {
+                fetch(`https://ntfy.sh/${topic}/json?poll=1`)
+                    .then(res => res.text())
+                    .then(text => {
+                        const lines = text.trim().split('\n');
+                        lines.forEach(line => {
+                            try {
+                                const item = JSON.parse(line);
+                                let p = null;
+                                if (typeof item.message === 'string') {
+                                    try { p = JSON.parse(item.message); } catch(e) { p = item; }
+                                } else if (typeof item.message === 'object') {
+                                    p = item.message;
+                                } else {
+                                    p = item;
+                                }
+
+                                if (p && p.lat && p.lng) {
+                                    onNewLocation(
+                                        parseFloat(p.lat),
+                                        parseFloat(p.lng),
+                                        parseFloat(p.speed || 0),
+                                        parseFloat(p.accuracy || 5),
+                                        parseFloat(p.bearing || 0),
+                                        p.timestamp,
+                                        p.name,
+                                        p.message
+                                    );
+                                }
+                            } catch(e) {}
+                        });
+                    }).catch(() => {});
+            }
+
+            connectSSE();
+            pollLatest();
+            setInterval(pollLatest, 3000);
+        }
+
+        // If valid initial coordinate was in URL, load it immediately
+        if (!isNaN(paramLat) && !isNaN(paramLng) && paramLat !== 0 && paramLng !== 0) {
+            onNewLocation(paramLat, paramLng, 0, 5, 0, Date.now(), paramName, paramMsg);
+        }
+    </script>
+</body>
+</html>

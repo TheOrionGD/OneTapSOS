@@ -130,9 +130,20 @@ class SOSActiveActivity : BaseActivity() {
         finish()
     }
 
+    private fun formatPhoneNumber(phone: String): String {
+        val clean = phone.replace("[^0-9+]".toRegex(), "")
+        return if (clean.startsWith("+")) {
+            clean
+        } else if (clean.length == 10) {
+            "+91$clean"
+        } else {
+            clean
+        }
+    }
+
     private fun sendSms(phone: String, msg: String): Boolean {
         return try {
-            val formatted = if (phone.startsWith("+")) phone else "+91$phone"
+            val formatted = formatPhoneNumber(phone)
             val smsMgr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 getSystemService(SmsManager::class.java)
             } else {
