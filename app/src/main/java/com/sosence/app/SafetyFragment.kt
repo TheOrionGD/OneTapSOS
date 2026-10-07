@@ -55,9 +55,9 @@ class SafetyFragment : Fragment() {
             startActivity(Intent(activity, EmergencyPreparationActivity::class.java))
         }
 
-        // 8. 5% Battery Alert Settings
+        // 8. Battery Safety Hub & 5% Alert
         view.findViewById<View>(R.id.cardPrepBattery)?.setOnClickListener {
-            startActivity(Intent(activity, BatteryAlertSettingsActivity::class.java))
+            startActivity(Intent(activity, BatterySafetyActivity::class.java))
         }
     }
 }

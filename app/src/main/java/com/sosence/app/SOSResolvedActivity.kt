@@ -35,7 +35,7 @@ class SOSResolvedActivity : BaseActivity() {
         }
 
         findViewById<CardView>(R.id.btnDone).setOnClickListener {
-            val intent = Intent(this, SafetyDashboardActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(intent)
             finish()

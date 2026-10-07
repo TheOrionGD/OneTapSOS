@@ -20,8 +20,24 @@ class ShareLocationActivity : BaseActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) fetchAndShare() else Toast.makeText(this, "Location permission needed", Toast.LENGTH_SHORT).show()
+    private var pendingMode: String = "copy"
+
+    private val locationResolutionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) fetchAndShare(pendingMode)
+    }
+
+    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { perms ->
+        val fineGranted = perms[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val coarseGranted = perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (fineGranted || coarseGranted) {
+            com.sosence.app.utils.LocationHelper.promptEnableLocation(this, locationResolutionLauncher) {
+                fetchAndShare(pendingMode)
+            }
+        } else {
+            Toast.makeText(this, "Location permission needed", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,10 +60,13 @@ class ShareLocationActivity : BaseActivity() {
     }
 
     private fun checkPermAndShare(mode: String) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fetchAndShare(mode)
+        pendingMode = mode
+        if (com.sosence.app.utils.LocationHelper.hasLocationPermission(this)) {
+            com.sosence.app.utils.LocationHelper.promptEnableLocation(this, locationResolutionLauncher) {
+                fetchAndShare(mode)
+            }
         } else {
-            requestPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            requestPermission.launch(com.sosence.app.utils.LocationHelper.LOCATION_PERMISSIONS)
         }
     }
 

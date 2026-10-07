@@ -25,8 +25,22 @@ class LiveTrackingActivity : BaseActivity() {
     private var lastLocation: Location? = null
     private val handler = Handler(Looper.getMainLooper())
 
-    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) startTracking() else Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show()
+    private val locationResolutionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) startTracking()
+    }
+
+    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { perms ->
+        val fineGranted = perms[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val coarseGranted = perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (fineGranted || coarseGranted) {
+            com.sosence.app.utils.LocationHelper.promptEnableLocation(this, locationResolutionLauncher) {
+                startTracking()
+            }
+        } else {
+            Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,12 +65,14 @@ class LiveTrackingActivity : BaseActivity() {
                 tvToggleLabel.text = "Start Live Tracking"
                 tvStatus.text = "Tracking stopped"
             } else {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    startTracking()
-                    tvToggleLabel.text = "Stop Tracking"
-                    tvStatus.text = "🟢 Live tracking active"
+                if (com.sosence.app.utils.LocationHelper.hasLocationPermission(this)) {
+                    com.sosence.app.utils.LocationHelper.promptEnableLocation(this, locationResolutionLauncher) {
+                        startTracking()
+                        tvToggleLabel.text = "Stop Tracking"
+                        tvStatus.text = "🟢 Live tracking active"
+                    }
                 } else {
-                    requestPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    requestPermission.launch(com.sosence.app.utils.LocationHelper.LOCATION_PERMISSIONS)
                 }
             }
         }

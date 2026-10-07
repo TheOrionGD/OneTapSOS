@@ -35,7 +35,7 @@ class LanguageSettingsActivity : BaseActivity() {
             appSettings.languageCode = selectedCode
             Toast.makeText(this, "Language updated to $selectedCode", Toast.LENGTH_SHORT).show()
 
-            val intent = Intent(this, SafetyDashboardActivity::class.java).apply {
+            val intent = Intent(this, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             }
             startActivity(intent)

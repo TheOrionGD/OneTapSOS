@@ -5,18 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.telephony.SmsManager
+import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.location.LocationServices
+import com.sosence.app.data.AppDatabaseHelper
+import com.sosence.app.data.SosEventModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class SOSReceiver : BroadcastReceiver() {
 
+    companion object {
+        private const val TAG = "SafeMaps/SOS"
+    }
+
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == "com.sosence.app.SEND_SOS") {
             val isFall = intent.getBooleanExtra("IS_FALL", false)
-            Toast.makeText(context, "🚨 SOS Triggered!", Toast.LENGTH_LONG).show()
+            Log.i(TAG, "[SOS] Background SOS broadcast received (isFall=$isFall)")
+            Toast.makeText(context, if (isFall) "⚠️ Fall SOS Triggered!" else "🚨 SOS Triggered!", Toast.LENGTH_LONG).show()
             triggerSOSFromBackground(context, isFall)
         }
     }
@@ -40,8 +48,10 @@ class SOSReceiver : BroadcastReceiver() {
         location: Location?,
         isFall: Boolean
     ) {
+        val lat = location?.latitude ?: 0.0
+        val lng = location?.longitude ?: 0.0
         val mapsLink = if (location != null) {
-            "https://maps.google.com/?q=${location.latitude},${location.longitude}"
+            "https://maps.google.com/?q=$lat,$lng"
         } else {
             "Location unavailable"
         }
@@ -51,14 +61,14 @@ class SOSReceiver : BroadcastReceiver() {
             buildString {
                 appendLine("⚠️ FALL DETECTED")
                 appendLine()
-                appendLine("A possible fall has been detected. I may need help.")
+                appendLine("A high-impact fall has been detected. I may need emergency assistance.")
                 appendLine()
                 appendLine("Location:")
                 appendLine(mapsLink)
                 appendLine()
                 appendLine("Time: $timeStamp")
                 appendLine()
-                append("Please check on me as soon as possible.")
+                append("Please check on me immediately.")
             }
         } else {
             buildString {
@@ -75,38 +85,58 @@ class SOSReceiver : BroadcastReceiver() {
             }
         }
 
-        val dbHelper = ContactsDatabaseHelper(context)
-        val contacts = dbHelper.getAllContacts()
+        val appDbHelper = AppDatabaseHelper(context)
+        val contacts = appDbHelper.getAllContacts().filter { it.isEnabled }
 
-        if (contacts.isEmpty()) {
-            Toast.makeText(context, "No trusted contacts added in local database", Toast.LENGTH_LONG).show()
-        } else {
-            val successfulRecipients = mutableListOf<String>()
-            var count = 0
-            for (contact in contacts) {
-                if (contact.phone.isNotEmpty()) {
-                    val contactMessage = if (contact.customMessage.isNotBlank() && !isFall) {
-                        "${contact.customMessage}\n\n🚨 SOS ALERT!\nLocation: $mapsLink\nTime: $timeStamp"
-                    } else {
-                        message
-                    }
-                    val success = sendSms(context, contact.phone, contactMessage)
-                    count++
-                    if (success) {
-                        successfulRecipients.add(contact.phone)
-                    }
+        val successfulRecipients = mutableListOf<String>()
+        var count = 0
+        for (contact in contacts) {
+            if (contact.phone.isNotEmpty()) {
+                val contactMessage = if (contact.customMessage.isNotBlank() && !isFall) {
+                    "${contact.customMessage}\n\n🚨 SOS ALERT!\nLocation: $mapsLink\nTime: $timeStamp"
+                } else {
+                    message
+                }
+                val success = sendSms(context, contact.phone, contactMessage)
+                count++
+                if (success) {
+                    successfulRecipients.add(contact.phone)
                 }
             }
-            if (count > 0) {
-                val appSettings = AppSettings(context)
-                appSettings.isSosActive = true
-                appSettings.lastSosTimestamp = System.currentTimeMillis()
-                appSettings.sosRecipients = successfulRecipients
-                Toast.makeText(context, "✅ SOS alert sent to $count trusted contact(s)!", Toast.LENGTH_LONG).show()
-            }
         }
-    }
 
+        val appSettings = AppSettings(context)
+        appSettings.isSosActive = true
+        appSettings.lastSosTimestamp = System.currentTimeMillis()
+        appSettings.sosRecipients = if (successfulRecipients.isNotEmpty()) successfulRecipients else contacts.map { it.phone }
+
+        // Persist authoritative SOS record in Room/SQLite database
+        val triggerType = if (isFall) "FALL_DETECTION" else "BACKGROUND_SOS"
+        val locationSummary = if (location != null) "GPS: %.4f, %.4f".format(lat, lng) else "Unknown"
+        val eventId = appDbHelper.recordSosEvent(
+            SosEventModel(
+                timestamp = System.currentTimeMillis(),
+                formattedTime = timeStamp,
+                latitude = lat,
+                longitude = lng,
+                locationName = locationSummary,
+                message = message,
+                recipientsCount = contacts.size,
+                isResolved = false,
+                triggerType = triggerType
+            )
+        )
+        Log.i(TAG, "[SOS] Background SOS record created: id=$eventId, trigger=$triggerType, recipients=${contacts.size}")
+
+        // Show Persistent Emergency SOS notification
+        SOSNotificationManager.showEmergencySosNotification(
+            context,
+            locationSummary,
+            contacts.size
+        )
+
+        Toast.makeText(context, "✅ SOS alert sent to ${contacts.size} contact(s)!", Toast.LENGTH_LONG).show()
+    }
 
     private fun sendSms(context: Context, phoneNumber: String, message: String): Boolean {
         return try {
@@ -125,7 +155,7 @@ class SOSReceiver : BroadcastReceiver() {
             }
             true
         } catch (e: Exception) {
-            Toast.makeText(context, "Failed to send SMS to $phoneNumber", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "[SOS] Failed to send SMS to $phoneNumber", e)
             false
         }
     }

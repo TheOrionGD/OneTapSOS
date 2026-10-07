@@ -46,11 +46,14 @@ class SOSNotificationActionReceiver : BroadcastReceiver() {
         SOSNotificationManager.cancelEmergencySosNotification(context)
         SOSNotificationManager.showSosResolvedNotification(context)
 
+        val dbHelper = AppDatabaseHelper(context)
+        dbHelper.markLatestSosResolved()
+
         Toast.makeText(context, "✅ SOS Resolved. 'I'm Safe' sent.", Toast.LENGTH_SHORT).show()
 
         // Send 'I'm Safe' SMS to recipients
         val recipients = appSettings.sosRecipients
-        val contacts = if (recipients.isNotEmpty()) recipients else ContactsDatabaseHelper(context).getAllContacts().map { it.phone }
+        val contacts = if (recipients.isNotEmpty()) recipients else dbHelper.getAllContacts().map { it.phone }
         val msg = appSettings.customSafeMessage
 
         for (phone in contacts) {

@@ -129,6 +129,17 @@ class PermissionsActivity : BaseActivity() {
             "battery_opt" -> {
                 BackgroundPermissionHelper.requestBatteryOptimizationExemption(this)
             }
+            "loc" -> {
+                if (!com.sosence.app.utils.LocationHelper.hasLocationPermission(this)) {
+                    ActivityCompat.requestPermissions(this, com.sosence.app.utils.LocationHelper.LOCATION_PERMISSIONS, 101)
+                } else if (!com.sosence.app.utils.LocationHelper.isGpsOrNetworkEnabled(this)) {
+                    com.sosence.app.utils.LocationHelper.promptEnableLocation(this) {
+                        refreshPermissionList()
+                    }
+                } else {
+                    Toast.makeText(this, "Location permission and GPS are already active.", Toast.LENGTH_SHORT).show()
+                }
+            }
             else -> {
                 item.permissionString?.let { perm ->
                     ActivityCompat.requestPermissions(this, arrayOf(perm), 101)

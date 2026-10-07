@@ -109,15 +109,19 @@ class SOSCountdownActivity : BaseActivity() {
         appSettings.lastSosTimestamp = System.currentTimeMillis()
         appSettings.sosRecipients = if (sentPhones.isNotEmpty()) sentPhones else contacts.map { it.phone }
 
+        val locationSummary = if (location != null) "GPS: %.4f, %.4f".format(lat, lng) else "Unknown"
         val eventId = dbHelper.recordSosEvent(SosEventModel(
             timestamp = System.currentTimeMillis(),
             latitude = lat,
             longitude = lng,
-            locationName = if (location != null) "GPS: %.4f, %.4f".format(lat, lng) else "Unknown",
+            locationName = locationSummary,
             message = defaultMessage,
             recipientsCount = contacts.size,
-            isResolved = false
+            isResolved = false,
+            triggerType = "MANUAL_SOS"
         ))
+
+        SOSNotificationManager.showEmergencySosNotification(this, locationSummary, contacts.size)
 
         Toast.makeText(this, "🚨 SOS Alert Sent to ${contacts.size} contact(s)!", Toast.LENGTH_LONG).show()
 

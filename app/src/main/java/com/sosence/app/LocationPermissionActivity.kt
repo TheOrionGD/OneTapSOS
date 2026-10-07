@@ -10,8 +10,12 @@ import androidx.core.content.ContextCompat
 
 class LocationPermissionActivity : BaseActivity() {
 
+    private val locationResolutionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { updateStatus() }
+
     private val requestPermLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
+        ActivityResultContracts.RequestMultiplePermissions()
     ) { updateStatus() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,15 +27,34 @@ class LocationPermissionActivity : BaseActivity() {
         updateStatus()
 
         findViewById<CardView>(R.id.btnGrantLocationPermission).setOnClickListener {
-            requestPermLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            if (!com.sosence.app.utils.LocationHelper.hasLocationPermission(this)) {
+                requestPermLauncher.launch(com.sosence.app.utils.LocationHelper.LOCATION_PERMISSIONS)
+            } else if (!com.sosence.app.utils.LocationHelper.isGpsOrNetworkEnabled(this)) {
+                com.sosence.app.utils.LocationHelper.promptEnableLocation(this, locationResolutionLauncher) {
+                    updateStatus()
+                }
+            } else {
+                updateStatus()
+            }
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateStatus()
+    }
+
     private fun updateStatus() {
-        val hasLoc = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasLoc = com.sosence.app.utils.LocationHelper.hasLocationPermission(this)
+        val isGpsOn = com.sosence.app.utils.LocationHelper.isGpsOrNetworkEnabled(this)
         val tvStatus = findViewById<TextView>(R.id.tvLocationPermissionStatus)
 
-        tvStatus.text = "Location Permission Status: ${if (hasLoc) "GRANTED ✅" else "NOT GRANTED ❌"}"
-        tvStatus.setTextColor(ContextCompat.getColor(this, if (hasLoc) R.color.success_green else R.color.danger_red))
+        val statusText = when {
+            hasLoc && isGpsOn -> "Permission: GRANTED ✅ | GPS: ACTIVE 🟢"
+            hasLoc && !isGpsOn -> "Permission: GRANTED ✅ | GPS: OFF ⚠️ (Tap to Enable)"
+            else -> "Permission: NOT GRANTED ❌ | GPS: UNKNOWN"
+        }
+        tvStatus.text = statusText
+        tvStatus.setTextColor(ContextCompat.getColor(this, if (hasLoc && isGpsOn) R.color.success_green else if (hasLoc) R.color.warning_yellow else R.color.danger_red))
     }
 }

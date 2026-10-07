@@ -46,11 +46,16 @@ class SOSDiagnosticsActivity : BaseActivity() {
         val locManager = getSystemService(LOCATION_SERVICE) as? LocationManager
         val isGpsEnabled = locManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) ?: false
 
+        val isAccAvailable = FallDetectionService.isAccelerometerAvailable
+        val isFallRunning = FallDetectionService.isServiceRunning || appSettings.isFallDetectionEnabled
+
         addDiagItem("DATABASE CONNECTION", true, "SQLite DB active & writable")
         addDiagItem("TRUSTED CONTACTS", contacts.isNotEmpty(), "${contacts.size} contact(s) saved")
         addDiagItem("SMS PERMISSION", hasSmsPerm, if (hasSmsPerm) "Granted" else "Denied - Required for SMS")
         addDiagItem("LOCATION PERMISSION", hasLocPerm, if (hasLocPerm) "Granted" else "Denied - GPS limited")
         addDiagItem("LOCATION PROVIDER", isGpsEnabled, if (isGpsEnabled) "GPS Provider Active" else "GPS Disabled")
+        addDiagItem("FALL ACCELEROMETER", isAccAvailable, if (isAccAvailable) "Sensor Hardware Available" else "Accelerometer Unavailable")
+        addDiagItem("FALL MONITORING ENGINE", isFallRunning, if (isFallRunning) "Service Monitoring Active" else "Engine Idle (Ready to Enable)")
         addDiagItem("MESSAGE GENERATION", true, "Emergency templates parsed OK")
         addDiagItem("SOS SERVICE STATUS", true, "Foreground alert engine ready")
         addDiagItem("RECIPIENT AVAILABILITY", contacts.any { it.isEnabled }, "Primary recipients available")

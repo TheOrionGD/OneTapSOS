@@ -12,19 +12,18 @@
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigation" />
 
-    <!-- Persistent Global Bottom Navigation Bar -->
+    <!-- Persistent Global Bottom Navigation Bar (Icon Only) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:background="@color/bg_dark_secondary"
         android:elevation="12dp"
-        app:itemIconSize="22dp"
+        app:itemIconSize="24dp"
         app:itemIconTint="@color/nav_item_color"
         app:itemRippleColor="#2200D9FF"
-        app:itemTextColor="@color/nav_item_color"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />
 
     <!-- Thin Top Border Line for Navigation Bar -->

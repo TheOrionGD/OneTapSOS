@@ -76,9 +76,9 @@ class MainActivity : BaseActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            isFallDetectionEnabled = true
+            appSettings.isFallDetectionEnabled = true
             startFallDetectionService()
-            Toast.makeText(this, "Fall Detection Enabled", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Fall Detection Enabled & Monitoring", Toast.LENGTH_SHORT).show()
             homeFragment.refreshDashboardState()
         } else {
             Toast.makeText(this, "Permission denied. Fall Detection cannot be enabled.", Toast.LENGTH_LONG).show()
@@ -138,6 +138,10 @@ class MainActivity : BaseActivity() {
         val targetTab = intent.getIntExtra("TARGET_TAB", R.id.nav_home)
         if (targetTab != R.id.nav_home) {
             navigateToTab(targetTab)
+        }
+
+        if (appSettings.isFallDetectionEnabled && !FallDetectionService.isServiceRunning) {
+            startFallDetectionService()
         }
     }
 
@@ -294,6 +298,9 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (appSettings.isFallDetectionEnabled && !FallDetectionService.isServiceRunning) {
+            startFallDetectionService()
+        }
         homeFragment.refreshDashboardState()
         updateNavDynamicAppearance(bottomNav.selectedItemId)
         updateNavBadges()
@@ -439,18 +446,20 @@ class MainActivity : BaseActivity() {
         appSettings.lastSosTimestamp = System.currentTimeMillis()
         appSettings.sosRecipients = successfulRecipients
 
+        val locSummary = if (location != null) "GPS: %.4f, %.4f".format(location.latitude, location.longitude) else "Unknown"
         appDbHelper.recordSosEvent(
             SosEventModel(
                 timestamp = System.currentTimeMillis(),
                 latitude = location?.latitude ?: 0.0,
                 longitude = location?.longitude ?: 0.0,
-                locationName = if (location != null) "GPS Fix" else "Unknown",
+                locationName = locSummary,
                 message = defaultMessage,
-                recipientsCount = sentCount
+                recipientsCount = sentCount,
+                isResolved = false,
+                triggerType = "MANUAL_SOS"
             )
         )
 
-        val locSummary = if (location != null) "GPS: %.4f, %.4f".format(location.latitude, location.longitude) else "Locating..."
         SOSNotificationManager.showEmergencySosNotification(this, locSummary, sentCount)
 
         homeFragment.refreshDashboardState()
@@ -496,6 +505,8 @@ class MainActivity : BaseActivity() {
 
         appSettings.isSosActive = false
         appSettings.sosRecipients = emptyList()
+
+        appDbHelper.markLatestSosResolved()
 
         SOSNotificationManager.cancelEmergencySosNotification(this)
         SOSNotificationManager.showSosResolvedNotification(this)
@@ -587,19 +598,20 @@ class MainActivity : BaseActivity() {
     fun showFallDetectionDialog() {
         if (isFinishing || isDestroyed) return
         try {
-            val message = if (isFallDetectionEnabled) {
-                "Fall Detection is currently ENABLED. Do you want to disable it?"
+            val isMonitoring = FallDetectionService.isServiceRunning || appSettings.isFallDetectionEnabled
+            val message = if (isMonitoring) {
+                "Fall Detection is currently ACTIVE & MONITORING sensors.\n\nDo you want to disable it?"
             } else {
-                "Fall Detection is currently DISABLED. Do you want to enable it?"
+                "Fall Detection provides 24/7 background acceleration & impact monitoring.\n\nDo you want to enable it?"
             }
-            val actionText = if (isFallDetectionEnabled) "Disable" else "Enable"
+            val actionText = if (isMonitoring) "Disable" else "Enable"
 
             AlertDialog.Builder(this)
-                .setTitle("Fall Detection")
+                .setTitle("Fall Detection Monitoring")
                 .setMessage(message)
                 .setPositiveButton(actionText) { _, _ ->
-                    if (isFallDetectionEnabled) {
-                        isFallDetectionEnabled = false
+                    if (isMonitoring) {
+                        appSettings.isFallDetectionEnabled = false
                         stopFallDetectionService()
                         Toast.makeText(this, "Fall Detection Disabled", Toast.LENGTH_SHORT).show()
                         homeFragment.refreshDashboardState()
@@ -607,9 +619,9 @@ class MainActivity : BaseActivity() {
                         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION)
                             == PackageManager.PERMISSION_GRANTED || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
                         ) {
-                            isFallDetectionEnabled = true
+                            appSettings.isFallDetectionEnabled = true
                             startFallDetectionService()
-                            Toast.makeText(this, "Fall Detection Enabled", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Fall Detection Enabled & Monitoring", Toast.LENGTH_SHORT).show()
                             homeFragment.refreshDashboardState()
                         } else {
                             requestActivityRecognitionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
@@ -625,15 +637,19 @@ class MainActivity : BaseActivity() {
 
     private fun startFallDetectionService() {
         try {
-            val serviceIntent = Intent(this, FallDetectionService::class.java)
+            val serviceIntent = Intent(this, FallDetectionService::class.java).apply {
+                action = FallDetectionService.ACTION_START
+            }
             ContextCompat.startForegroundService(this, serviceIntent)
         } catch (e: Exception) {}
     }
 
     private fun stopFallDetectionService() {
         try {
-            val serviceIntent = Intent(this, FallDetectionService::class.java)
-            stopService(serviceIntent)
+            val serviceIntent = Intent(this, FallDetectionService::class.java).apply {
+                action = FallDetectionService.ACTION_STOP
+            }
+            startService(serviceIntent)
         } catch (e: Exception) {}
     }
 

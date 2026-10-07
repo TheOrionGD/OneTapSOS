@@ -1,48 +1,71 @@
 package com.sosence.app
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.sosence.app.data.AppDatabaseHelper
+import com.sosence.app.data.SosEventModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-data class SOSEvent(val timestamp: Long, val message: String, val recipientCount: Int)
-
 class SOSHistoryActivity : BaseActivity() {
+
+    private lateinit var dbHelper: AppDatabaseHelper
+    private lateinit var rvHistory: RecyclerView
+    private lateinit var tvEmpty: TextView
+    private lateinit var adapter: SOSHistoryAdapter
+    private val eventsList = mutableListOf<SosEventModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sos_history)
         animateEntrance()
 
+        dbHelper = AppDatabaseHelper(this)
+
         val btnBack = findViewById<ImageView>(R.id.ivHistoryBack)
-        val rvHistory = findViewById<RecyclerView>(R.id.rvSOSHistory)
-        val tvEmpty = findViewById<TextView>(R.id.tvHistoryEmpty)
+        rvHistory = findViewById(R.id.rvSOSHistory)
+        tvEmpty = findViewById(R.id.tvHistoryEmpty)
 
         btnBack.setOnClickListener { finish() }
 
-        val prefs = getSharedPreferences("sosense_prefs", MODE_PRIVATE)
-        val historySet = prefs.getStringSet("sos_history", emptySet()) ?: emptySet()
-        val events = historySet.mapNotNull {
-            val parts = it.split("|")
-            if (parts.size >= 3) SOSEvent(parts[0].toLongOrNull() ?: 0L, parts[1], parts[2].toIntOrNull() ?: 0) else null
-        }.sortedByDescending { it.timestamp }
+        rvHistory.layoutManager = LinearLayoutManager(this)
+        adapter = SOSHistoryAdapter(eventsList) { event ->
+            val intent = Intent(this, SOSDetailsActivity::class.java).apply {
+                putExtra("EVENT_ID", event.id)
+            }
+            startActivity(intent)
+        }
+        rvHistory.adapter = adapter
 
-        if (events.isEmpty()) {
+        loadSosHistory()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadSosHistory()
+    }
+
+    private fun loadSosHistory() {
+        val records = dbHelper.getAllSosEvents()
+        eventsList.clear()
+        eventsList.addAll(records)
+        adapter.notifyDataSetChanged()
+
+        if (records.isEmpty()) {
             tvEmpty.visibility = View.VISIBLE
             rvHistory.visibility = View.GONE
         } else {
             tvEmpty.visibility = View.GONE
             rvHistory.visibility = View.VISIBLE
-            rvHistory.layoutManager = LinearLayoutManager(this)
-            rvHistory.adapter = SOSHistoryAdapter(events)
         }
     }
 
@@ -53,14 +76,19 @@ class SOSHistoryActivity : BaseActivity() {
     }
 }
 
-class SOSHistoryAdapter(private val events: List<SOSEvent>) :
-    RecyclerView.Adapter<SOSHistoryAdapter.VH>() {
+class SOSHistoryAdapter(
+    private val events: List<SosEventModel>,
+    private val onItemClick: (SosEventModel) -> Unit
+) : RecyclerView.Adapter<SOSHistoryAdapter.VH>() {
 
-    val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
+    private val sdf = SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault())
 
     class VH(view: View) : RecyclerView.ViewHolder(view) {
+        val tvTriggerType: TextView = view.findViewById(R.id.tvHistoryTriggerType)
+        val tvStatus: TextView = view.findViewById(R.id.tvHistoryStatus)
         val tvTime: TextView = view.findViewById(R.id.tvHistoryTime)
         val tvMsg: TextView = view.findViewById(R.id.tvHistoryMsg)
+        val tvLocation: TextView = view.findViewById(R.id.tvHistoryLocation)
         val tvRecipients: TextView = view.findViewById(R.id.tvHistoryRecipients)
     }
 
@@ -69,9 +97,52 @@ class SOSHistoryAdapter(private val events: List<SOSEvent>) :
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val e = events[position]
-        holder.tvTime.text = sdf.format(Date(e.timestamp))
-        holder.tvMsg.text = e.message
-        holder.tvRecipients.text = "Sent to ${e.recipientCount} contact(s)"
+        val ctx = holder.itemView.context
+
+        // Trigger Type
+        val triggerLabel = when (e.triggerType) {
+            "FALL_DETECTION" -> "⚠️ Fall Detection"
+            "VOLUME_KEY" -> "🔊 Hardware Key"
+            "WIDGET" -> "📱 Panic Widget"
+            "TILE" -> "⚡ Quick Tile"
+            else -> "🚨 Emergency SOS"
+        }
+        holder.tvTriggerType.text = triggerLabel
+
+        // Status badge
+        if (e.isResolved) {
+            holder.tvStatus.text = if (e.durationSeconds > 0) "Resolved (${e.durationSeconds}s)" else "Resolved"
+            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.success_green))
+            holder.tvStatus.setBackgroundResource(R.drawable.bg_badge_granted)
+        } else {
+            holder.tvStatus.text = "Active 🚨"
+            holder.tvStatus.setTextColor(ContextCompat.getColor(ctx, R.color.danger_red))
+            holder.tvStatus.setBackgroundResource(R.drawable.bg_badge_pill)
+        }
+
+        // Time
+        val timeFormatted = if (e.formattedTime.isNotBlank()) e.formattedTime else sdf.format(Date(e.timestamp))
+        holder.tvTime.text = timeFormatted
+
+        // Message
+        holder.tvMsg.text = e.message.ifBlank { "Emergency SOS Alert dispatched" }
+
+        // Location
+        val locText = if (e.locationName.isNotBlank() && e.locationName != "Unknown") {
+            "📍 ${e.locationName}"
+        } else if (e.latitude != 0.0 || e.longitude != 0.0) {
+            "📍 GPS: %.4f, %.4f".format(e.latitude, e.longitude)
+        } else {
+            "📍 Location unavailable"
+        }
+        holder.tvLocation.text = locText
+
+        // Recipients
+        holder.tvRecipients.text = "👥 ${e.recipientsCount} contact(s)"
+
+        holder.itemView.setOnClickListener {
+            onItemClick(e)
+        }
     }
 
     override fun getItemCount() = events.size

@@ -29,7 +29,21 @@ data class SosEventModel(
     val recipientsCount: Int = 0,
     val isResolved: Boolean = false,
     val resolutionTime: Long = 0L,
-    val durationSeconds: Long = 0L
+    val durationSeconds: Long = 0L,
+    val triggerType: String = "MANUAL_SOS"
+)
+
+data class SafeZoneModel(
+    val id: Long = 0,
+    val name: String,
+    val type: String,
+    val icon: String,
+    val distance: String = "",
+    val latitude: Double,
+    val longitude: Double,
+    val address: String = "Address not available",
+    val phone: String = "Not available",
+    val timestamp: Long = System.currentTimeMillis()
 )
 
 data class MessageTemplateModel(
@@ -95,7 +109,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
 
     companion object {
         private const val DATABASE_NAME = "sosence_full.db"
-        private const val DATABASE_VERSION = 4
+        private const val DATABASE_VERSION = 5
 
         // Tables
         private const val TABLE_CONTACTS = "contacts"
@@ -106,6 +120,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         private const val TABLE_LOCATIONS = "location_logs"
         private const val TABLE_MESSAGES = "conversation_messages"
         private const val TABLE_SAFETY_EVENTS = "safety_events"
+        private const val TABLE_CACHED_SAFE_ZONES = "cached_safe_zones"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -133,7 +148,8 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                 recipients_count INTEGER,
                 is_resolved INTEGER DEFAULT 0,
                 resolution_time INTEGER DEFAULT 0,
-                duration_seconds INTEGER DEFAULT 0
+                duration_seconds INTEGER DEFAULT 0,
+                trigger_type TEXT DEFAULT 'MANUAL_SOS'
             )
         """.trimIndent())
 
@@ -208,6 +224,20 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
             )
         """.trimIndent())
 
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS $TABLE_CACHED_SAFE_ZONES (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                type TEXT,
+                icon TEXT,
+                latitude REAL,
+                longitude REAL,
+                address TEXT,
+                phone TEXT,
+                timestamp INTEGER
+            )
+        """.trimIndent())
+
         // Seed initial templates
         seedInitialTemplates(db)
     }
@@ -234,6 +264,30 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                         longitude REAL DEFAULT 0.0,
                         details TEXT,
                         handled INTEGER DEFAULT 1
+                    )
+                """.trimIndent())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        if (oldVersion < 5) {
+            try {
+                db.execSQL("ALTER TABLE $TABLE_SOS_EVENTS ADD COLUMN trigger_type TEXT DEFAULT 'MANUAL_SOS'")
+            } catch (e: Exception) {
+                // Column may already exist
+            }
+            try {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS $TABLE_CACHED_SAFE_ZONES (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT,
+                        type TEXT,
+                        icon TEXT,
+                        latitude REAL,
+                        longitude REAL,
+                        address TEXT,
+                        phone TEXT,
+                        timestamp INTEGER
                     )
                 """.trimIndent())
             } catch (e: Exception) {
@@ -348,6 +402,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                 put("is_resolved", if (event.isResolved) 1 else 0)
                 put("resolution_time", event.resolutionTime)
                 put("duration_seconds", event.durationSeconds)
+                put("trigger_type", event.triggerType)
             }
             db.insert(TABLE_SOS_EVENTS, null, cv)
         } catch (e: Exception) {
@@ -359,7 +414,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return try {
             val db = writableDatabase
             val event = getSosEventById(id)
-            val duration = if (event != null) (resolutionTime - event.timestamp) / 1000 else 0L
+            val duration = if (event != null && event.timestamp > 0) (resolutionTime - event.timestamp) / 1000 else 0L
             val cv = ContentValues().apply {
                 put("is_resolved", 1)
                 put("resolution_time", resolutionTime)
@@ -371,12 +426,28 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         }
     }
 
+    fun markLatestSosResolved(resolutionTime: Long = System.currentTimeMillis()): Boolean {
+        return try {
+            val events = getAllSosEvents()
+            val target = events.firstOrNull { !it.isResolved } ?: events.firstOrNull()
+            if (target != null) {
+                markSosResolved(target.id, resolutionTime)
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     fun getSosEventById(id: Long): SosEventModel? {
         try {
             val db = readableDatabase
             val cursor = db.query(TABLE_SOS_EVENTS, null, "id = ?", arrayOf(id.toString()), null, null, null)
             with(cursor) {
                 if (moveToFirst()) {
+                    val triggerTypeIdx = getColumnIndex("trigger_type")
+                    val triggerType = if (triggerTypeIdx >= 0) getString(triggerTypeIdx) ?: "MANUAL_SOS" else "MANUAL_SOS"
                     val model = SosEventModel(
                         id = getLong(getColumnIndexOrThrow("id")),
                         timestamp = getLong(getColumnIndexOrThrow("timestamp")),
@@ -388,7 +459,8 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                         recipientsCount = getInt(getColumnIndexOrThrow("recipients_count")),
                         isResolved = getInt(getColumnIndexOrThrow("is_resolved")) == 1,
                         resolutionTime = getLong(getColumnIndexOrThrow("resolution_time")),
-                        durationSeconds = getLong(getColumnIndexOrThrow("duration_seconds"))
+                        durationSeconds = getLong(getColumnIndexOrThrow("duration_seconds")),
+                        triggerType = triggerType
                     )
                     close()
                     return model
@@ -401,13 +473,44 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return null
     }
 
+    fun getLatestSosEvent(): SosEventModel? {
+        val all = getAllSosEvents()
+        return all.firstOrNull()
+    }
+
+    fun getSosCount(): Int {
+        return try {
+            val db = readableDatabase
+            val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_SOS_EVENTS", null)
+            var count = 0
+            if (cursor.moveToFirst()) {
+                count = cursor.getInt(0)
+            }
+            cursor.close()
+            count
+        } catch (e: Exception) {
+            getAllSosEvents().size
+        }
+    }
+
+    fun clearSosEvents(): Boolean {
+        return try {
+            val db = writableDatabase
+            db.delete(TABLE_SOS_EVENTS, null, null) > 0
+        } catch (e: Exception) {
+            false
+        }
+    }
+
     fun getAllSosEvents(): List<SosEventModel> {
         val list = mutableListOf<SosEventModel>()
         try {
             val db = readableDatabase
             val cursor = db.query(TABLE_SOS_EVENTS, null, null, null, null, null, "timestamp DESC")
             with(cursor) {
+                val triggerTypeIdx = getColumnIndex("trigger_type")
                 while (moveToNext()) {
+                    val triggerType = if (triggerTypeIdx >= 0) getString(triggerTypeIdx) ?: "MANUAL_SOS" else "MANUAL_SOS"
                     list.add(SosEventModel(
                         id = getLong(getColumnIndexOrThrow("id")),
                         timestamp = getLong(getColumnIndexOrThrow("timestamp")),
@@ -419,7 +522,65 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                         recipientsCount = getInt(getColumnIndexOrThrow("recipients_count")),
                         isResolved = getInt(getColumnIndexOrThrow("is_resolved")) == 1,
                         resolutionTime = getLong(getColumnIndexOrThrow("resolution_time")),
-                        durationSeconds = getLong(getColumnIndexOrThrow("duration_seconds"))
+                        durationSeconds = getLong(getColumnIndexOrThrow("duration_seconds")),
+                        triggerType = triggerType
+                    ))
+                }
+                close()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return list
+    }
+
+    // --- CACHED SAFE ZONES ---
+    fun saveCachedSafeZones(zones: List<SafeZoneModel>) {
+        if (zones.isEmpty()) return
+        try {
+            val db = writableDatabase
+            db.beginTransaction()
+            try {
+                db.delete(TABLE_CACHED_SAFE_ZONES, null, null)
+                for (zone in zones) {
+                    val cv = ContentValues().apply {
+                        put("name", zone.name)
+                        put("type", zone.type)
+                        put("icon", zone.icon)
+                        put("latitude", zone.latitude)
+                        put("longitude", zone.longitude)
+                        put("address", zone.address)
+                        put("phone", zone.phone)
+                        put("timestamp", zone.timestamp)
+                    }
+                    db.insert(TABLE_CACHED_SAFE_ZONES, null, cv)
+                }
+                db.setTransactionSuccessful()
+            } finally {
+                db.endTransaction()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun getCachedSafeZones(): List<SafeZoneModel> {
+        val list = mutableListOf<SafeZoneModel>()
+        try {
+            val db = readableDatabase
+            val cursor = db.query(TABLE_CACHED_SAFE_ZONES, null, null, null, null, null, "id ASC")
+            with(cursor) {
+                while (moveToNext()) {
+                    list.add(SafeZoneModel(
+                        id = getLong(getColumnIndexOrThrow("id")),
+                        name = getString(getColumnIndexOrThrow("name")),
+                        type = getString(getColumnIndexOrThrow("type")),
+                        icon = getString(getColumnIndexOrThrow("icon")),
+                        latitude = getDouble(getColumnIndexOrThrow("latitude")),
+                        longitude = getDouble(getColumnIndexOrThrow("longitude")),
+                        address = getString(getColumnIndexOrThrow("address")),
+                        phone = getString(getColumnIndexOrThrow("phone")),
+                        timestamp = getLong(getColumnIndexOrThrow("timestamp"))
                     ))
                 }
                 close()

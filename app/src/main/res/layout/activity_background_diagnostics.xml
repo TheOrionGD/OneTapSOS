@@ -319,6 +319,42 @@
                             android:textSize="13sp"
                             android:textStyle="bold" />
                     </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="@color/surface_border" />
+
+                    <!-- 6. Fall Detection Sensor Engine -->
+                    <LinearLayout
+                        android:id="@+id/rowDiagFall"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="4dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="🏃 Fall Sensor Engine"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/tvDiagFallStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="✓ Monitoring Active"
+                            android:textColor="@color/success_green"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -339,11 +375,26 @@
                 android:layout_marginTop="10dp"
                 android:orientation="vertical">
 
+                <!-- 0. Simulate Fall Event -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSimulateFallDetection"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:backgroundTint="@color/card_bg"
+                    android:text="🏃 Simulate High-Impact Fall (15s Test)"
+                    android:textColor="@color/danger_red"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/danger_red"
+                    app:strokeWidth="1dp" />
+
                 <!-- 1. Simulate Low Battery -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSimulateLowBattery"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
+                    android:layout_marginTop="8dp"
                     android:backgroundTint="@color/card_bg"
                     android:text="⚡ Simulate 5% Low Battery Event"
                     android:textColor="@color/warning_yellow"

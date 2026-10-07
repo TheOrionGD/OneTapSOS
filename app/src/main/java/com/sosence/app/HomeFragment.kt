@@ -216,16 +216,62 @@ class HomeFragment : Fragment() {
             startActivity(Intent(activity, FakeCallActivity::class.java))
         }
 
-        view?.findViewById<View>(R.id.cardActionCheckIn)?.setOnClickListener {
-            startActivity(Intent(activity, CheckInActivity::class.java))
+        view?.findViewById<View>(R.id.cardActionLiveTrack)?.setOnClickListener {
+            startActivity(Intent(activity, LiveTrackingActivity::class.java))
         }
     }
 
     fun refreshDashboardState() {
         val ctx = context ?: return
-        val contacts = dbHelper.getAllContacts()
-        tvHudContacts.text = "${contacts.size} Active"
 
+        // 1. HUD: Trusted Contacts
+        val contacts = dbHelper.getAllContacts()
+        val activeContacts = contacts.filter { it.isEnabled }
+        tvHudContacts.text = "${activeContacts.size} Active"
+        tvHudContacts.setTextColor(ContextCompat.getColor(ctx, if (activeContacts.isNotEmpty()) R.color.text_primary else R.color.warning_yellow))
+
+        // 2. HUD: Live GPS Status
+        val locManager = ctx.getSystemService(Context.LOCATION_SERVICE) as? android.location.LocationManager
+        val hasLocPerm = ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+        val isGpsEnabled = locManager?.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER) == true ||
+                locManager?.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER) == true
+
+        if (hasLocPerm && isGpsEnabled) {
+            tvHudLocation.text = "Fix Active"
+            tvHudLocation.setTextColor(ContextCompat.getColor(ctx, R.color.success_green))
+        } else if (!hasLocPerm) {
+            tvHudLocation.text = "Perm Needed"
+            tvHudLocation.setTextColor(ContextCompat.getColor(ctx, R.color.warning_yellow))
+        } else {
+            tvHudLocation.text = "GPS Off"
+            tvHudLocation.setTextColor(ContextCompat.getColor(ctx, R.color.danger_red))
+        }
+
+        // 3. HUD: 5% Safe SOS Battery Guard
+        val isBatteryProtected = appSettings.isBatteryAlertEnabled && appSettings.isBackgroundSafetyEnabled
+        if (isBatteryProtected) {
+            tvHudBattery.text = "Protected (${appSettings.lowBatteryThreshold}%)"
+            tvHudBattery.setTextColor(ContextCompat.getColor(ctx, R.color.accent_teal))
+        } else {
+            tvHudBattery.text = "Disabled"
+            tvHudBattery.setTextColor(ContextCompat.getColor(ctx, R.color.text_muted))
+        }
+
+        // 4. HUD: Fall Sense Status
+        val isFallRunning = FallDetectionService.isServiceRunning || appSettings.isFallDetectionEnabled
+        val isSensorAvailable = FallDetectionService.isAccelerometerAvailable
+        if (isFallRunning) {
+            tvHudFall.text = "Monitoring"
+            tvHudFall.setTextColor(ContextCompat.getColor(ctx, R.color.success_green))
+        } else if (!isSensorAvailable) {
+            tvHudFall.text = "Sensor N/A"
+            tvHudFall.setTextColor(ContextCompat.getColor(ctx, R.color.warning_yellow))
+        } else {
+            tvHudFall.text = "Disabled"
+            tvHudFall.setTextColor(ContextCompat.getColor(ctx, R.color.text_muted))
+        }
+
+        // 5. Hero & Emergency Banner State
         val isSosActive = appSettings.isSosActive
         if (isSosActive) {
             tvStatusBadge.text = "🚨 EMERGENCY SOS ACTIVE"
@@ -243,13 +289,15 @@ class HomeFragment : Fragment() {
             tvSosSubLabel.text = "PRESS FOR HELP"
         }
 
+        // 6. Emergency Log & History Card (Authoritative Room/SQLite Database)
         val history = dbHelper.getAllSosEvents()
         if (history.isNotEmpty()) {
             val last = history.first()
             val df = java.text.SimpleDateFormat("dd MMM, HH:mm", java.util.Locale.getDefault())
-            tvRecentSummary.text = "Last SOS: ${df.format(java.util.Date(last.timestamp))} (${last.recipientsCount} notified)"
+            val countLabel = if (history.size == 1) "1 recorded" else "${history.size} recorded"
+            tvRecentSummary.text = "Last SOS: ${df.format(java.util.Date(last.timestamp))} • $countLabel"
         } else {
-            tvRecentSummary.text = "No crisis incidents recorded • All safe"
+            tvRecentSummary.text = "No SOS alerts yet • All safe"
         }
     }
 

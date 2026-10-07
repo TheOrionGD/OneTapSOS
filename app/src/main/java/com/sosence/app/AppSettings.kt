@@ -39,9 +39,32 @@ class AppSettings(context: Context) {
         private const val KEY_ACTIVE_CHECKIN_END_TIME = "active_checkin_end_time"
         private const val KEY_ACTIVE_CHECKIN_NOTE = "active_checkin_note"
 
+        // Fall Detection Keys
+        private const val KEY_FALL_DETECTION_ENABLED = "fall_detection_enabled"
+        private const val KEY_FALL_IMPACT_THRESHOLD = "fall_impact_threshold"
+        private const val KEY_FALL_FREEFALL_THRESHOLD = "fall_freefall_threshold"
+        private const val KEY_FALL_CONFIRMATION_TIMEOUT = "fall_confirmation_timeout"
+
         const val DEFAULT_SAFE_MESSAGE =
             "I'm Safe\n\nThe situation has been resolved. I am safe now.\n\nThank you for your concern."
     }
+
+    // Fall Detection Properties
+    var isFallDetectionEnabled: Boolean
+        get() = prefs.getBoolean(KEY_FALL_DETECTION_ENABLED, false)
+        set(value) = prefs.edit().putBoolean(KEY_FALL_DETECTION_ENABLED, value).apply()
+
+    var fallImpactThreshold: Float
+        get() = prefs.getFloat(KEY_FALL_IMPACT_THRESHOLD, 22.0f)
+        set(value) = prefs.edit().putFloat(KEY_FALL_IMPACT_THRESHOLD, value).apply()
+
+    var fallFreeFallThreshold: Float
+        get() = prefs.getFloat(KEY_FALL_FREEFALL_THRESHOLD, 3.5f)
+        set(value) = prefs.edit().putFloat(KEY_FALL_FREEFALL_THRESHOLD, value).apply()
+
+    var fallConfirmationTimeoutSeconds: Int
+        get() = prefs.getInt(KEY_FALL_CONFIRMATION_TIMEOUT, 15)
+        set(value) = prefs.edit().putInt(KEY_FALL_CONFIRMATION_TIMEOUT, value).apply()
 
     // Background Safety Engine Properties
     var isBackgroundSafetyEnabled: Boolean

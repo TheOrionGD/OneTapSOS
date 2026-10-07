@@ -73,12 +73,39 @@ class BackgroundDiagnosticsActivity : BaseActivity() {
             }
         }
 
+        findViewById<View>(R.id.rowDiagFall).setOnClickListener {
+            val isRunning = FallDetectionService.isServiceRunning || appSettings.isFallDetectionEnabled
+            if (isRunning) {
+                appSettings.isFallDetectionEnabled = false
+                val stopIntent = Intent(this, FallDetectionService::class.java).apply {
+                    action = FallDetectionService.ACTION_STOP
+                }
+                startService(stopIntent)
+                Toast.makeText(this, "Fall Detection Stopped", Toast.LENGTH_SHORT).show()
+            } else {
+                appSettings.isFallDetectionEnabled = true
+                val startIntent = Intent(this, FallDetectionService::class.java).apply {
+                    action = FallDetectionService.ACTION_START
+                }
+                androidx.core.content.ContextCompat.startForegroundService(this, startIntent)
+                Toast.makeText(this, "Fall Detection Started", Toast.LENGTH_SHORT).show()
+            }
+            refreshDiagnostics()
+        }
+
         setupTestButtons()
         refreshDiagnostics()
         loadSafetyEvents()
     }
 
     private fun setupTestButtons() {
+        // 0. Simulate Fall Event
+        findViewById<View>(R.id.btnSimulateFallDetection).setOnClickListener {
+            FallDetectionService.simulateFall(this)
+            Toast.makeText(this, "Simulated Fall Event Triggered! (15s Confirmation Window)", Toast.LENGTH_LONG).show()
+            window.decorView.postDelayed({ loadSafetyEvents() }, 1000)
+        }
+
         // 1. Simulate Low Battery
         findViewById<View>(R.id.btnSimulateLowBattery).setOnClickListener {
             val threshold = appSettings.lowBatteryThreshold
@@ -142,6 +169,21 @@ class BackgroundDiagnosticsActivity : BaseActivity() {
         val isIgnoringOptimizations = com.sosence.app.engine.BackgroundPermissionHelper.isBatteryOptimizationExempt(this)
         tvOpt.text = if (isIgnoringOptimizations) "Exempt / Unrestricted" else "Standard (Tap to Optimize)"
         tvOpt.setTextColor(getColor(if (isIgnoringOptimizations) R.color.success_green else R.color.accent_cyan))
+
+        // 6. Fall Detection Sensor Subsystem
+        val tvFall = findViewById<TextView>(R.id.tvDiagFallStatus)
+        val isFallRunning = FallDetectionService.isServiceRunning || appSettings.isFallDetectionEnabled
+        val isAccAvailable = FallDetectionService.isAccelerometerAvailable
+        if (isFallRunning) {
+            tvFall.text = "✓ Monitoring Active"
+            tvFall.setTextColor(getColor(R.color.success_green))
+        } else if (!isAccAvailable) {
+            tvFall.text = "✕ Sensor Unavailable"
+            tvFall.setTextColor(getColor(R.color.danger_red))
+        } else {
+            tvFall.text = "✕ Disabled (Tap to Enable)"
+            tvFall.setTextColor(getColor(R.color.text_muted))
+        }
     }
 
     private fun loadSafetyEvents() {

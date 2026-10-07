@@ -9,12 +9,11 @@ class NearbyHelpActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_nearby_help)
-
-        findViewById<TextView>(R.id.btnBack).setOnClickListener { finish() }
-
-        val openMap = { startActivity(Intent(this, MapActivity::class.java)) }
-        findViewById<CardView>(R.id.cardPolice).setOnClickListener { openMap() }
-        findViewById<CardView>(R.id.cardHospital).setOnClickListener { openMap() }
+        val filter = intent.getStringExtra("FILTER_TYPE") ?: intent.getStringExtra("FILTER_CATEGORY")
+        val safeMapIntent = Intent(this, SafeMapActivity::class.java).apply {
+            putExtra("FILTER_CATEGORY", filter)
+        }
+        startActivity(safeMapIntent)
+        finish()
     }
 }

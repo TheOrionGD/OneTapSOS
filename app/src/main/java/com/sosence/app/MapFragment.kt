@@ -26,6 +26,27 @@ class MapFragment : Fragment() {
     private var userMarker: Marker? = null
     private var tvStatusSub: TextView? = null
 
+    private val locationResolutionLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            fetchAndCenterLocation()
+        }
+    }
+
+    private val requestLocationLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
+    ) { perms ->
+        val fineGranted = perms[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val coarseGranted = perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (fineGranted || coarseGranted) {
+            val act = activity ?: return@registerForActivityResult
+            com.sosence.app.utils.LocationHelper.promptEnableLocation(act, locationResolutionLauncher) {
+                fetchAndCenterLocation()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,29 +90,29 @@ class MapFragment : Fragment() {
 
     private fun setupPoiChips(root: View) {
         root.findViewById<View>(R.id.chipNearbyPolice)?.setOnClickListener {
-            val intent = Intent(activity, NearbyHelpActivity::class.java).apply {
-                putExtra("FILTER_TYPE", "police")
+            val intent = Intent(activity, SafeMapActivity::class.java).apply {
+                putExtra("FILTER_CATEGORY", "police")
             }
             startActivity(intent)
         }
 
         root.findViewById<View>(R.id.chipNearbyHospitals)?.setOnClickListener {
-            val intent = Intent(activity, NearbyHelpActivity::class.java).apply {
-                putExtra("FILTER_TYPE", "hospital")
+            val intent = Intent(activity, SafeMapActivity::class.java).apply {
+                putExtra("FILTER_CATEGORY", "hospital")
             }
             startActivity(intent)
         }
 
         root.findViewById<View>(R.id.chipNearbyPharmacies)?.setOnClickListener {
-            val intent = Intent(activity, NearbyHelpActivity::class.java).apply {
-                putExtra("FILTER_TYPE", "pharmacy")
+            val intent = Intent(activity, SafeMapActivity::class.java).apply {
+                putExtra("FILTER_CATEGORY", "pharmacy")
             }
             startActivity(intent)
         }
 
         root.findViewById<View>(R.id.chipNearbyFire)?.setOnClickListener {
-            val intent = Intent(activity, NearbyHelpActivity::class.java).apply {
-                putExtra("FILTER_TYPE", "fire")
+            val intent = Intent(activity, SafeMapActivity::class.java).apply {
+                putExtra("FILTER_CATEGORY", "fire")
             }
             startActivity(intent)
         }
@@ -117,31 +138,46 @@ class MapFragment : Fragment() {
 
     private fun fetchAndCenterLocation() {
         val ctx = context ?: return
-        if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            try {
-                fusedLocationClient?.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-                    ?.addOnSuccessListener { loc: Location? ->
-                        if (loc != null && isAdded) {
-                            val userGeo = GeoPoint(loc.latitude, loc.longitude)
-                            mapView?.controller?.animateTo(userGeo)
-                            tvStatusSub?.text = "GPS Fix: %.4f, %.4f".format(loc.latitude, loc.longitude)
+        if (!com.sosence.app.utils.LocationHelper.hasLocationPermission(ctx)) {
+            requestLocationLauncher.launch(com.sosence.app.utils.LocationHelper.LOCATION_PERMISSIONS)
+            return
+        }
 
-                            mapView?.let { mv ->
-                                if (userMarker == null) {
-                                    userMarker = Marker(mv).apply {
-                                        title = "Your Location"
-                                        setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                                    }
-                                    mv.overlays.add(userMarker)
+        val act = activity
+        if (act != null && !com.sosence.app.utils.LocationHelper.isGpsOrNetworkEnabled(ctx)) {
+            com.sosence.app.utils.LocationHelper.promptEnableLocation(act, locationResolutionLauncher) {
+                doAcquireLocation()
+            }
+            return
+        }
+
+        doAcquireLocation()
+    }
+
+    private fun doAcquireLocation() {
+        try {
+            fusedLocationClient?.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                ?.addOnSuccessListener { loc: Location? ->
+                    if (loc != null && isAdded) {
+                        val userGeo = GeoPoint(loc.latitude, loc.longitude)
+                        mapView?.controller?.animateTo(userGeo)
+                        tvStatusSub?.text = "GPS Fix: %.4f, %.4f".format(loc.latitude, loc.longitude)
+
+                        mapView?.let { mv ->
+                            if (userMarker == null) {
+                                userMarker = Marker(mv).apply {
+                                    title = "Your Location"
+                                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                                 }
-                                userMarker?.position = userGeo
-                                mv.invalidate()
+                                mv.overlays.add(userMarker)
                             }
+                            userMarker?.position = userGeo
+                            mv.invalidate()
                         }
                     }
-            } catch (e: SecurityException) {
-                e.printStackTrace()
-            }
+                }
+        } catch (e: SecurityException) {
+            e.printStackTrace()
         }
     }
 
