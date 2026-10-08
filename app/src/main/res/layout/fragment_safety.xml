@@ -74,62 +74,6 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <!-- Journey Mode Card -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardJourneyMode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardBackgroundColor="@color/card_bg"
-            app:cardCornerRadius="14dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🚶"
-                    android:textSize="24sp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Journey Mode &amp; Escort"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Real-time commute tracking with auto safety alerts"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="›"
-                    android:textColor="@color/text_muted"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
         <!-- Safety Timer Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardSafetyTimer"
@@ -242,131 +186,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Section 2: Crisis Reporting & Situation Assessment -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="8dp"
-            android:letterSpacing="0.08"
-            android:text="INCIDENT &amp; SITUATION REPORTING"
-            android:textColor="@color/accent_cyan"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <!-- Unsafe Situation Card -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardUnsafeSituation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardBackgroundColor="@color/card_bg"
-            app:cardCornerRadius="14dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="⚠️"
-                    android:textSize="24sp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Report Unsafe Environment"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Flag suspicious activity, dark routes, or distress zones"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="›"
-                    android:textColor="@color/text_muted"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Incident History Log -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardIncidentReportHistory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardBackgroundColor="@color/card_bg"
-            app:cardCornerRadius="14dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📝"
-                    android:textSize="24sp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="14dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Incident Reports &amp; Evidence Log"
-                        android:textColor="@color/text_primary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Documented safety reports with photo &amp; GPS timestamps"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="›"
-                    android:textColor="@color/text_muted"
-                    android:textSize="20sp" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Section 3: Readiness & Emergency Kit -->
+        <!-- Section: Readiness & Emergency Kit -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -378,95 +198,59 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardPrepKit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/card_bg"
+            app:cardCornerRadius="12dp">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardPrepKit"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="@color/card_bg"
-                app:cardCornerRadius="12dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🎒"
+                    android:textSize="24sp" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="14dp">
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🎒"
-                        android:textSize="22sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Emergency Kit"
+                        android:text="Emergency Kit &amp; Checklist"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Checklist"
+                        android:text="Preparedness tools and essential survival items"
                         android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardPrepBattery"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="@color/card_bg"
-                app:cardCornerRadius="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🔋"
-                        android:textSize="22sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="5% Battery Alert"
-                        android:textColor="@color/text_primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Auto SMS"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
+                    android:text="›"
+                    android:textColor="@color/text_muted"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 </ScrollView>

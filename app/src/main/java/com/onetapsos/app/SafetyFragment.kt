@@ -25,39 +25,19 @@ class SafetyFragment : Fragment() {
             startActivity(Intent(activity, SOSDiagnosticsActivity::class.java))
         }
 
-        // 2. Journey Mode
-        view.findViewById<View>(R.id.cardJourneyMode)?.setOnClickListener {
-            startActivity(Intent(activity, JourneyModeActivity::class.java))
-        }
-
-        // 3. Safety Timer
+        // 2. Safety Timer
         view.findViewById<View>(R.id.cardSafetyTimer)?.setOnClickListener {
             startActivity(Intent(activity, SafetyTimerActivity::class.java))
         }
 
-        // 4. Scheduled Check-In
+        // 3. Scheduled Check-In
         view.findViewById<View>(R.id.cardScheduledCheckIn)?.setOnClickListener {
             startActivity(Intent(activity, CheckInActivity::class.java))
         }
 
-        // 5. Unsafe Situation
-        view.findViewById<View>(R.id.cardUnsafeSituation)?.setOnClickListener {
-            startActivity(Intent(activity, UnsafeSituationActivity::class.java))
-        }
-
-        // 6. Incident Reports & Log
-        view.findViewById<View>(R.id.cardIncidentReportHistory)?.setOnClickListener {
-            startActivity(Intent(activity, IncidentHistoryActivity::class.java))
-        }
-
-        // 7. Emergency Kit Checklist
+        // 4. Emergency Kit Checklist
         view.findViewById<View>(R.id.cardPrepKit)?.setOnClickListener {
             startActivity(Intent(activity, EmergencyPreparationActivity::class.java))
-        }
-
-        // 8. Battery Safety Hub & 5% Alert
-        view.findViewById<View>(R.id.cardPrepBattery)?.setOnClickListener {
-            startActivity(Intent(activity, BatterySafetyActivity::class.java))
         }
     }
 }

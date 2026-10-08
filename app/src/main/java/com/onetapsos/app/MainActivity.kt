@@ -594,18 +594,25 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        val resolutionTime = System.currentTimeMillis()
+        val finalCount = if (sentCount > 0) sentCount else if (phoneNumbers.isNotEmpty()) phoneNumbers.size else 1
+
         appSettings.isSosActive = false
         appSettings.sosRecipients = emptyList()
 
-        appDbHelper.markLatestSosResolved()
+        appDbHelper.markLatestSosResolved(resolutionTime)
 
         SOSNotificationManager.cancelEmergencySosNotification(this)
         SOSNotificationManager.showSosResolvedNotification(this)
 
         homeFragment.refreshDashboardState()
 
-        Toast.makeText(this, "✅ 'I'm Safe' message sent to $sentCount contact(s)!", Toast.LENGTH_LONG).show()
-        startActivity(Intent(this, SOSResolvedActivity::class.java))
+        Toast.makeText(this, "✅ 'I'm Safe' message sent to $finalCount contact(s)!", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, SOSResolvedActivity::class.java).apply {
+            putExtra("RESOLUTION_TIME", resolutionTime)
+            putExtra("RECIPIENTS_COUNT", finalCount)
+        }
+        startActivity(intent)
     }
 
     private fun buildSosMessage(location: Location?): String {

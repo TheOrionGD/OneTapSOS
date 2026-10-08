@@ -18,9 +18,10 @@ class SOSResolvedActivity : BaseActivity() {
         var recipientsCount = intent.getIntExtra("RECIPIENTS_COUNT", 0)
 
         if (recipientsCount <= 0) {
-            val dbHelper = com.onetapsos.app.data.AppDatabaseHelper(this)
-            val contacts = dbHelper.getAllContacts()
-            recipientsCount = if (contacts.isNotEmpty()) contacts.size else 1
+            val legacyContacts = ContactsDatabaseHelper(this).getAllContacts()
+            val appContacts = com.onetapsos.app.data.AppDatabaseHelper(this).getAllContacts()
+            val storedCount = maxOf(legacyContacts.size, appContacts.size)
+            recipientsCount = if (storedCount > 0) storedCount else 1
         }
 
         val tvResolutionTime = findViewById<TextView>(R.id.tvResolutionTime)

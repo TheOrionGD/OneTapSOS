@@ -76,68 +76,7 @@ class NotificationSettingsActivity : BaseActivity() {
     }
 
     private fun setupNotificationTestingLab() {
-        // 1. Test SOS Alert Notification
-        findViewById<CardView>(R.id.btnTestSosNotif)?.setOnClickListener {
-            SOSNotificationManager.showEmergencySosNotification(
-                this,
-                "Live GPS Fix (13.0827° N, 80.2707° E)",
-                3
-            )
-            Toast.makeText(this, "🚨 Dispatched Emergency SOS notification!", Toast.LENGTH_SHORT).show()
-        }
-
-        // 2. Test Fall Detection Alert
-        findViewById<CardView>(R.id.btnTestFallNotif)?.setOnClickListener {
-            SOSNotificationManager.showFallDetectionAlertNotification(this, 15)
-            Toast.makeText(this, "🏃 Dispatched Fall Warning notification!", Toast.LENGTH_SHORT).show()
-        }
-
-        // 3. Test Safety Timer Alert
-        findViewById<CardView>(R.id.btnTestTimerNotif)?.setOnClickListener {
-            SOSNotificationManager.showSafetyTimerNotification(
-                this,
-                "Late Night Commute",
-                "14:59"
-            )
-            Toast.makeText(this, "⏱️ Dispatched Safety Timer notification!", Toast.LENGTH_SHORT).show()
-        }
-
-        // 4. Test Journey Tracking
-        findViewById<CardView>(R.id.btnTestJourneyNotif)?.setOnClickListener {
-            SOSNotificationManager.showJourneyTrackingNotification(
-                this,
-                "Central Metro Station",
-                "Trail live • 2.4 km remaining"
-            )
-            Toast.makeText(this, "📍 Dispatched Journey Tracking notification!", Toast.LENGTH_SHORT).show()
-        }
-
-        // 5. Test 5% Battery Alert
-        findViewById<CardView>(R.id.btnTestBatteryNotif)?.setOnClickListener {
-            SOSNotificationManager.showLowBatteryAlertNotification(this, 5)
-            Toast.makeText(this, "🔋 Dispatched Low Battery notification!", Toast.LENGTH_SHORT).show()
-        }
-
-        // 6. Test Safe Zone Geofence
-        findViewById<CardView>(R.id.btnTestSafeZoneNotif)?.setOnClickListener {
-            SOSNotificationManager.showSafeZoneAlertNotification(
-                this,
-                "Downtown Campus Safe Haven",
-                isLeaving = true
-            )
-            Toast.makeText(this, "🛡️ Dispatched Safe Zone notification!", Toast.LENGTH_SHORT).show()
-        }
-
-        // 7. Test Fake Call Heads-up
-        findViewById<CardView>(R.id.btnTestFakeCallNotif)?.setOnClickListener {
-            SOSNotificationManager.showFakeCallIncomingNotification(
-                this,
-                "Local Security & Emergency Patrol"
-            )
-            Toast.makeText(this, "📞 Dispatched Fake Call notification!", Toast.LENGTH_SHORT).show()
-        }
-
-        // 8. Test Daily Safety Tip
+        // Daily Safety Tip Test ONLY
         findViewById<CardView>(R.id.btnTestTipsNotif)?.setOnClickListener {
             SOSNotificationManager.showSafetyTipNotification(
                 this,

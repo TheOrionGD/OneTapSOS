@@ -3,7 +3,7 @@
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
 [![Package](https://img.shields.io/badge/Package-com.onetapsos.app-007ACC?logo=android&logoColor=white)](app/build.gradle.kts)
-[![Version](https://img.shields.io/badge/Version-1.2.1-orange.svg)](https://github.com/TheOrionGD/OneTapSOS/releases/tag/v1.2.1)
+[![Version](https://img.shields.io/badge/Version-2.1.2-orange.svg)](https://github.com/TheOrionGD/OneTapSOS/releases/tag/v2.1.2)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0+-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Gemini AI](https://img.shields.io/badge/AI-Google_Gemini-4285F4?logo=google&logoColor=white)](https://ai.google.dev)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -81,14 +81,14 @@
    # Assemble Debug APK
    ./gradlew assembleDebug
 
-   # Assemble Signed Release APK & AAB Bundle (v1.2.1)
+   # Assemble Signed Release APK & AAB Bundle (v2.1.2)
    ./gradlew assembleRelease bundleRelease
    ```
 
 ---
 
 ## 📄 Documentation & Releases
-- 📦 [Latest Release (v1.2.1)](https://github.com/TheOrionGD/OneTapSOS/releases/tag/v1.2.1)
+- 📦 [Latest Release (v2.1.2)](https://github.com/TheOrionGD/OneTapSOS/releases/tag/v2.1.2)
 - 🔒 [Privacy Policy Document](OneTapSOSDOCS/privacy_policy.html)
 - 📋 [Google Play Store Publishing Specifications](OneTapSOSDOCS/GOOGLE_PLAY_STORE_PUBLISHING_DETAILS.txt)
 

@@ -40,24 +40,9 @@ class ContactsFragment : Fragment() {
             startActivity(Intent(activity, TrustedContactsActivity::class.java))
         }
 
-        // 3. Emergency Groups
-        view.findViewById<View>(R.id.cardContactGroups)?.setOnClickListener {
-            startActivity(Intent(activity, GroupsActivity::class.java))
-        }
-
-        // 4. Message Templates
-        view.findViewById<View>(R.id.cardMessageTemplates)?.setOnClickListener {
-            startActivity(Intent(activity, MessageTemplateActivity::class.java))
-        }
-
-        // 5. Custom I'm Safe Editor
+        // 3. Custom I'm Safe Editor ONLY
         view.findViewById<View>(R.id.cardImSafeEditor)?.setOnClickListener {
             startActivity(Intent(activity, ImSafeMessageActivity::class.java))
-        }
-
-        // 6. Emergency Message Hub / Conversations
-        view.findViewById<View>(R.id.cardEmergencyMsgHub)?.setOnClickListener {
-            startActivity(Intent(activity, EmergencyMessagesActivity::class.java))
         }
     }
 
