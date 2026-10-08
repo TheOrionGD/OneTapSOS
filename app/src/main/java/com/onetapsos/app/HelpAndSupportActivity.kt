@@ -59,7 +59,7 @@ class HelpAndSupportActivity : BaseActivity() {
                 "Full Screen Interactive Safe Map" to MapActivity::class.java,
                 "Safe Havens & Zones" to SafeMapActivity::class.java,
                 "Nearby Police & Hospitals Directory" to NearbyHelpActivity::class.java,
-                "Live Location Tracking & Breadcrumbs" to LiveTrackingActivity::class.java,
+                "Live Location Tracking & Breadcrumbs" to LocationShareActiveActivity::class.java,
                 "Location Timeline & History Log" to LocationHistoryActivity::class.java,
                 "Location Sharing Settings" to LocationSharingSettingsActivity::class.java,
                 "Map Display & Offline Settings" to MapSettingsActivity::class.java,

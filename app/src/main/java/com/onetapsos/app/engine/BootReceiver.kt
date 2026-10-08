@@ -24,6 +24,7 @@ class BootReceiver : BroadcastReceiver() {
                 "android.intent.action.LOCKED_BOOT_COMPLETED" -> {
                     BackgroundSafetyEngine.init(context)
                     BackgroundSafetyEngine.restorePendingSchedules(context)
+                    BackgroundSafetyEngine.schedulePeriodicBatteryCheck(context)
                     BackgroundSafetyEngine.dispatchEvent(context, SafetyEvent.BootRestored(1))
                 }
             }

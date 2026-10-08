@@ -8,7 +8,7 @@
 [![Gemini AI](https://img.shields.io/badge/AI-Google_Gemini-4285F4?logo=google&logoColor=white)](https://ai.google.dev)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**OneTapSOS** (`com.onetapsos.app`) is an advanced, privacy-first personal safety and emergency response Android application built to protect individuals, families, and communities during critical situations. Featuring instantaneous one-touch SOS dispatch, automated fall detection, per-contact custom alert messaging, offline-ready OpenStreetMap navigation, and an intelligent Google Gemini AI safety companion, OneTapSOS empowers users to get immediate life-saving assistance when every second counts.
+**OneTapSOS** (`com.onetapsos.app`) is an advanced, privacy-first personal safety and emergency response Android application built to protect individuals, families, and communities during critical situations. Featuring instantaneous one-touch SOS dispatch, automated fall detection, per-contact custom alert messaging, offline-ready OpenStreetMap/google map navigation, and an intelligent Google Gemini AI safety companion, OneTapSOS empowers users to get immediate life-saving assistance when every second counts.
 
 ---
 

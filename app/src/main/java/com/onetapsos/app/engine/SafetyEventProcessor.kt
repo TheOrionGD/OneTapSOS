@@ -110,6 +110,9 @@ class SafetyEventProcessor(private val context: Context) {
             triggerHapticAlert()
         }
 
+        // Send Offline Emergency Battery SMS to trusted contacts
+        sendOfflineLowBatterySms(event.percentage)
+
         Log.i(TAG, "⚡ Low Battery Safety Event Triggered: ${event.percentage}% (Threshold: $threshold%)")
     }
 
@@ -126,6 +129,46 @@ class SafetyEventProcessor(private val context: Context) {
             )
         )
         SOSNotificationManager.showLowBatteryAlertNotification(context, event.percentage)
+        sendOfflineLowBatterySms(event.percentage)
+    }
+
+    private fun sendOfflineLowBatterySms(batteryPct: Int) {
+        val contacts = dbHelper.getAllContacts().filter { it.isEnabled }
+        val targetPhones = if (contacts.isNotEmpty()) contacts.map { it.phone } else appSettings.sosRecipients
+        if (targetPhones.isEmpty()) {
+            Log.w(TAG, "No contacts configured for low battery SMS alert.")
+            return
+        }
+
+        val locations = dbHelper.getLocationHistory()
+        val lastLoc = locations.firstOrNull()
+        val mapsLink = if (lastLoc != null) "https://maps.google.com/?q=${lastLoc.latitude},${lastLoc.longitude}" else "GPS unavailable"
+        val timeStamp = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault()).format(Date())
+
+        val message = "🔋 CRITICAL BATTERY ALERT ($batteryPct%)\n\nMy device battery is at $batteryPct% and will shut down soon.\n📍 Last Known Location: $mapsLink\n🕒 Time: $timeStamp\n\nSent automatically via OneTapSOS Emergency Safeguard."
+
+        for (phone in targetPhones) {
+            if (phone.isNotBlank()) {
+                try {
+                    val formatted = if (phone.startsWith("+")) phone else "+91$phone"
+                    val smsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        context.getSystemService(android.telephony.SmsManager::class.java)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        android.telephony.SmsManager.getDefault()
+                    }
+                    val parts = smsManager.divideMessage(message)
+                    if (parts.size > 1) {
+                        smsManager.sendMultipartTextMessage(formatted, null, parts, null, null)
+                    } else {
+                        smsManager.sendTextMessage(formatted, null, message, null, null)
+                    }
+                    Log.i(TAG, "Offline low battery SMS successfully sent to $formatted")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to send offline low battery SMS to $phone: ${e.message}")
+                }
+            }
+        }
     }
 
     private fun handleChargingState(event: SafetyEvent, isCharging: Boolean, formattedTime: String) {

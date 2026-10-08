@@ -15,7 +15,13 @@ class SOSResolvedActivity : BaseActivity() {
         setContentView(R.layout.activity_sos_resolved)
 
         val resTime = intent.getLongExtra("RESOLUTION_TIME", System.currentTimeMillis())
-        val recipientsCount = intent.getIntExtra("RECIPIENTS_COUNT", 0)
+        var recipientsCount = intent.getIntExtra("RECIPIENTS_COUNT", 0)
+
+        if (recipientsCount <= 0) {
+            val dbHelper = com.onetapsos.app.data.AppDatabaseHelper(this)
+            val contacts = dbHelper.getAllContacts()
+            recipientsCount = if (contacts.isNotEmpty()) contacts.size else 1
+        }
 
         val tvResolutionTime = findViewById<TextView>(R.id.tvResolutionTime)
         val tvDuration = findViewById<TextView>(R.id.tvDuration)

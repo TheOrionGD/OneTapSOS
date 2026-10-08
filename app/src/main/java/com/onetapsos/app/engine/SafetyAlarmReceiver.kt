@@ -12,6 +12,7 @@ class SafetyAlarmReceiver : BroadcastReceiver() {
 
         const val ACTION_SAFETY_TIMER_EXPIRED = "com.onetapsos.app.ACTION_SAFETY_TIMER_EXPIRED"
         const val ACTION_CHECKIN_EXPIRED = "com.onetapsos.app.ACTION_CHECKIN_EXPIRED"
+        const val ACTION_BATTERY_MONITOR_CHECK = "com.onetapsos.app.ACTION_BATTERY_MONITOR_CHECK"
 
         const val EXTRA_REASON = "EXTRA_REASON"
         const val EXTRA_MINUTES = "EXTRA_MINUTES"
@@ -19,6 +20,7 @@ class SafetyAlarmReceiver : BroadcastReceiver() {
 
         const val REQ_CODE_SAFETY_TIMER = 4001
         const val REQ_CODE_CHECKIN = 4002
+        const val REQ_CODE_BATTERY_MONITOR = 4003
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -43,6 +45,10 @@ class SafetyAlarmReceiver : BroadcastReceiver() {
                         context,
                         SafetyEvent.CheckInExpired(note)
                     )
+                }
+                ACTION_BATTERY_MONITOR_CHECK -> {
+                    BackgroundSafetyEngine.checkCurrentBatteryState(context)
+                    BackgroundSafetyEngine.schedulePeriodicBatteryCheck(context)
                 }
             }
         } catch (e: Exception) {

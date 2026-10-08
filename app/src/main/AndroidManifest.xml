@@ -86,7 +86,6 @@
         <activity android:name=".SafeMapActivity" android:exported="false" />
         <activity android:name=".NearbyHelpActivity" android:exported="false" />
         <activity android:name=".LocationDashboardActivity" android:exported="false" />
-        <activity android:name=".LiveTrackingActivity" android:exported="false" />
         <activity android:name=".LocationHistoryActivity" android:exported="false" />
         <activity android:name=".LocationSharingSettingsActivity" android:exported="false" />
         <activity android:name=".LocationShareActiveActivity" android:exported="false" />
@@ -206,6 +205,7 @@
             <intent-filter>
                 <action android:name="com.onetapsos.app.ACTION_SAFETY_TIMER_EXPIRED" />
                 <action android:name="com.onetapsos.app.ACTION_CHECKIN_EXPIRED" />
+                <action android:name="com.onetapsos.app.ACTION_BATTERY_MONITOR_CHECK" />
             </intent-filter>
         </receiver>
 

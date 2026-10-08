@@ -403,13 +403,13 @@
                 <span>📍</span>
                 <span id="tvCurrentStatus">Tracking Live Movement</span>
             </div>
-            <button id="btnGetLocation" class="btn-location" title="Grant or Refresh Device Location Access">
+            <button id="btnGetLocation" class="btn-location" title="Recenter Map View">
                 <span>📍</span>
-                <span id="btnLocationText">Device Location</span>
+                <span id="btnLocationText">Recenter User</span>
             </button>
             <div class="map-overlay-loading" id="mapLoadingOverlay">
                 <div class="spinner"></div>
-                <div id="loadingText">Connecting to SOS Live Satellite Stream...</div>
+                <div id="loadingText">Connecting to Live Emergency Stream...</div>
             </div>
             <div id="map"></div>
         </div>
@@ -417,7 +417,7 @@
         <!-- 4. Past 5 Locations History -->
         <div class="card-history">
             <div class="history-header">
-                <span>📍 Current & Past 5 Locations</span>
+                <span>📍 Current & Recent Locations</span>
                 <span class="history-badge" id="tvHistoryCount">0 Locations</span>
             </div>
             <div class="history-list" id="historyList">
@@ -430,13 +430,16 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Parse URL Parameters
+        // Parse URL Parameters for user ID, session ID, name, message & initial coordinates
         const urlParams = new URLSearchParams(window.location.search);
-        const sessionId = urlParams.get('session') || '';
+        const sessionId = urlParams.get('session') || urlParams.get('user') || urlParams.get('id') || '';
         const paramLat = parseFloat(urlParams.get('lat'));
         const paramLng = parseFloat(urlParams.get('lng'));
-        const paramName = urlParams.get('name');
-        const paramMsg = urlParams.get('msg');
+        const rawName = urlParams.get('name') || urlParams.get('user') || '';
+        const rawMsg = urlParams.get('msg') || urlParams.get('message') || '';
+
+        const paramName = rawName ? decodeURIComponent(rawName) : '';
+        const paramMsg = rawMsg ? decodeURIComponent(rawMsg) : '';
 
         if (paramName && paramName.trim() !== '') {
             document.getElementById('tvPersonName').textContent = paramName.trim();
@@ -445,26 +448,22 @@
             document.getElementById('tvSosMessage').textContent = paramMsg.trim();
         }
 
-        // Initialize Map in neutral state
+        // Initialize Leaflet Map
         const map = L.map('map', {
             zoomControl: true,
             attributionControl: false
-        }).setView([20.5937, 78.9629], 4); // Default continent view until first live coordinate
+        }).setView([20.5937, 78.9629], 4);
 
-        // Google Maps Standard Tile Layer
         L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(map);
 
-        // Polyline Route Line
-        const locationHistory = []; // Array of { lat, lng, time, speed }
+        const locationHistory = [];
         const polyline = L.polyline([], {
             color: '#EF4444',
-            weight: 4,
-            opacity: 0.85,
-            smoothFactor: 1.0,
-            dashArray: '6, 6'
+            weight: 5,
+            opacity: 0.9,
+            smoothFactor: 1.0
         }).addTo(map);
 
-        // Live Pulsing Marker
         const liveIcon = L.divIcon({
             className: 'custom-live-marker',
             html: '<div class="live-marker-container"><div class="marker-pulse-ring"></div><div class="marker-dot-core"></div></div>',
@@ -482,7 +481,6 @@
 
             document.getElementById('tvHistoryCount').textContent = `${Math.min(locationHistory.length, 5)} Locations`;
 
-            // Take the last 5 locations (most recent first)
             const recentFive = locationHistory.slice(-5).reverse();
             container.innerHTML = '';
 
@@ -526,7 +524,6 @@
                 document.getElementById('tvSosMessage').textContent = msg.trim();
             }
 
-            // Hide loading overlay on first valid GPS fix
             if (!hasAcquiredLocation) {
                 hasAcquiredLocation = true;
                 const overlay = document.getElementById('mapLoadingOverlay');
@@ -540,33 +537,32 @@
 
             const newPoint = { lat, lng, time: timestamp || Date.now(), speed: speed || 0 };
             
-            // Check if coordinates moved (>1.5 meters) or first point
+            // Check for identical point duplicate
             if (locationHistory.length > 0) {
                 const last = locationHistory[locationHistory.length - 1];
-                if (Math.abs(last.lat - lat) < 0.000015 && Math.abs(last.lng - lng) < 0.000015) {
+                if (Math.abs(last.lat - lat) < 0.000005 && Math.abs(last.lng - lng) < 0.000005) {
                     return;
                 }
             }
 
             locationHistory.push(newPoint);
 
-            // Update Polyline
+            // Update route polyline smoothly
             const coords = locationHistory.map(p => [p.lat, p.lng]);
             polyline.setLatLngs(coords);
 
-            // Update Live Marker position
+            // Update marker and center map smoothly
             if (currentMarker) {
                 currentMarker.setLatLng([lat, lng]);
             }
             map.panTo([lat, lng], { animate: true, duration: 0.8 });
 
-            // Clear and redraw past point numbers on the map (up to 5 past markers)
             pastMarkers.forEach(m => map.removeLayer(m));
             pastMarkers.length = 0;
 
             const pastFive = locationHistory.slice(-5);
             pastFive.forEach((p, idx) => {
-                if (idx < pastFive.length - 1) { // all points before the current one
+                if (idx < pastFive.length - 1) {
                     const dotIcon = L.divIcon({
                         className: 'past-dot',
                         html: `<div class="past-marker-icon">${idx + 1}</div>`,
@@ -582,89 +578,19 @@
             renderHistoryList();
         }
 
-        // HTML5 Browser Geolocation Access
-        function requestDeviceLocation(isManual = false) {
-            if (!navigator.geolocation) {
-                if (isManual) alert("Geolocation is not supported by your browser or device.");
-                return;
-            }
-
-            const btnText = document.getElementById('btnLocationText');
-            if (btnText && isManual) btnText.textContent = "Acquiring...";
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    const speed = position.coords.speed || 0;
-                    const accuracy = position.coords.accuracy || 5;
-                    const heading = position.coords.heading || 0;
-                    const time = position.timestamp || Date.now();
-
-                    if (btnText) btnText.textContent = "Device Located";
-
-                    onNewLocation(
-                        lat,
-                        lng,
-                        speed,
-                        accuracy,
-                        heading,
-                        time,
-                        paramName || "Live Device Track",
-                        paramMsg || "Active Emergency Broadcast"
-                    );
-                },
-                (err) => {
-                    console.warn('Geolocation access error:', err.message);
-                    if (btnText) btnText.textContent = "Device Location";
-                    if (isManual) {
-                        alert("Location access was denied or is unavailable. Please enable GPS and allow location permission in your browser.");
-                    }
-                },
-                { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
-            );
-        }
-
-        // Watch device position for live continuous location updates
-        function startGeolocationWatch() {
-            if (!navigator.geolocation) return;
-
-            navigator.geolocation.watchPosition(
-                (position) => {
-                    if (!sessionId || !hasAcquiredLocation) {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        const speed = position.coords.speed || 0;
-                        const accuracy = position.coords.accuracy || 5;
-                        const heading = position.coords.heading || 0;
-                        const time = position.timestamp || Date.now();
-
-                        onNewLocation(
-                            lat,
-                            lng,
-                            speed,
-                            accuracy,
-                            heading,
-                            time,
-                            paramName || "Live Device Track",
-                            paramMsg || "Active Emergency Broadcast"
-                        );
-                    }
-                },
-                (err) => console.warn('watchPosition error:', err.message),
-                { enableHighAccuracy: true, maximumAge: 3000 }
-            );
-        }
-
         document.getElementById('btnGetLocation').addEventListener('click', () => {
-            requestDeviceLocation(true);
+            if (locationHistory.length > 0) {
+                const latest = locationHistory[locationHistory.length - 1];
+                map.setView([latest.lat, latest.lng], 17);
+            }
         });
 
-        // Request browser/device location access immediately on page load
-        requestDeviceLocation(false);
-        startGeolocationWatch();
+        // Load initial coordinates from URL parameters if available
+        if (!isNaN(paramLat) && !isNaN(paramLng) && paramLat !== 0 && paramLng !== 0) {
+            onNewLocation(paramLat, paramLng, 0, 5, 0, Date.now(), paramName, paramMsg);
+        }
 
-        // Connect Real-Time Cloud Stream via ntfy.sh
+        // Connect Real-Time Cloud Stream for user session via ntfy.sh
         if (sessionId) {
             const topic = `sosense_live_${sessionId}`;
 
@@ -698,7 +624,7 @@
                                 );
                             }
                         } catch (e) {
-                            console.error('Error parsing SSE data:', e);
+                            console.error('Error parsing SSE payload:', e);
                         }
                     };
 
@@ -709,7 +635,6 @@
                 } catch (e) {}
             }
 
-            // Polling Fallback
             function pollLatest() {
                 fetch(`https://ntfy.sh/${topic}/json?poll=1`)
                     .then(res => res.text())
@@ -747,11 +672,6 @@
             connectSSE();
             pollLatest();
             setInterval(pollLatest, 3000);
-        }
-
-        // If valid initial coordinate was in URL, load it immediately
-        if (!isNaN(paramLat) && !isNaN(paramLng) && paramLat !== 0 && paramLng !== 0) {
-            onNewLocation(paramLat, paramLng, 0, 5, 0, Date.now(), paramName, paramMsg);
         }
     </script>
 </body>

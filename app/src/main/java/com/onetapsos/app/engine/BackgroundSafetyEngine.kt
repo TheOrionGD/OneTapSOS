@@ -35,6 +35,50 @@ object BackgroundSafetyEngine {
 
         // 2. Reschedule any existing timers that survived
         restorePendingSchedules(appContext)
+
+        // 3. Schedule recurring offline battery monitor
+        schedulePeriodicBatteryCheck(appContext)
+    }
+
+    fun schedulePeriodicBatteryCheck(context: Context) {
+        val appContext = context.applicationContext
+        val appSettings = AppSettings(appContext)
+
+        if (!appSettings.isBackgroundSafetyEnabled || !appSettings.isBatteryAlertEnabled) {
+            return
+        }
+
+        // Schedule next check in 5 minutes (300,000 ms) using setExactAndAllowWhileIdle
+        val alarmManager = appContext.getSystemService(Context.ALARM_SERVICE) as? AlarmManager ?: return
+        val triggerTimeMs = System.currentTimeMillis() + (5 * 60 * 1000L)
+
+        val intent = Intent(appContext, SafetyAlarmReceiver::class.java).apply {
+            action = SafetyAlarmReceiver.ACTION_BATTERY_MONITOR_CHECK
+        }
+
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            appContext,
+            SafetyAlarmReceiver.REQ_CODE_BATTERY_MONITOR,
+            intent,
+            flags
+        )
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimeMs, pendingIntent)
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTimeMs, pendingIntent)
+            }
+            Log.d(TAG, "Periodic offline battery check scheduled for +5 mins")
+        } catch (e: Exception) {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTimeMs, pendingIntent)
+        }
     }
 
     fun dispatchEvent(context: Context, event: SafetyEvent) {

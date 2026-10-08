@@ -112,7 +112,14 @@ class HomeFragment : Fragment() {
         }
 
         btnBannerLiveTrack.setOnClickListener {
-            startActivity(Intent(activity, LiveTrackingActivity::class.java))
+            val ctx = context ?: return@setOnClickListener
+            val trackingUrl = com.onetapsos.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(ctx, null)
+            val browserIntent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(trackingUrl))
+            try {
+                startActivity(browserIntent)
+            } catch (e: Exception) {
+                (activity as? MainActivity)?.navigateToTab(R.id.nav_map)
+            }
         }
     }
 
@@ -233,7 +240,14 @@ class HomeFragment : Fragment() {
         }
 
         view?.findViewById<View>(R.id.cardActionLiveTrack)?.setOnClickListener {
-            startActivity(Intent(activity, LiveTrackingActivity::class.java))
+            val ctx = context ?: return@setOnClickListener
+            val trackingUrl = com.onetapsos.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(ctx, null)
+            val browserIntent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(trackingUrl))
+            try {
+                startActivity(browserIntent)
+            } catch (e: Exception) {
+                (activity as? MainActivity)?.navigateToTab(R.id.nav_map)
+            }
         }
     }
 

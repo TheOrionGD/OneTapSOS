@@ -51,7 +51,13 @@ class SOSActiveActivity : BaseActivity() {
         }
 
         findViewById<CardView>(R.id.btnLiveTracking).setOnClickListener {
-            startActivity(Intent(this, LiveTrackingActivity::class.java))
+            val trackingUrl = com.onetapsos.app.utils.LiveLocationPublisher.buildLiveTrackingUrl(this, null)
+            val browserIntent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(trackingUrl))
+            try {
+                startActivity(browserIntent)
+            } catch (e: Exception) {
+                startActivity(Intent(this, MapActivity::class.java))
+            }
         }
 
         findViewById<CardView>(R.id.btnViewMap).setOnClickListener {
@@ -97,9 +103,11 @@ class SOSActiveActivity : BaseActivity() {
         val mapLink = if (location != null) "\n\nCurrent location: https://maps.google.com/?q=${location.latitude},${location.longitude}" else ""
         val fullMessage = "$customMsg$mapLink"
 
+        val allContacts = dbHelper.getAllContacts()
+        val enabledContacts = allContacts.filter { it.isEnabled }
         var recipients = appSettings.sosRecipients
         if (recipients.isEmpty()) {
-            recipients = dbHelper.getAllContacts().map { it.phone }
+            recipients = if (enabledContacts.isNotEmpty()) enabledContacts.map { it.phone } else allContacts.map { it.phone }
         }
 
         var sentCount = 0
@@ -112,6 +120,8 @@ class SOSActiveActivity : BaseActivity() {
         val resolutionTime = System.currentTimeMillis()
         if (sosEventId != -1L) {
             dbHelper.markSosResolved(sosEventId, resolutionTime)
+        } else {
+            dbHelper.markLatestSosResolved(resolutionTime)
         }
         appSettings.isSosActive = false
         appSettings.sosRecipients = emptyList()
@@ -120,11 +130,14 @@ class SOSActiveActivity : BaseActivity() {
         SOSNotificationManager.cancelEmergencySosNotification(this)
         SOSNotificationManager.showSosResolvedNotification(this)
 
-        Toast.makeText(this, "✅ 'I'm Safe' sent to $sentCount contact(s)", Toast.LENGTH_LONG).show()
+        val totalNotified = if (sentCount > 0) sentCount else if (recipients.isNotEmpty()) recipients.size else if (enabledContacts.isNotEmpty()) enabledContacts.size else allContacts.size
+        val finalCount = if (totalNotified > 0) totalNotified else 1
+
+        Toast.makeText(this, "✅ 'I'm Safe' sent to $finalCount contact(s)", Toast.LENGTH_LONG).show()
 
         val intent = Intent(this, SOSResolvedActivity::class.java).apply {
             putExtra("RESOLUTION_TIME", resolutionTime)
-            putExtra("RECIPIENTS_COUNT", sentCount)
+            putExtra("RECIPIENTS_COUNT", finalCount)
         }
         startActivity(intent)
         finish()
