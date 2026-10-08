@@ -14,15 +14,15 @@ if (localPropertiesFile.exists()) {
 val geminiApiKey: String = localProperties.getProperty("GEMINI_API_KEY", "\"\"")
 
 android {
-    namespace = "com.sosence.app"
+    namespace = "com.onetapsos.app"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.sosence.app"
+        applicationId = "com.onetapsos.app"
         minSdk = 24
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.0.6"
+        versionCode = 8
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         

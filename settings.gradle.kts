@@ -22,6 +22,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SOSense"
+rootProject.name = "OneTapSOS"
 include(":app")
  

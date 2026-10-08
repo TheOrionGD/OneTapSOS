@@ -1,4 +1,4 @@
-### 🚀 SOSence v1.0.4 Release Notes
+### 🚀 OneTapSOS v1.0.4 Release Notes
 
 #### 🚨 SOS Emergency Log & Single Source of Truth
 - Unified SOS activation lifecycle across manual buttons, hardware power clicks, and fall detection into SQLite Room/DatabaseHelper (`TABLE_SOS_EVENTS`).

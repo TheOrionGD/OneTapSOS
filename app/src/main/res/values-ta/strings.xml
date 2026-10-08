@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App General -->
-    <string name="app_name">SOSense</string>
+    <string name="app_name">OneTapSOS</string>
     <string name="tagline">தனிநபர் அவசரநிலை மற்றும் பாதுகாப்பு பிணையம்</string>
     <string name="sos">எஸ்.ஓ.எஸ் (SOS)</string>
     <string name="im_safe">நான் பாதுகாப்பாக உள்ளேன்</string>

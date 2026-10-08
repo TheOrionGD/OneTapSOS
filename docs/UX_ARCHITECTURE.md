@@ -1,7 +1,7 @@
-# SOSense — Comprehensive UX Information Architecture & Navigation Graph
+# OneTapSOS — Comprehensive UX Information Architecture & Navigation Graph
 
 ## 1. Executive Product Vision
-**SOSense** is an emergency SOS dispatch and personal safety platform designed to provide instantaneous, fail-safe crisis response and continuous prevention monitoring.
+**OneTapSOS** is an emergency SOS dispatch and personal safety platform designed to provide instantaneous, fail-safe crisis response and continuous prevention monitoring.
 
 The application architecture is structured into **5 Primary Pillars**:
 ```text

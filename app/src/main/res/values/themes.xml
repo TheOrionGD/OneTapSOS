@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.SOSense" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.OneTapSOS" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/bg_dark_primary</item>
         <item name="android:navigationBarColor">@color/bg_dark_primary</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
@@ -8,7 +8,7 @@
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
     </style>
 
-    <style name="Theme.SOSense" parent="Base.Theme.SOSense" />
+    <style name="Theme.OneTapSOS" parent="Base.Theme.OneTapSOS" />
 
     <style name="KeypadButtonStyle">
         <item name="android:layout_width">68dp</item>

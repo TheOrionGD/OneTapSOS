@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
             android:letterSpacing="0.04"
-            android:text="SOSense AI"
+            android:text="OneTapSOS AI"
             android:textColor="@color/accent_cyan"
             android:textSize="11sp"
             android:textStyle="bold" />

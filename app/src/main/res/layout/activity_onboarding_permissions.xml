@@ -116,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:lineSpacingExtra="3dp"
-                        android:text="To ensure instant rescue alerts and real-time offline SMS coordination, SOSense needs the following Android system permissions. All data stays strictly on your device."
+                        android:text="To ensure instant rescue alerts and real-time offline SMS coordination, OneTapSOS needs the following Android system permissions. All data stays strictly on your device."
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
 
@@ -192,7 +192,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-medium"
-                android:text="Enter SOSense 🚀"
+                android:text="Enter OneTapSOS 🚀"
                 android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />

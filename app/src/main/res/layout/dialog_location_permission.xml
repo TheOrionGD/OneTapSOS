@@ -60,7 +60,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:text="SOSense needs your location this session to send accurate emergency alerts."
+        android:text="OneTapSOS needs your location this session to send accurate emergency alerts."
         android:textColor="@color/text_secondary"
         android:textSize="13sp"
         android:lineSpacingExtra="2dp"

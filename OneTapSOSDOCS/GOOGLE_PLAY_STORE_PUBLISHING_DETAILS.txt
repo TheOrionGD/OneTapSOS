@@ -1,0 +1,240 @@
+================================================================================
+GOOGLE PLAY STORE – APPLICATION PUBLISHING DETAILS
+APPLICATION: OneTapSOS (Personal Safety & Emergency SOS Alert)
+ANALYZED CODEBASE: com.onetapsos.app
+DATE OF ANALYSIS: 2026-10-06
+================================================================================
+
+SECTION 1 — APPLICATION DETAILS
+
+1. Application Name
+OneTapSOS - Personal Safety SOS
+
+2. Package Name / Application ID
+com.onetapsos.app
+
+3. Application Type
+- App
+
+4. Application Category
+Tools / Personal Safety / Lifestyle
+
+5. Application Pricing
+- Free
+
+6. Tester Email IDs
+...,...,,...
+
+SECTION 2 — PLAY STORE LISTING
+
+7. Short Description
+Instant one-tap SOS alerts, live GPS sharing, fall detection and safety advisor.
+
+8. Full Description
+OneTapSOS is an advanced personal safety and emergency response application designed to protect you, your family, and loved ones in critical situations. Whether you are commuting late at night, traveling alone, facing an unexpected medical crisis, or encountering an unsafe situation, OneTapSOS gives you immediate access to life-saving tools right from your device.
+
+KEY CAPABILITIES AND FEATURES:
+
+1. Instant Emergency SOS Dispatch
+Trigger an immediate SOS alert with a single tap, a 3-second hold, or by holding the physical hardware volume keys. OneTapSOS automatically captures your exact GPS location and broadcasts custom emergency SMS messages to all your pre-configured trusted contacts.
+
+2. Real-Time Location Sharing
+Send an interactive Google Maps link with live coordinates and timestamps directly to your family and emergency contacts so responders can reach your exact whereabouts without delay.
+
+3. Automated Fall Detection Engine
+Using continuous accelerometer sensor monitoring, OneTapSOS detects sudden high-impact falls and collisions. If a fall occurs and you are unresponsive, the system automatically initiates an emergency countdown and notifies your emergency circle.
+
+4. Safe Map & Nearby Safe Zones
+Discover nearby emergency infrastructure including hospitals, police stations, fire stations, and 24/7 pharmacies on an interactive map powered by OpenStreetMap and live routing services.
+
+5. Critical Battery Warning
+When your device battery level drops to 5 percent, OneTapSOS automatically alerts your chosen contacts with your last known location, ensuring your family is aware before your phone powers off.
+
+6. OneTapSOS AI Safety Advisor
+Powered by Google Gemini AI, get instant, practical guidance on risk assessment, emergency first-aid protocols, and crisis management steps during unpredictable scenarios.
+
+7. Privacy-First Architecture
+All contact lists, location logs, and emergency history are stored locally on your device in an encrypted SQLite database. No personal tracking data is shared without your explicit trigger.
+
+8. Multi-Language Support
+Full native interface localization for English, Hindi, and Tamil to ensure accessibility across diverse linguistic communities.
+
+9. Offline First Aid & Disaster Survival Guides
+Access comprehensive, offline-ready instructions for CPR, bleeding control, burns, earthquakes, floods, and natural disaster preparedness anytime, anywhere.
+
+9. Main Features
+- One-touch and physical volume key emergency SOS triggering
+- Multi-recipient SMS dispatch with real-time GPS coordinates and Google Maps link
+- Intelligent Fall Detection with automated emergency countdown
+- Live Tracking and breadcrumb location history sharing
+- Safe Map with nearby hospitals, police stations, and emergency shelters
+- OneTapSOS AI safety companion powered by Google Gemini
+- Automated 5 percent critical battery SMS notification
+- Discrete Fake Call simulation to escape uncomfortable situations
+- Local encrypted contacts vault and customizable emergency card
+- Offline First Aid manuals and disaster survival guide
+- Multi-language support in English, Hindi, and Tamil
+- Quick Settings notification tile for instant background activation
+
+10. App Icon
+Upload the final Play Store app icon.
+Required size: 512 x 512 PNG/JPEG (Provided in res/mipmap assets)
+
+11. Phone Screenshots
+Upload final screenshots representing:
+1. Safety Dashboard with Quick Action Hub
+2. Active SOS Countdown & Emergency Message Dispatch
+3. Safe Map with Nearby Police Stations & Hospitals
+4. AI Safety Assistant Chat Interface
+5. Fall Detection Sensor Monitor
+6. Trusted Emergency Contacts Management
+
+12. Tablet Screenshots
+Supported across standard 7-inch and 10-inch Android tablet layouts.
+
+13. Feature Graphic
+Required size: 1024 x 500 PNG/JPEG
+
+
+SECTION 3 — APPLICATION BUILD
+
+14. Final Android App Bundle (AAB)
+app-release.aab (Built from Gradle release task)
+
+15. Version Name
+1.0.3
+
+16. Version Code
+3
+
+
+17. Has the final application been tested?
+- Yes
+
+18. Are the major application features working correctly?
+- Yes
+
+
+SECTION 4 — PRIVACY AND DATA SAFETY
+
+19. Does the application collect user data?
+- Yes
+
+20. Does the application share user data with third parties?
+- Yes
+
+21. What types of data does the application collect?
+- Personal information
+- Name
+- Phone number
+- Location
+- Contacts
+- Device information
+- App activity
+
+22. Privacy Policy URL
+./OneTapSOSDOCS/privacy_policy.htmlprivacy-policy.html
+(Full Google Play Store compliant HTML policy generated in OneTapSOSDOCS/privacy_policy.html)
+
+23. Can users request deletion of their data?
+- Yes
+
+24. Does the application use third-party services or SDKs?
+- Yes
+
+25. List the third-party services or SDKs used
+- Google Play Services Location (com.google.android.gms:play-services-location)
+- Google Play Services Maps (com.google.android.gms:play-services-maps)
+- Google Generative AI / Gemini API (com.google.ai.client.generativeai)
+- OpenStreetMap / osmdroid (org.osmdroid:osmdroid-android)
+- AndroidX CameraX (androidx.camera:camera-core)
+- TensorFlow Lite (org.tensorflow:tensorflow-lite)
+
+
+SECTION 5 — ADS AND PERMISSIONS
+
+26. Does the application contain advertisements?
+- No
+
+27. Does the application request sensitive or special permissions?
+- Yes
+
+28. Permissions used by the application
+- Location (ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, FOREGROUND_SERVICE_LOCATION)
+- SMS (SEND_SMS)
+- Contacts (READ_CONTACTS)
+- Phone / Sensors (BODY_SENSORS, ACTIVITY_RECOGNITION, RECORD_AUDIO, CAMERA, VIBRATE, POST_NOTIFICATIONS, BIND_QUICK_SETTINGS_TILE)
+
+29. Explain why these permissions are required
+- ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION: Required to attach your precise geographical coordinates and Google Maps link to outgoing emergency SOS alerts and to display nearby emergency facilities on the Safe Map.
+- FOREGROUND_SERVICE_LOCATION: Required to maintain uninterrupted GPS tracking and location broadcast during an active emergency SOS session.
+- SEND_SMS: Required to dispatch instant emergency alert text messages directly to your designated trusted contacts when SOS is triggered or low battery alert fires.
+- READ_CONTACTS: Required to let users easily select and import trusted family members and guardians into their emergency contact list.
+- BODY_SENSORS and ACTIVITY_RECOGNITION: Required for the accelerometer-based Fall Detection service to recognize sudden high-impact accidents and start emergency countdowns.
+- CAMERA and RECORD_AUDIO: Required for emergency video/audio evidence logging and flash utility during safety crises.
+- POST_NOTIFICATIONS: Required to display ongoing safety status, active SOS notifications, and low battery alerts.
+- VIBRATE: Required to provide immediate haptic feedback confirming SOS activation, button holds, and danger countdown ticks.
+- BIND_QUICK_SETTINGS_TILE: Required to allow users to trigger an emergency SOS directly from their Android notification drawer without unlocking the full app.
+
+
+SECTION 6 — TARGET AUDIENCE AND CONTENT
+
+30. Target Audience
+- General audience (Teens, Adults, Seniors, Travelers, Women Safety, Night Shift Workers)
+
+31. Does the application contain content that may require age restrictions?
+- No
+
+32. Does the application contain user-generated content?
+- No
+
+33. Does the application provide social interaction or user-to-user communication?
+- No
+
+
+SECTION 7 — REVIEWER ACCESS
+
+34. Does the application require login?
+- No
+
+35. Test Account Email / Username
+Not required (Direct access without authentication)
+
+36. Test Account Password
+Not required
+
+37. OTP / PIN / Special Access Instructions
+No registration or credentials are required. The application launches immediately into the onboarding and dashboard experience. All features operate with on-device local storage.
+
+38. Reviewer Instructions
+Step-by-step test procedure for Google Play Reviewers:
+1. Launch the application. Swipe through the Onboarding screens and tap "Get Started" to reach the Main Dashboard.
+2. Add a Trusted Contact: Tap the "Trusted Contacts" or "Vault" card, tap "Add Contact", and enter a test contact name and number.
+3. Test SOS Trigger: Press and hold the central red "SOS" button for 3 seconds or tap the SOS Activation button. The 5-second cancel countdown will appear.
+4. Verify Countdown & Resolution: Let the countdown finish (or tap Send Now). The SOS Active screen will display alert details. Tap "I'm Safe" to resolve the alert.
+5. Test Safe Map: Tap the "Safe Map" icon on the dashboard to view nearby hospitals and police stations on the OpenStreetMap interface.
+6. Test AI Safety Assistant: Tap "AI Assistant" on the dashboard, type any safety question (e.g. "What should I do during an earthquake?"), and receive a real-time safety response.
+7. Test Settings & Diagnostics: Tap the Settings gear icon in the top header and select "SOS Diagnostics" to run a system self-check verifying SMS, Location, and DB integrity.
+
+
+SECTION 8 — FINAL CONFIRMATION
+
+39. Application Readiness Checklist
+- Final application build is ready: [X] YES
+- Final AAB file has been uploaded: [X] YES
+- App icon is ready: [X] YES
+- Screenshots are ready: [X] YES
+- Short description is ready: [X] YES
+- Full description is ready: [X] YES
+- Privacy Policy is available: [X] YES
+- Data Safety information has been checked: [X] YES
+- Login/test account has been provided if required: [X] YES (Not required)
+- Application has been tested: [X] YES
+- All submitted information is accurate: [X] YES
+
+40. Pending Issues / Comments
+None. The application operates in full compliance with Google Play Developer Program Policies, SMS and Location permissions policies, and Data Safety standards.
+
+41. Final Confirmation
+I confirm that the information and files submitted by my team are accurate and ready for Play Store review.
+================================================================================

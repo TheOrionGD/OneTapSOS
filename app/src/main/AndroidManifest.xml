@@ -30,7 +30,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SOSense">
+        android:theme="@style/Theme.OneTapSOS">
 
         <!-- 1. Splash Screen -->
         <activity
@@ -84,7 +84,6 @@
         <!-- 7. Location & Maps Screens (OpenStreetMap osmdroid) -->
         <activity android:name=".MapActivity" android:exported="false" />
         <activity android:name=".SafeMapActivity" android:exported="false" />
-        <activity android:name=".SafeRouteActivity" android:exported="false" />
         <activity android:name=".NearbyHelpActivity" android:exported="false" />
         <activity android:name=".LocationDashboardActivity" android:exported="false" />
         <activity android:name=".LiveTrackingActivity" android:exported="false" />
@@ -163,8 +162,8 @@
             android:name=".SOSReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.sosence.app.SEND_SOS" />
-                <action android:name="com.sosence.app.CANCEL_SOS" />
+                <action android:name="com.onetapsos.app.SEND_SOS" />
+                <action android:name="com.onetapsos.app.CANCEL_SOS" />
             </intent-filter>
         </receiver>
 
@@ -176,15 +175,15 @@
             android:name=".SOSNotificationActionReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.sosence.app.ACTION_RESOLVE_SOS" />
-                <action android:name="com.sosence.app.ACTION_CANCEL_FALL" />
-                <action android:name="com.sosence.app.ACTION_CONFIRM_CHECK_IN" />
-                <action android:name="com.sosence.app.ACTION_EXTEND_TIMER" />
-                <action android:name="com.sosence.app.ACTION_STOP_JOURNEY" />
-                <action android:name="com.sosence.app.ACTION_TRIGGER_INSTANT_SOS" />
-                <action android:name="com.sosence.app.ACTION_ANSWER_FAKE_CALL" />
-                <action android:name="com.sosence.app.ACTION_DECLINE_FAKE_CALL" />
-                <action android:name="com.sosence.app.ACTION_SEND_BATTERY_SMS" />
+                <action android:name="com.onetapsos.app.ACTION_RESOLVE_SOS" />
+                <action android:name="com.onetapsos.app.ACTION_CANCEL_FALL" />
+                <action android:name="com.onetapsos.app.ACTION_CONFIRM_CHECK_IN" />
+                <action android:name="com.onetapsos.app.ACTION_EXTEND_TIMER" />
+                <action android:name="com.onetapsos.app.ACTION_STOP_JOURNEY" />
+                <action android:name="com.onetapsos.app.ACTION_TRIGGER_INSTANT_SOS" />
+                <action android:name="com.onetapsos.app.ACTION_ANSWER_FAKE_CALL" />
+                <action android:name="com.onetapsos.app.ACTION_DECLINE_FAKE_CALL" />
+                <action android:name="com.onetapsos.app.ACTION_SEND_BATTERY_SMS" />
             </intent-filter>
         </receiver>
 
@@ -205,8 +204,8 @@
             android:name=".engine.SafetyAlarmReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.sosence.app.ACTION_SAFETY_TIMER_EXPIRED" />
-                <action android:name="com.sosence.app.ACTION_CHECKIN_EXPIRED" />
+                <action android:name="com.onetapsos.app.ACTION_SAFETY_TIMER_EXPIRED" />
+                <action android:name="com.onetapsos.app.ACTION_CHECKIN_EXPIRED" />
             </intent-filter>
         </receiver>
 

@@ -65,7 +65,7 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"
         android:lineSpacingExtra="4dp"
-        android:text="SOSense keeps you safe with instant 1-tap SOS alerts sent to your trusted emergency contacts."
+        android:text="OneTapSOS keeps you safe with instant 1-tap SOS alerts sent to your trusted emergency contacts."
         android:textColor="@color/text_secondary"
         android:textSize="14sp" />
 
