@@ -121,7 +121,7 @@
             android:id="@+id/tvSplashVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="OneTapSOS v1.0.2 • Emergency Ready"
+            android:text="OneTapSOS v2.1.3 • Emergency Ready"
             android:textColor="@color/text_muted"
             android:textSize="12sp" />
     </LinearLayout>
